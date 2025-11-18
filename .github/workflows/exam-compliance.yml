@@ -1,0 +1,79 @@
+name: exam-compliance
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  compliance:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore DeadPigeons.sln
+
+      - name: Build API
+        run: dotnet build server/DeadPigeons.Api/DeadPigeons.Api.csproj --configuration Release
+
+      - name: Build DataAccess
+        run: dotnet build server/DeadPigeons.DataAccess/DeadPigeons.DataAccess.csproj --configuration Release
+
+      - name: Verify Entity Framework usage
+        run: |
+          if ! grep -R "Microsoft.EntityFrameworkCore" -n server; then
+            echo "❌ EF Core not detected."
+            exit 1
+          fi
+          echo "✔ EF Core detected."
+
+      - name: Verify Guid usage
+        run: |
+          if ! grep -R "Guid" -n server; then
+            echo "❌ No GUID found in code."
+            exit 1
+          fi
+          echo "✔ GUID IDs detected."
+
+      - name: Verify Swagger/OpenAPI
+        run: |
+          if ! grep -R "AddSwaggerGen" -n server; then
+            echo "❌ Swagger/OpenAPI not detected."
+            exit 1
+          fi
+          echo "✔ Swagger/OpenAPI detected."
+
+      - name: Run tests
+        run: dotnet test --no-build --verbosity normal
+
+      - name: Verify TestContainers
+        run: |
+          if ! grep -R "Testcontainers" -n tests; then
+            echo "⚠ TestContainers not yet implemented (expected in D3/D5)."
+            exit 0
+          fi
+          echo "✔ TestContainers detected."
+
+      - name: Verify no secrets in git
+        run: |
+          if grep -R "connectionString=" -n .; then
+            echo "❌ Possible secret found!"
+            exit 1
+          fi
+          echo "✔ No secrets detected."
+
+      - name: Check React client exists
+        run: |
+          if [ ! -f "client/deadpigeons-client/package.json" ]; then
+            echo "❌ React client not detected."
+            exit 1
+          fi
+          echo "✔ React client detected."
