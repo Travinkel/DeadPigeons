@@ -1,31 +1,43 @@
 # Architecture Decision Records (ADRs)
 
-This folder contains Architecture Decision Records for Dead Pigeons.
+An ADR captures a single, significant decision that affects the architecture or key technical direction. Assessors care because ADRs show traceable context, alternatives, decisions, and consequences tied to exam milestones (D‑items).
 
-An ADR captures a **single, significant decision** that affects the system’s
-architecture or key technical direction. Each record documents:
+## What is an ADR?
 
-- Context – why the decision was needed
-- Options considered
-- The decision itself
-- Consequences and follow-up actions
+- Context — why a decision was needed
+- Options — alternatives considered
+- Decision — the chosen option
+- Consequences — expected impact, risks, and follow‑ups
 
-## Conventions
+## ADR Index (current)
 
-- Files are named: `NNNN-title-with-dashes.md`
-  - `NNNN` is a zero-padded sequence number (e.g., `0001`, `0002`)
-- Once an ADR is **Accepted**, it is treated as immutable.
-  - If the decision changes, create a new ADR and link to the old one.
+- 0001 — Walking Skeleton and Project Structure
+  - Rationale for end‑to‑end skeleton and CI from day one
+- 0002 — Client Folder Structure and CI Linting
+  - Flatten client to `client/`, enforce ESLint flat config in CI
+- 0003 — ESLint Flat Config and Legacy Config Deprecation
+  - Standardize on ESLint 9 flat config; remove `.eslintrc*`
+- 0004 — Walking Skeleton uses Docker (compose) for parity
+  - Minimal compose for DB (and optional proxy) to mirror CI/deploy topology while keeping local DX fast
+- 0005 — Containerisation and Distributed Runtime
+  - All services run as containers in CI and production; images are the deploy unit; separation of proxy, API, DB
+- 0006 — Use PostgreSQL and EF Core
+  - Choose Postgres + EF Core with code‑first migrations and Testcontainers
 
-## ADR Index
+## When to write a new ADR
 
-- `0001-walking-skeleton-and-project-structure.md`  
-  Initial walking skeleton and solution structure (API + client + CI).
-- `0002-client-folder-structure-and-ci-linting.md`  
-  Flattening the React client to `/client` and aligning CI.
-- `0003-eslint-flat-config-and-legacy-config-deprecation.md`  
-  Using ESLint flat config and removing legacy `.eslintrc.*` files.
-- `0004-use-postgresql-and-ef-core.md`  
-  Choosing PostgreSQL + EF Core (code-first) as the data access stack.
+- Introducing a new technology or major dependency
+- Changing a previously accepted decision
+- Defining cross‑cutting patterns (auth model, logging, deployment strategy)
+- Any decision that examiners might question during defense
 
-Add new ADRs here as they are created.
+## Ties to D‑items and SDII
+
+- D1–D7 checklists reference ADRs as evidence of deliberate design
+- SDII emphasizes CI/CD and code generation; ADRs make these choices explicit
+
+## Cross‑links
+
+- Architecture Overview — Distributed Architecture & Containerisation Strategy
+- Process & Quality — Agile + D‑items
+- CI & Quality

@@ -27,16 +27,16 @@ We will:
 
 - Use **only** the ESLint **flat config** (`eslint.config.js`) in the client.
 - Remove legacy ESLint config files from the client:
-  - `.eslintrc.js`, `.eslintrc.cjs`, `.eslintrc.json` (if present).
+    - `.eslintrc.js`, `.eslintrc.cjs`, `.eslintrc.json` (if present).
 - Ensure all plugins referenced in `eslint.config.js` are installed as
   devDependencies in `client/package.json`, for example:
-  - `eslint`
-  - `@typescript-eslint/parser`
-  - `@typescript-eslint/eslint-plugin`
-  - `eslint-plugin-react`
-  - `eslint-plugin-react-hooks`
-  - `eslint-plugin-import`
-  - `eslint-config-prettier` (if used)
+    - `eslint`
+    - `@typescript-eslint/parser`
+    - `@typescript-eslint/eslint-plugin`
+    - `eslint-plugin-react`
+    - `eslint-plugin-react-hooks`
+    - `eslint-plugin-import`
+    - `eslint-config-prettier` (if used)
 
 CI will run:
 
@@ -48,19 +48,19 @@ CI will run:
 ### Keep legacy `.eslintrc.*` and remove flat config
 
 - Pros:
-  - Aligns with older ESLint documentation.
+    - Aligns with older ESLint documentation.
 - Cons:
-  - ESLint 9 pushes flat config as the primary model.
-  - More friction when using newer tooling and examples.
+    - ESLint 9 pushes flat config as the primary model.
+    - More friction when using newer tooling and examples.
 
 ### Use both configs in parallel (not recommended)
 
 - Pros:
-  - Might ease transition temporarily.
+    - Might ease transition temporarily.
 - Cons:
-  - Confusing precedence rules.
-  - High chance of plugin resolution and path issues.
-  - Inconsistent behaviour between environments.
+    - Confusing precedence rules.
+    - High chance of plugin resolution and path issues.
+    - Inconsistent behaviour between environments.
 
 ## Consequences
 
@@ -79,14 +79,24 @@ CI will run:
 ## Risks and Mitigations
 
 - **Risk**: Flat config references a plugin that is not installed.
-  - **Mitigation**: Add a one-time check to match `eslint.config.js` imports
-    against `devDependencies`. CI will fail early if a plugin is missing.
+    - **Mitigation**: Add a one-time check to match `eslint.config.js` imports
+      against `devDependencies`. CI will fail early if a plugin is missing.
 - **Risk**: Behaviour changes slightly when migrating rules.
-  - **Mitigation**: Run `npm run lint` locally and in CI, fix any new warnings
-    or errors, and adjust rules where appropriate.
+    - **Mitigation**: Run `npm run lint` locally and in CI, fix any new warnings
+      or errors, and adjust rules where appropriate.
 
 ## Follow-up Actions
 
+### Evidence
+
+- Repo path: `client/eslint.config.js`; legacy `.eslintrc*` removed
+- CI logs: ESLint 9 flat config runs clean in PRs
+
+### Consequences for exam goals (2–3 lines)
+
+- Stable linting baseline improves code quality signal for assessors.
+- Prevents “plugin not found” CI failures that waste exam time.
+- Aligns tooling with current ESLint guidance for longevity.
 - Document the linting setup in:
-  - `docs/explanation/ci-quality.md`
+    - `docs/explanation/ci-quality.md`
 - Keep lint commands in `package.json` stable (`npm run lint`, `npm run lint:fix`).
