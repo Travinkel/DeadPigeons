@@ -19,21 +19,6 @@ Current status:
 
 ---
 
-## Exam Alignment
-
-This project fulfills the learning goals of:
-
-| Course | Competencies Demonstrated |
-|--------|---------------------------|
-| **Programming II** | React + TypeScript, .NET Web API, Entity Framework, GUIDs, NSwag, server-side validation |
-| **Systems Development II** | GitHub Actions CI/CD, XUnit + TestContainers, GitHub Flow, DevOps practices |
-| **CDS.Security** | JWT authentication, password hashing, authorization policies, no secrets in git |
-| **CDS.Networking** | Cloud deployment (Fly.io), Docker, Nginx reverse proxy |
-
-The architecture follows the exam specification with stateless API, calculated balance, soft deletes, and PostgreSQL arrays.
-
----
-
 ## Security Policy
 
 ### Authentication
@@ -89,7 +74,7 @@ The architecture follows the exam specification with stateless API, calculated b
 
 ### Key Decisions (ADR-0010)
 - **Calculated balance:** No balance column; sum of approved transactions
-- **GUIDs for all PKs:** Exam requirement, prevents enumeration
+- **GUIDs for all PKs:** Prevents enumeration attacks
 - **PostgreSQL arrays:** Board numbers and winning numbers
 - **Soft delete:** Player only (DeletedAt timestamp)
 - **Players inactive by default:** Admin must activate
@@ -264,19 +249,6 @@ Follows the **Diátaxis** documentation model:
 - [Data Model Reference](docs/reference/data-model.md)
 - [Knowledge Domains](docs/explanation/knowledge-domains.md)
 - [ADR-0010: Data Model Decisions](docs/adr/0010-data-model-decisions.md)
-
----
-
-## Exam Information
-
-- **Project Announcement:** November 13, 2024
-- **Review Meetings:** November 26-27, 2024
-- **Submission Deadline:** December 19, 2024
-- **Oral Exams:** January 5-16, 2025
-
-### Exam Format
-- **Programming + CDS:** 30 minutes oral
-- **Systems Development:** 20 minutes oral
 
 ---
 
