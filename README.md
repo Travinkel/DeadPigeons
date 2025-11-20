@@ -2,8 +2,8 @@
 
 **Courses:** Programming II · Systems Development II · CDS.Security · CDS.Networking
 
-**Current Version:** `v1.1.0-devops-hardening`
-**Branch:** `feature/data-model` (Sprint 2)
+**Current Version:** `v1.2.0`
+**Branch:** `main`
 
 ---
 
@@ -208,7 +208,7 @@ fly status
 | Sprint | Focus | Status | Tag |
 |--------|-------|--------|-----|
 | Sprint 1 | Walking Skeleton + DevOps | Done | v1.0.0, v1.1.0 |
-| Sprint 2 | Data Model + Basic Endpoints | In Progress | — |
+| Sprint 2 | Data Model + Basic Endpoints | Done | v1.2.0 |
 | Sprint 3 | Auth + Authz + Validation | Planned | — |
 | Sprint 4 | Game Logic + React UI + Deploy | Planned | — |
 
@@ -224,11 +224,12 @@ fly status
 - ✅ TestContainers integration test infrastructure
 - ✅ Swagger/OpenAPI documentation
 
-### In Progress (Sprint 2)
-- 🔄 EF Core entities (Player, Transaction, Board, Game)
-- 🔄 Database migrations
-- 🔄 Basic CRUD endpoints (unprotected)
-- 🔄 Unit test suite
+### Completed (Sprint 2)
+- ✅ EF Core entities (Player, Transaction, Board, Game)
+- ✅ Database migrations
+- ✅ Basic CRUD endpoints (unprotected)
+- ✅ Unit test suite (30 tests)
+- ✅ Integration test suite (5 tests)
 
 ### Planned
 - ⏳ JWT authentication

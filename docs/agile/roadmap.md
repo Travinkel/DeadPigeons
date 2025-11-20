@@ -13,12 +13,12 @@
 
 ## Sprint Overview
 
-| Sprint | Focus | Status | Tag | Weeks |
-|--------|-------|--------|-----|-------|
-| Sprint 1 | Walking Skeleton + DevOps | Done | v1.0.0, v1.1.0 | W36-40 |
-| Sprint 2 | Data Model + Basic Endpoints | Done | — | W41-43 |
-| Sprint 3 | Auth + Authz + Validation | Planned | — | W44-46 |
-| Sprint 4 | Game Logic + React UI + Deploy | Planned | — | W47-50 |
+| Sprint | Focus | Status | Tag |
+|--------|-------|--------|-----|
+| Sprint 1 | Walking Skeleton + DevOps | Done | v1.0.0, v1.1.0 |
+| Sprint 2 | Data Model + Basic Endpoints | Done | v1.2.0 |
+| Sprint 3 | Auth + Authz + Validation | Planned | — |
+| Sprint 4 | Game Logic + React UI + Deploy | Planned | — |
 
 ---
 
@@ -139,16 +139,16 @@ This ensures the project meets Programming, Systems Development, and Security re
 
 ## Curriculum Alignment
 
-| Week | Theme | Sprint |
-|------|-------|--------|
-| W36-37 | Branching Strategy | Sprint 1 |
-| W38-39 | CI/CD Pipeline | Sprint 1 |
-| W40 | Linting & Formatting | Sprint 1 |
-| W41 | Code Generation | Sprint 2 |
-| W42 | Testing Strategy | Sprint 2 |
-| W43 | Git Hooks | Sprint 1 (Done) |
-| W44-46 | Security | Sprint 3 |
-| W47-50 | Deployment & Polish | Sprint 4 |
+| Theme | Sprint |
+|-------|--------|
+| Branching Strategy | Sprint 1 |
+| CI/CD Pipeline | Sprint 1 |
+| Linting & Formatting | Sprint 1 |
+| Code Generation | Sprint 2 |
+| Testing Strategy | Sprint 2 |
+| Git Hooks | Sprint 1 |
+| Security | Sprint 3 |
+| Deployment & Polish | Sprint 4 |
 
 ---
 

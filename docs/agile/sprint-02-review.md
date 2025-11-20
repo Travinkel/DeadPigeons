@@ -3,9 +3,9 @@
 **Sprint Goal:** Establish the data persistence layer with all core entities, migrations, and basic CRUD endpoints.
 
 **Sprint Duration:** Sprint 2
-**Sprint Status:** In Progress (CI Pending)
-**PR:** #3
-**Tag:** `v1.2.0-data-model` (pending)
+**Sprint Status:** Complete
+**PR:** #4
+**Tag:** `v1.2.0`
 
 ---
 
@@ -18,8 +18,8 @@
 | TASK-2.3 | Migrations | ✅ Done | 20251120161739_DataModel |
 | TASK-2.4 | Basic Endpoints | ✅ Done | All controllers unprotected |
 | TASK-2.5 | Unit Tests | ✅ Done | 30 tests passing |
-| TASK-2.6 | Integration Tests | ⏳ Pending | CI workflow being fixed |
-| TASK-2.7 | CI Test Reporting | ⏳ Pending | ReportGenerator setup |
+| TASK-2.6 | Integration Tests | ✅ Done | 5 tests passing in CI |
+| TASK-2.7 | CI Test Reporting | ✅ Done | GitHubActions annotations |
 
 ---
 
@@ -60,11 +60,11 @@ The Data Model sprint delivers:
 
 | Planned | Delivered | Notes |
 |---------|-----------|-------|
-| 34 story points | ~30 story points | CI pending |
-| 6 tasks | 5 complete, 2 pending | Integration tests + reporting |
+| 34 story points | 34 story points | All delivered |
+| 7 tasks | 7 complete | All tasks done |
 | All entities | All entities | ✅ |
 | All endpoints | All endpoints | ✅ Unprotected |
-| CI green | CI in progress | Test reporting issues |
+| CI green | CI green | ✅ All tests passing |
 
 ---
 
@@ -81,9 +81,9 @@ The Data Model sprint delivers:
    - User stories embedded in sprint epics
 
 3. **CI Improvements**
-   - Added HTML test report with ReportGenerator
+   - GitHubActions test logger for inline annotations
    - Fixed workflow triggers for feature branches
-   - Disabled Ryuk for TestContainers in CI
+   - Test isolation with shared collection fixture
 
 4. **Security Notice**
    - Added warning to README about unprotected endpoints
@@ -95,11 +95,11 @@ The Data Model sprint delivers:
 
 - [x] Code compiles without errors
 - [x] Unit tests pass (30/30)
-- [ ] Integration tests pass in CI
-- [ ] NSwag client regenerated
+- [x] Integration tests pass in CI (5/5)
+- [x] NSwag client regenerated
 - [x] Documentation updated
-- [ ] Code reviewed and merged to main
-- [ ] Sprint increment tagged
+- [x] Code reviewed and merged to main
+- [x] Sprint increment tagged (v1.2.0)
 
 ---
 
@@ -118,8 +118,9 @@ The Data Model sprint delivers:
 
 | Blocker | Impact | Resolution |
 |---------|--------|------------|
-| CI test reporting | Cannot merge PR | Fixing ReportGenerator setup |
-| TestContainers Ryuk | Tests fail in CI | Disabled Ryuk |
+| CI test reporting | Cannot merge PR | ✅ Resolved with GitHubActions logger |
+| TestContainers Ryuk | Tests fail in CI | ✅ Resolved with default Docker setup |
+| Test isolation | 409 conflicts | ✅ Resolved with collection fixture |
 
 ---
 
@@ -146,7 +147,8 @@ The Data Model sprint delivers:
 | Metric | Value |
 |--------|-------|
 | Story Points Planned | 34 |
-| Story Points Completed | ~30 |
-| Velocity | 88% |
+| Story Points Completed | 34 |
+| Velocity | 100% |
 | Unit Tests | 30 |
+| Integration Tests | 5 |
 | Code Coverage | TBD |
