@@ -64,7 +64,7 @@ jobs:
         run: dotnet build server/DeadPigeons.Api/DeadPigeons.Api.csproj --configuration Release
 
       - name: Generate API client
-        run: nswag run nswag.json /runtime:Net100
+        run: nswag run nswag.json
 
       - name: Check for API client drift
         run: |
