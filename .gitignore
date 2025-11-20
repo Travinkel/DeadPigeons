@@ -23,6 +23,9 @@ mono_crash.*
 CLAUDE.md
 .claude/
 
+# Internal Documentation and Training Data
+/docs/internal
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
