@@ -61,6 +61,35 @@ The MVP must satisfy all mandatory technical requirements as specified in the ex
 
 ---
 
+## 3. Current Status
+
+### Completed Milestones
+
+| Version | Name | Status | Date |
+|---------|------|--------|------|
+| v1.0.0 | Walking Skeleton | Done | Sprint 1 |
+| v1.1.0 | DevOps Hardening | Done | Sprint 2 |
+
+### Infrastructure Complete
+- [x] CI/CD pipeline (GitHub Actions)
+- [x] Linting and formatting (ESLint, Prettier)
+- [x] Git hooks (Husky, commitlint, secretlint)
+- [x] Integration test infrastructure (Testcontainers)
+- [x] NSwag TypeScript client generation
+- [x] Development workflow documentation
+
+### In Progress (Sprint 3)
+- [ ] Data model and EF Core entities
+- [ ] Database migrations
+- [ ] First API endpoints
+
+### Planned
+- [ ] Authentication & Authorization
+- [ ] Core game logic
+- [ ] Deployment to cloud
+
+---
+
 ## Definition of Ready
 
 The MVP is officially **ready** when every single checkbox in this document is ticked. At that point, the project fulfills the core requirements and is ready for a final review before being handed over to the stakeholder.

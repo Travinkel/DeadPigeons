@@ -1,18 +1,31 @@
 # Dead Pigeons — Exam Project (Programming II · SDII · CDS Security)
 
-**Current Version:** `v1.0.0-walking-skeleton`
+**Current Version:** `v1.1.0-devops-hardening`
+**Previous Milestone:** `v1.0.0-walking-skeleton`
 
 ## Overview
 
 Distributed full-stack application implementing the Jerne IF "Dead Pigeons" game.
-Includes:
 
-- React + TypeScript client
-- .NET Web API + Entity Framework Core + PostgreSQL
-- Authentication, Authorization
-- Cloud deployment
-- TestContainers + XUnit
-- Full CI/CD automation
+### Features
+- React + TypeScript client (Vite)
+- .NET 9 Web API + Entity Framework Core + PostgreSQL
+- NSwag-generated TypeScript API client
+- TestContainers + xUnit integration tests
+- Full CI/CD automation (GitHub Actions)
+
+### Development Workflow
+- **Branching Strategy:** GitHub Flow (feature branches → PR → main)
+- **Commit Format:** Conventional Commits (enforced by commitlint)
+- **Quality Gates:** Husky pre-commit hooks, lint-staged, secretlint
+
+### Milestones
+| Version | Name | Status |
+|---------|------|--------|
+| v1.0.0 | Walking Skeleton | Done |
+| v1.1.0 | DevOps Hardening | Done |
+| v1.2.0 | Data Model + Migrations | Planned |
+| v1.3.0 | Authentication | Planned |
 
 ---
 
@@ -24,6 +37,21 @@ Includes:
 - Node.js 20+ and npm
 - Docker Desktop (for Testcontainers and local services)
 - PostgreSQL (local install or via Docker)
+
+### Local Development Notes
+
+**Shadow PC Environment:** Docker is not available locally due to Shadow PC limitations. Integration tests (which use Testcontainers) run only in CI via GitHub Actions.
+
+**What runs locally:**
+- Client development server (`npm run dev`)
+- API development server (`dotnet run`)
+- Linting, formatting, type checking
+- Pre-commit hooks (lint-staged, secretlint, commitlint)
+
+**What runs only in CI:**
+- Integration tests (Testcontainers + PostgreSQL)
+- Full test suite
+- Docker builds
 
 ### Run Locally
 

@@ -20,6 +20,14 @@ Milestone-oriented roadmap aligned to internal delivery gates (D1–D7).
 **Evidence:** ADR-0001, CI green, health endpoint
 **Sprint:** 1
 **Tag:** `v1.0.0-walking-skeleton`
+**Milestone:** v1.0.0
+
+### D1.5: DevOps Hardening
+**Status:** Done
+**Evidence:** ADR-0007, Husky hooks, commitlint, secretlint, CI quality gates
+**Sprint:** 2
+**Tag:** `v1.1.0-devops-hardening`
+**Milestone:** v1.1.0
 
 ### D2: Data Model + Migrations
 **Status:** In Progress
@@ -103,21 +111,35 @@ Milestone-oriented roadmap aligned to internal delivery gates (D1–D7).
 
 - **Sprint 1 – Walking Skeleton (Done):**
   Vertical slice operational, CI baseline, NSwag pipeline.
+  **Tag:** `v1.0.0-walking-skeleton`
 
-- **Sprint 2 – DevOps Hardening (Current):**
+- **Sprint 2 – DevOps Hardening (Done):**
   Husky, commitlint, secretlint, lint-staged, enhanced CI.
+  **Tag:** `v1.1.0-devops-hardening`
 
-- **Sprint 3 – Authentication & Security:**
+- **Sprint 3 – Data Model + First Endpoints (Current):**
+  EF Core entities, migrations, initial CRUD endpoints.
+
+- **Sprint 4 – Authentication & Security:**
   JWT auth, secure password hashing, session handling.
 
-- **Sprint 4 – Core Domain & Boards System:**
+- **Sprint 5 – Core Domain & Boards System:**
   CRUD operations, transactions, board gameplay logic.
 
-- **Sprint 5 – Deployment & Polish:**
+- **Sprint 6 – Deployment & Polish:**
   Fly.io deployment, environment validation, exam review.
 
 ## Related Documentation
 
+### Sprint Documentation
 - [Sprint 1 Review](sprint-01-review.md)
 - [Sprint 1 Increment](sprint-01-increment.md)
+- [Sprint 1 Retrospective](sprint-01-retrospective.md)
 - [Sprint 2 Epic](sprint-02-epic.md)
+- [Sprint 2 Review](sprint-02-review.md)
+- [MVP Definition](MVP-Definition.md)
+
+### Architecture Decision Records
+- [ADR-0007: DevOps Hardening](../adr/0007-devops-hardening-and-git-hooks.md)
+- [ADR-0008: Shadow PC and CI-Only Testing](../adr/0008-shadow-pc-and-ci-only-testing.md)
+- [ADR-0009: GitHub Flow](../adr/0009-github-flow-branching-strategy.md)
