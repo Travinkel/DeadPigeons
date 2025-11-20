@@ -19,6 +19,13 @@
 # Mono auto generated files
 mono_crash.*
 
+# Claude AI files
+CLAUDE.md
+.claude/
+
+# Internal Documentation and Training Data
+/docs/internal
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

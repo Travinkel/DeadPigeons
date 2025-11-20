@@ -1,4 +1,4 @@
-name: ci-dotnet
+name: CI
 
 on:
   push:
@@ -7,28 +7,70 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: deadpigeons
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
 
     steps:
-      
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-      
-      - name: Lint client
-        working-directory: client/deadpigeons-client
-        run: npm run lint
 
-      - name: Setup .NET
+      - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '9.0.x'
 
-      - name: Restore
+      - name: Backend restore
         run: dotnet restore DeadPigeons.sln
 
-      - name: Build
+      - name: Backend build
         run: dotnet build DeadPigeons.sln --configuration Release --no-restore
 
-      - name: Test
-        run: dotnet test DeadPigeons.sln --no-build --verbosity normal
+      - name: Backend test
+        run: dotnet test DeadPigeons.sln --configuration Release --no-build --verbosity normal
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Frontend install
+        run: npm ci --prefix client
+
+      - name: Frontend build
+        run: npm run build --prefix client
+
+      - name: Lint client
+        run: npm run lint --prefix client
+
+      - name: Start API for NSwag
+        run: dotnet run --project server/DeadPigeons.Api --urls "http://localhost:5000" &
+
+      - name: Wait for API to be ready
+        run: sleep 8
+
+      - name: Install NSwag
+        run: dotnet tool install -g NSwag.ConsoleCore
+
+      - name: Build API (for NSwag)
+        run: dotnet build server/DeadPigeons.Api/DeadPigeons.Api.csproj --configuration Release
+
+      - name: Generate API client
+        run: nswag run nswag.json
+
+      - name: Check for API client drift
+        run: |
+          if git diff --exit-code client/src/api/generated/; then
+            echo "API client is up to date"
+          else
+            echo "ERROR: API client is out of date. Run 'nswag run nswag.json' and commit the changes."
+            exit 1
+          fi
