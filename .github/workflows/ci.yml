@@ -51,11 +51,20 @@ jobs:
       - name: Lint client
         run: npm run lint --prefix client
 
+      - name: Start API for NSwag
+        run: dotnet run --project server/DeadPigeons.Api --urls "http://localhost:5000" &
+
+      - name: Wait for API to be ready
+        run: sleep 8
+
       - name: Install NSwag
         run: dotnet tool install -g NSwag.ConsoleCore
 
+      - name: Build API (for NSwag)
+        run: dotnet build server/DeadPigeons.Api/DeadPigeons.Api.csproj --configuration Release
+
       - name: Generate API client
-        run: nswag run nswag.json
+        run: nswag run nswag.json /runtime:Net100
 
       - name: Check for API client drift
         run: |
