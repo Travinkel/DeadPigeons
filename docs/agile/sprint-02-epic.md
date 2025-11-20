@@ -1,352 +1,158 @@
-# Sprint 2 EPIC - DevOps Hardening
+# Sprint 2 EPIC — Data Model + Basic Endpoints
 
 **Epic ID:** EPIC-02
 **Sprint:** 2
-**Branch:** `feature/devops-hardening`
-**Status:** In Progress
+**Branch:** `feature/data-model`
+**Status:** Complete
+
+---
 
 ## Epic Summary
 
-Establish robust development workflow automation and quality gates to ensure consistent code quality, prevent accidental secret leaks, and enforce conventional commits across the team.
+Design and implement the core data model for Dead Pigeons. This sprint establishes the persistence layer with EF Core entities, migrations, and basic CRUD endpoints. **Endpoints are unprotected** — security is added in Sprint 3.
 
-## Business Value
+## Why This Sprint Order?
 
-- Prevents broken code from reaching main branch
-- Enforces consistent commit message format for changelog generation
-- Catches secrets before they enter version control
-- Reduces code review burden through automated checks
-- Aligns with SD2 DevOps and CI/CD curriculum requirements
+The data model comes **before** authentication because:
+1. Entities must exist before we can secure them
+2. Database schema must be stable before adding user identity
+3. Basic endpoints allow testing the data layer independently
+
+Security is added in Sprint 3 to ensure all exam CDS.Security requirements are met.
+
+---
+
+## Exam Competencies
+
+| Course | Competencies |
+|--------|-------------|
+| PROG | Entity Framework Core, GUIDs, server-side validation |
+| SDE2 | Database migrations, testing infrastructure |
+
+---
 
 ## Acceptance Criteria
 
-- [ ] All commits follow conventional commit format
-- [ ] Pre-commit hooks validate code quality
-- [ ] Pre-push hooks run tests
-- [ ] No secrets can be committed
-- [ ] Main branch protected from direct pushes
-- [ ] CI validates migrations, types, and builds
+- [x] All core entities defined with proper relationships
+- [x] EF Core configurations complete
+- [x] Migrations created and tested
+- [x] Basic CRUD endpoints operational (unprotected)
+- [x] Unit tests for domain logic (30 passing)
+- [x] Integration tests pass in CI with TestContainers
+- [x] NSwag client regenerated
 
 ---
 
 ## User Stories
 
-| Story ID | User Story | Acceptance Criteria | Tasks |
-|----------|------------|---------------------|-------|
-| US-2.1 | As a developer, I need enforced commit conventions so that changelogs can be auto-generated and commit history is readable | Commits rejected if not following conventional format | TASK-2.3 |
-| US-2.2 | As a developer, I need automatic linting on staged files so that code quality is maintained without manual effort | Only staged files are linted; failures block commit | TASK-2.1, TASK-2.2, TASK-2.5 |
-| US-2.3 | As a code reviewer, I need CI quality gates so that PRs are validated automatically before review | CI runs typecheck, tests, secret scan, migration check | TASK-2.8 |
-| US-2.4 | As a team lead, I need branch protection so that main remains stable and all changes go through PR | Direct pushes to main blocked; PRs require CI pass | TASK-2.7 |
-| US-2.5 | As a security-conscious developer, I need secret detection so that credentials never enter version control | Commits with secrets are blocked with clear error | TASK-2.4 |
-| US-2.6 | As a developer, I need pre-push validation so that broken code doesn't reach the remote | Tests run before push; failures block push | TASK-2.6 |
-| US-2.7 | As an operator, I need environment validation so that missing config is caught at startup | App fails fast with clear error if vars missing | TASK-2.9 |
-
-## Why These User Stories Matter
-
-- **Commit conventions** produce clean history for the examiner and allow automated release notes.
-- **Secretlint** directly satisfies CDS.Security teaching goals (secure development practices).
-- **Husky + lint-staged** align with SD2 "Developer Experience & Tooling".
-- **Pre-push tests** prevent broken features from reaching PR stage.
-- **Environment validation** prevents hidden runtime bugs during the exam demo.
+| Story ID | User Story | Acceptance Criteria |
+|----------|------------|---------------------|
+| US-2.1 | As a developer, I need Player entity so I can manage users | CRUD operations work, soft delete implemented |
+| US-2.2 | As a developer, I need Transaction entity so balance can be tracked | Sum of approved transactions = balance |
+| US-2.3 | As a developer, I need Board entity so games can be played | 5-8 numbers stored as PostgreSQL array |
+| US-2.4 | As a developer, I need Game entity so draws can be conducted | Status transitions work, winning numbers stored |
+| US-2.5 | As a developer, I need migrations so schema is versioned | Migrations apply cleanly |
 
 ---
 
-## Curriculum Alignment (SDE2)
+## Tasks
 
-| Week | Theme | Tasks | Evidence |
-|------|-------|-------|----------|
-| W40 | Linting & Formatting | TASK-2.2 | lint-staged config, ESLint integration |
-| W43 | Git Hooks | TASK-2.1, TASK-2.3, TASK-2.5, TASK-2.6 | Husky setup, pre-commit/pre-push hooks |
-| W44 | Environments & Config | TASK-2.9 | .env validation, startup checks |
+### TASK-2.1: Define Entities (8 SP)
+
+**Entities:**
+- Player (with **IsActive = false** default)
+- Transaction (with type enum)
+- Board (with PostgreSQL array)
+- Game (with status enum)
+
+**Key Requirements per Exam:**
+- Phone is **required** (not optional)
+- Players **inactive by default**
+- GUIDs for all primary keys
+
+### TASK-2.2: EF Core Configurations (5 SP)
+
+- Fluent API configurations
+- Indexes (Email unique, PlayerId, IsApproved)
+- Soft delete query filter for Player
+- PostgreSQL array column types
+
+### TASK-2.3: Migrations (3 SP)
+
+- Initial migration with all entities
+- Apply and test rollback
+- CI runs migrations in tests
+
+### TASK-2.4: Basic Endpoints (8 SP)
+
+**Endpoints (unprotected):**
+- Players: GET, POST, PUT, DELETE, GET balance
+- Transactions: GET pending, POST deposit, POST approve
+- Boards: GET, POST
+- Games: GET, POST, POST complete
+
+**Note:** Endpoints unprotected in this sprint. Security added in Sprint 3.
+
+### TASK-2.5: Unit Tests (5 SP)
+
+- Balance calculation (sum of approved)
+- Soft delete behavior
+- Number validation (5-8)
+- Game state transitions
+
+### TASK-2.6: Integration Tests (5 SP)
+
+- CRUD operations with TestContainers
+- CI-only (Shadow PC limitation)
+- Migration testing
+
+**Total Story Points:** 34
 
 ---
 
-## Diátaxis Links
+## Data Model Summary
 
-| Type | Topic | Location |
-|------|-------|----------|
-| **Tutorial** | Setting up Husky and Git hooks | docs/tutorials/husky-setup.md |
-| **How-To** | Configure pre-commit hooks | docs/how-to/pre-commit-hooks.md |
-| **How-To** | Add commitlint to project | docs/how-to/commitlint.md |
-| **Reference** | commitlint.config.js | Root config file |
-| **Reference** | .secretlintrc.json | Root config file |
-| **Reference** | lint-staged configuration | package.json |
-| **Explanation** | Why DevOps hardening matters | docs/explanation/devops-hardening.md |
-
----
-
-## Risk Assessment
-
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| Hooks slow down development | Medium | Low | Use lint-staged to only check staged files |
-| Team unfamiliar with conventional commits | Medium | Medium | Document format, provide examples |
-| Hooks bypass possible | Low | High | CI also enforces all checks |
-| secretlint false positives | Medium | Low | Configure ignore patterns |
-
----
-
-## Sprint Backlog
-
-### TASK-2.1: Add Husky
-**Story Points:** 2
-**Priority:** High
-
-**Description:** Install and configure Husky for Git hooks management.
-
-**Acceptance Criteria:**
-- [ ] Husky installed as dev dependency
-- [ ] `.husky/` directory created
-- [ ] `prepare` script in package.json installs hooks
-- [ ] Hooks execute on git operations
-
-**Implementation:**
-```bash
-cd client
-npm install -D husky
-npx husky init
+### Player Entity
+```
+Id: Guid (PK)
+Name: string (required, max 100)
+Email: string (required, unique)
+Phone: string (required, max 20)     ← REQUIRED per exam
+IsActive: bool (default: false)       ← INACTIVE per exam
+CreatedAt, UpdatedAt, DeletedAt
 ```
 
----
+### Board Pricing (implemented in Sprint 4)
+- 5 numbers = 20 DKK
+- 6 numbers = 40 DKK
+- 7 numbers = 80 DKK
+- 8 numbers = 160 DKK
 
-### TASK-2.2: Add lint-staged
-**Story Points:** 2
-**Priority:** High
-
-**Description:** Configure lint-staged to run linters only on staged files.
-
-**Acceptance Criteria:**
-- [ ] lint-staged installed
-- [ ] Configuration in package.json or .lintstagedrc
-- [ ] Runs ESLint on staged .ts/.tsx files
-- [ ] Runs Prettier on staged files
-- [ ] Integrated with Husky pre-commit hook
-
-**Implementation:**
-```bash
-npm install -D lint-staged
-```
-
-```json
-// package.json
-"lint-staged": {
-  "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
-  "*.{json,md}": ["prettier --write"]
-}
-```
+### Key Decisions (ADR-0010)
+- Calculated balance (no balance column)
+- Soft delete for Player only
+- PostgreSQL arrays for numbers
+- Single active game constraint
 
 ---
-
-### TASK-2.3: Add commitlint
-**Story Points:** 2
-**Priority:** High
-
-**Description:** Enforce conventional commit message format.
-
-**Acceptance Criteria:**
-- [ ] commitlint installed with conventional config
-- [ ] Husky commit-msg hook validates messages
-- [ ] Rejects non-conventional commits
-- [ ] Team documented on commit format
-
-**Implementation:**
-```bash
-npm install -D @commitlint/cli @commitlint/config-conventional
-echo "export default { extends: ['@commitlint/config-conventional'] };" > commitlint.config.js
-npx husky add .husky/commit-msg 'npx --no -- commitlint --edit "$1"'
-```
-
-**Commit Format:**
-```
-type(scope): subject
-
-feat(auth): add JWT token refresh
-fix(api): handle null response
-docs(readme): update installation steps
-```
-
----
-
-### TASK-2.4: Add secretlint
-**Story Points:** 3
-**Priority:** Critical
-
-**Description:** Prevent secrets from being committed to repository.
-
-**Acceptance Criteria:**
-- [ ] secretlint installed
-- [ ] Configuration detects common secret patterns
-- [ ] Pre-commit hook blocks commits with secrets
-- [ ] CI also runs secretlint
-
-**Implementation:**
-```bash
-npm install -D secretlint @secretlint/secretlint-rule-preset-recommend
-```
-
-```json
-// .secretlintrc.json
-{
-  "rules": [
-    {
-      "id": "@secretlint/secretlint-rule-preset-recommend"
-    }
-  ]
-}
-```
-
----
-
-### TASK-2.5: Configure pre-commit hook
-**Story Points:** 2
-**Priority:** High
-
-**Description:** Set up pre-commit hook to run quality checks.
-
-**Acceptance Criteria:**
-- [ ] Runs lint-staged
-- [ ] Runs secretlint
-- [ ] Runs TypeScript type check
-- [ ] Blocks commit on failure
-
-**Implementation:**
-```bash
-# .husky/pre-commit
-npx lint-staged
-npx secretlint "**/*"
-npm run typecheck
-```
-
----
-
-### TASK-2.6: Configure pre-push hook
-**Story Points:** 2
-**Priority:** High
-
-**Description:** Run tests before allowing push to remote.
-
-**Acceptance Criteria:**
-- [ ] Runs client tests
-- [ ] Optionally runs backend tests
-- [ ] Blocks push on test failure
-
-**Implementation:**
-```bash
-# .husky/pre-push
-npm run test --prefix client
-dotnet test DeadPigeons.sln
-```
-
----
-
-### TASK-2.7: Branch protection rules
-**Story Points:** 1
-**Priority:** High
-
-**Description:** Configure GitHub branch protection for main.
-
-**Acceptance Criteria:**
-- [ ] No direct pushes to main
-- [ ] Require PR with at least 1 approval
-- [ ] Require CI to pass before merge
-- [ ] Require up-to-date branch
-
-**Implementation:**
-GitHub Settings → Branches → Add rule for `main`:
-- Require pull request before merging
-- Require status checks to pass
-- Require branches to be up to date
-
----
-
-### TASK-2.8: Enhanced CI pipeline
-**Story Points:** 3
-**Priority:** Medium
-
-**Description:** Add additional quality gates to CI.
-
-**Acceptance Criteria:**
-- [ ] TypeScript type checking (`tsc --noEmit`)
-- [ ] Migration validation (pending migrations check)
-- [ ] Docker build test
-- [ ] Secretlint scan
-
-**Implementation:**
-```yaml
-# Additional CI steps
-- name: TypeScript type check
-  run: npm run typecheck --prefix client
-
-- name: Check for pending migrations
-  run: dotnet ef migrations has-pending-changes
-
-- name: Build Docker image
-  run: docker build -t deadpigeons-api .
-
-- name: Secret scan
-  run: npx secretlint "**/*"
-```
-
----
-
-### TASK-2.9: Environment validation
-**Story Points:** 2
-**Priority:** Medium
-
-**Description:** Validate required environment variables at startup.
-
-**Acceptance Criteria:**
-- [ ] .env.example documents all required variables
-- [ ] Application fails fast if required vars missing
-- [ ] Clear error messages indicate missing vars
-- [ ] CI validates .env.example exists
-
-**Implementation:**
-```csharp
-// Program.cs
-var requiredVars = new[] { "DATABASE_URL", "JWT_SECRET" };
-foreach (var v in requiredVars)
-{
-    if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(v)))
-        throw new InvalidOperationException($"Missing required environment variable: {v}");
-}
-```
-
----
-
-## Story Point Summary
-
-| Task | Points |
-|------|--------|
-| TASK-2.1: Husky | 2 |
-| TASK-2.2: lint-staged | 2 |
-| TASK-2.3: commitlint | 2 |
-| TASK-2.4: secretlint | 3 |
-| TASK-2.5: pre-commit hook | 2 |
-| TASK-2.6: pre-push hook | 2 |
-| TASK-2.7: Branch protection | 1 |
-| TASK-2.8: Enhanced CI | 3 |
-| TASK-2.9: Env validation | 2 |
-| **Total** | **19** |
 
 ## Definition of Done
 
-- [ ] All tasks completed and merged
-- [ ] CI pipeline green
-- [ ] Branch protection active
-- [ ] Team trained on new workflow
-- [ ] Documentation updated
-- [ ] Sprint review conducted
+- [x] Entities created with correct defaults
+- [x] Configurations apply all constraints
+- [x] Migrations tested (CI + local if possible)
+- [x] Endpoints operational (unprotected)
+- [x] Unit tests pass locally (30/30)
+- [x] Integration tests pass in CI
+- [x] Documentation updated
+- [x] CI with GitHub Actions test logger showing annotations
+- [x] PR reviewed and merged
 
-## Getting Started
+---
 
-```bash
-# Create feature branch
-git checkout main
-git pull
-git checkout -b feature/devops-hardening
+## Related Documentation
 
-# Begin implementation
-cd client
-npm install -D husky lint-staged @commitlint/cli @commitlint/config-conventional secretlint @secretlint/secretlint-rule-preset-recommend
-npx husky init
-```
+- [Data Model Reference](../reference/data-model.md)
+- [ADR-0010: Data Model Decisions](../adr/0010-data-model-decisions.md)
+- [Roadmap](roadmap.md)
+- [Sprint 1 Review](sprint-01-review.md)

@@ -2,7 +2,8 @@
 
 namespace DeadPigeons.IntegrationTests;
 
-public class HealthTests : IClassFixture<ApiFactory>
+[Collection("IntegrationTests")]
+public class HealthTests
 {
     private readonly HttpClient _client;
 

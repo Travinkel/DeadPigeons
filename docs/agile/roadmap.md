@@ -1,123 +1,186 @@
 # Project Roadmap
 
-## Knowledge Domains (RAG)
+## Exam Timeline
 
-| KD | Domain | Status |
-|----|--------|--------|
-| KD2 | CI/CD & Automation | In Progress |
-| KD8 | Web API & Data Layer (.NET + EF + SQL) | In Progress |
-| KD9 | Deployment & Cloud | Planned |
-| KD10 | Auth & Session Management | Planned |
-| KD11 | Authorization & Access Control | Planned |
-| KD12 | Application Security (Web & OWASP) | Planned |
+| Date | Event |
+|------|-------|
+| November 13, 2024 | Project Announcement |
+| November 26-27, 2024 | Review Meetings |
+| December 19, 2024 | Submission Deadline |
+| January 5-16, 2025 | Oral Exams |
 
-## Milestones (Quality Gates)
-
-Milestone-oriented roadmap aligned to internal delivery gates (D1–D7).
-
-### D1: Walking Skeleton + CI Spine
-**Status:** Done
-**Evidence:** ADR-0001, CI green, health endpoint
-**Sprint:** 1
-**Tag:** `v1.0.0-walking-skeleton`
-
-### D2: Data Model + Migrations
-**Status:** In Progress
-**Evidence:** Data Model Decisions, Migrations Reference
-**Sprint:** 2–3
-
-### D3: First Endpoints + NSwag Client
-**Status:** In Progress
-**Evidence:** API Reference, NSwag Strategy
-**Sprint:** 2–3
-
-### D4: Deployment (Containerized)
-**Status:** In Progress
-**Evidence:** Deploy How-to (Nginx), smoke tests
-**Sprint:** 3–4
-
-### D5: Auth Baseline
-**Status:** Planned
-**Evidence:** Security Model (hashing, session), integration test auth flows
-**Sprint:** 4–5
-
-### D6: Authorization & Quality
-**Status:** Planned
-**Evidence:** Authorization Matrix, linting/hooks in CI
-**Sprint:** 5–6
-
-### D7: OWASP Probes & Final Evidence
-**Status:** Planned
-**Evidence:** Probe notes (IDOR, SQLi, XSS) attached to PRs; RAG Map links
-**Sprint:** 6–7
+---
 
 ## Sprint Overview
 
-| Sprint | Focus | Status |
-|--------|-------|--------|
-| Sprint 1 | Walking Skeleton | Done |
-| Sprint 2 | DevOps Hardening | In Progress |
-| Sprint 3 | Core Domain & Endpoints | Planned |
-| Sprint 4 | Authentication | Planned |
-| Sprint 5 | Authorization | Planned |
-| Sprint 6 | Security Hardening | Planned |
-| Sprint 7 | Final Polish & Evidence | Planned |
+| Sprint | Focus | Status | Tag | Weeks |
+|--------|-------|--------|-----|-------|
+| Sprint 1 | Walking Skeleton + DevOps | Done | v1.0.0, v1.1.0 | W36-40 |
+| Sprint 2 | Data Model + Basic Endpoints | Done | — | W41-43 |
+| Sprint 3 | Auth + Authz + Validation | Planned | — | W44-46 |
+| Sprint 4 | Game Logic + React UI + Deploy | Planned | — | W47-50 |
 
-## Status Legend
+---
 
-- Done: Completed and tagged
-- In Progress: Currently in development
-- Planned: Scheduled for future sprint
+## Why This Sprint Order?
 
-## Curriculum Alignment (SDE2)
+We implement authentication **before** full domain logic because:
+1. **CDS.Security competencies are mandatory** for exam compliance
+2. **Endpoints must be protected** before implementing game logic
+3. The functional flows must reflect a **secure system design**
 
-| Week | Theme | Sprint Coverage |
-|------|-------|-----------------|
-| W36–37 | Branching Strategy | Sprint 1 |
-| W38–39 | CI/CD Pipeline | Sprint 1, 2 |
-| W40 | Linting & Formatting | Sprint 2 |
-| W41 | Code Generation | Sprint 1 |
-| W42 | Testing Strategy | Sprint 1, 2 |
-| W43 | Git Hooks | Sprint 2 |
-| W44 | Environments & Config | Sprint 2 |
+This ensures the project meets Programming, Systems Development, and Security requirements simultaneously.
 
-## Diátaxis Cross-Links
+---
 
-### Tutorials
-- [Setting up local development](../tutorials/)
-- [Running integration tests](../tutorials/)
+## Sprint Details
 
-### How-To Guides
-- [Adding a new migration](../how-to/)
-- [Configuring Git hooks](../how-to/)
+### Sprint 1: Walking Skeleton + DevOps (Done)
 
-### Reference
-- [API endpoints](../reference/)
-- [Configuration options](../reference/)
+**Tags:** `v1.0.0-walking-skeleton`, `v1.1.0-devops-hardening`
 
-### Explanation
-- [Architecture decisions](../explanation/)
-- [Security model](../explanation/)
+**Deliverables:**
+- CI/CD pipeline (GitHub Actions)
+- DevOps hardening (Husky, commitlint, secretlint)
+- Health endpoint
+- Initial folder structure
+- Simple React page
+- ADRs 0001–0009
+- GitHub Flow branching
 
-## Sprint Mapping
+**Exam Competencies:**
+- SDE2: CI/CD, GitHub Actions, branching strategy
+- SDE2: Testing infrastructure (TestContainers)
 
-- **Sprint 1 – Walking Skeleton (Done):**
-  Vertical slice operational, CI baseline, NSwag pipeline.
+---
 
-- **Sprint 2 – DevOps Hardening (Current):**
-  Husky, commitlint, secretlint, lint-staged, enhanced CI.
+### Sprint 2: Data Model + Basic Endpoints (Done)
 
-- **Sprint 3 – Authentication & Security:**
-  JWT auth, secure password hashing, session handling.
+**Branch:** `feature/data-model`
 
-- **Sprint 4 – Core Domain & Boards System:**
-  CRUD operations, transactions, board gameplay logic.
+**Deliverables:**
+- EF Core entities (Player, Transaction, Board, Game)
+- DbContext with configurations
+- Migrations
+- Minimal CRUD endpoints (unprotected)
+- Unit test baseline
+- ADR-0010 data model decisions
+- Documentation foundation (Diátaxis)
 
-- **Sprint 5 – Deployment & Polish:**
-  Fly.io deployment, environment validation, exam review.
+**Exam Competencies:**
+- PROG: Entity Framework, GUIDs, PostgreSQL
+- SDE2: Database design, migrations
+- PROG: Server-side validation (DataAnnotations)
+
+**Note:** Endpoints are unprotected in this sprint. Security is added in Sprint 3.
+
+---
+
+### Sprint 3: Auth + Authz + Validation (Planned)
+
+**Priority:** CRITICAL for CDS.Security
+
+**Deliverables:**
+- JWT authentication
+- Password hashing (ASP.NET Core Identity)
+- Authorization policies (Admin/Player roles)
+- `[Authorize]` on all endpoints
+- DTO validation (DataAnnotations)
+- XUnit.DependencyInjection migration
+- Negative-path tests (all unhappy paths)
+- Security documentation
+
+**Exam Competencies:**
+- CDS.Security: Authentication, password hashing
+- CDS.Security: Authorization policies
+- CDS.Security: No secrets in git
+- PROG: Validation
+- SDE2: XUnit.DependencyInjection, complete test coverage
+
+---
+
+### Sprint 4: Game Logic + React UI + Deploy (Planned)
+
+**Deliverables:**
+- Board purchase workflow (pricing, balance check)
+- Weekly game completion
+- Winner detection algorithm
+- React UI pages (React Router)
+- Fly.io deployment
+- End-to-end tests
+- Smoke tests in CI
+- Exam presentation prep
+- Final documentation polish
+
+**Exam Competencies:**
+- PROG: React + TypeScript, business logic
+- CDS.Networking: Cloud deployment, Docker, Nginx
+- SDE2: E2E testing, deployment pipeline
+
+---
+
+## Knowledge Domain Mapping
+
+| KD | Domain | Sprint Coverage |
+|----|--------|-----------------|
+| KD1 | Git & Version Control | Sprint 1 |
+| KD2 | CI/CD & Automation | Sprint 1, 2 |
+| KD3 | Linting & Code Quality | Sprint 1 |
+| KD4 | Code Generation | Sprint 1, 2 |
+| KD5 | Testing Strategy | Sprint 1, 2, 3 |
+| KD8 | Web API & Data Layer | Sprint 2, 4 |
+| KD9 | Deployment & Cloud | Sprint 4 |
+| KD10 | Auth & Session Management | Sprint 3 |
+| KD11 | Authorization & Access Control | Sprint 3 |
+| KD12 | Application Security | Sprint 3 |
+| KD13 | Client Development | Sprint 4 |
+
+---
+
+## Curriculum Alignment
+
+| Week | Theme | Sprint |
+|------|-------|--------|
+| W36-37 | Branching Strategy | Sprint 1 |
+| W38-39 | CI/CD Pipeline | Sprint 1 |
+| W40 | Linting & Formatting | Sprint 1 |
+| W41 | Code Generation | Sprint 2 |
+| W42 | Testing Strategy | Sprint 2 |
+| W43 | Git Hooks | Sprint 1 (Done) |
+| W44-46 | Security | Sprint 3 |
+| W47-50 | Deployment & Polish | Sprint 4 |
+
+---
+
+## Definition of Done
+
+A sprint is complete when:
+- [ ] All user stories accepted
+- [ ] Tests pass (unit + integration in CI)
+- [ ] Documentation updated
+- [ ] Code reviewed and merged
+- [ ] Tagged in version control
+- [ ] Exam competencies evidenced
+
+---
 
 ## Related Documentation
 
+### Sprint Documentation
 - [Sprint 1 Review](sprint-01-review.md)
 - [Sprint 1 Increment](sprint-01-increment.md)
+- [Sprint 1 Retrospective](sprint-01-retrospective.md)
 - [Sprint 2 Epic](sprint-02-epic.md)
+- [Sprint 3 Epic](sprint-03-epic.md)
+- [Sprint 4 Epic](sprint-04-epic.md)
+- [MVP Definition](MVP-Definition.md)
+
+### Architecture Decision Records
+- [ADR-0007: DevOps Hardening](../adr/0007-devops-hardening-and-git-hooks.md)
+- [ADR-0008: Shadow PC Testing](../adr/0008-shadow-pc-and-ci-only-testing.md)
+- [ADR-0009: GitHub Flow](../adr/0009-github-flow-branching-strategy.md)
+- [ADR-0010: Data Model Decisions](../adr/0010-data-model-decisions.md)
+
+### Reference
+- [Data Model Specification](../reference/data-model.md)
+- [Knowledge Domains](../explanation/knowledge-domains.md)

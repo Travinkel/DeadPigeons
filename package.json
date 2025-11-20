@@ -24,10 +24,10 @@
   },
   "lint-staged": {
     "client/src/**/*.{ts,tsx}": [
-      "npm run lint:fix --prefix client"
+      "npx --prefix client eslint --fix"
     ],
     "client/src/**/*.{ts,tsx,json,css,md}": [
-      "npm run format --prefix client"
+      "npx --prefix client prettier --write"
     ]
   }
 }
