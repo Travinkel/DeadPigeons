@@ -2,7 +2,7 @@
 
 ## Overview
 
-Distributed full-stack application implementing the Jerne IF “Dead Pigeons” game.
+Distributed full-stack application implementing the Jerne IF "Dead Pigeons" game.
 Includes:
 
 - React + TypeScript client
@@ -11,6 +11,68 @@ Includes:
 - Cloud deployment
 - TestContainers + XUnit
 - Full CI/CD automation
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- .NET 9 SDK
+- Node.js 20+ and npm
+- Docker Desktop (for Testcontainers and local services)
+- PostgreSQL (local install or via Docker)
+
+### Run Locally
+
+```bash
+# Terminal 1 — API
+dotnet run --project server/DeadPigeons.Api
+
+# Terminal 2 — Client
+cd client && npm install && npm run dev
+```
+
+- API Swagger UI: http://localhost:5000/swagger
+- Client: http://localhost:5173
+
+### Run Tests
+
+```bash
+# All tests (unit + integration)
+dotnet test
+
+# Single test by name
+dotnet test --filter "FullyQualifiedName~TestMethodName"
+```
+
+Note: Integration tests use Testcontainers and will automatically start PostgreSQL.
+
+### Run with Docker
+
+```bash
+# Start all services
+docker compose up
+
+# Or rebuild and start
+docker compose up --build
+```
+
+Services:
+- API: http://localhost:8081
+- Client: http://localhost:5173
+- Nginx proxy: http://localhost:8080
+- PostgreSQL: localhost:5432
+
+### Generate API Client
+
+```bash
+# Install NSwag globally (one-time)
+dotnet tool install -g NSwag.ConsoleCore
+
+# Regenerate TypeScript client
+nswag run nswag.json
+```
 
 ---
 
