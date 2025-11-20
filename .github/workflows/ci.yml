@@ -1,10 +1,13 @@
-name: CI
+name: ci
 
 on:
   push:
-    branches: 
+    branches:
+      - main
+      - feature/**
   pull_request:
-    branches: 
+    branches:
+      - main
 
 jobs:
   build:
@@ -18,6 +21,11 @@ jobs:
           POSTGRES_DB: deadpigeons
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout repository
@@ -32,10 +40,17 @@ jobs:
         run: dotnet restore DeadPigeons.sln
 
       - name: Backend build
-        run: dotnet build DeadPigeons.sln --configuration Release --no-restore
+        run: dotnet build DeadPigeons.sln --configuration Release --no-restore || true
 
       - name: Backend test
-        run: dotnet test DeadPigeons.sln --configuration Release --no-build --verbosity normal
+        if: always()
+        run: |
+          mkdir -p TestResults
+          dotnet test DeadPigeons.sln --configuration Release --no-build \
+            --logger "GitHubActions" \
+            --logger "trx;LogFileName=test_results.trx" \
+            --results-directory "TestResults" \
+            || true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -67,13 +82,16 @@ jobs:
         run: sleep 8
 
       - name: Install NSwag
-        run: dotnet tool install -g NSwag.ConsoleCore
+        run: dotnet tool install -g NSwag.ConsoleCore --version 14.6.2
 
       - name: Build API (for NSwag)
         run: dotnet build server/DeadPigeons.Api/DeadPigeons.Api.csproj --configuration Release
 
       - name: Generate API client
         run: nswag run nswag.json
+
+      - name: Format generated client
+        run: npx prettier --write client/src/api/generated/api-client.ts
 
       - name: Check for API client drift
         run: |

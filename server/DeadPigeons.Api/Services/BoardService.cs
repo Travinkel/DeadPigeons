@@ -1,0 +1,130 @@
+using DeadPigeons.Api.Dtos;
+using DeadPigeons.DataAccess;
+using DeadPigeons.DataAccess.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace DeadPigeons.Api.Services;
+
+public class BoardService : IBoardService
+{
+    private readonly AppDbContext _db;
+    private readonly IPlayerService _playerService;
+    private const decimal PricePerNumber = 5m;
+
+    public BoardService(AppDbContext db, IPlayerService playerService)
+    {
+        _db = db;
+        _playerService = playerService;
+    }
+
+    public async Task<IEnumerable<BoardResponse>> GetByGameIdAsync(Guid gameId)
+    {
+        return await _db.Boards
+            .Where(b => b.GameId == gameId)
+            .Select(b => new BoardResponse(
+                b.Id,
+                b.PlayerId,
+                b.GameId,
+                b.Numbers,
+                b.IsRepeating,
+                b.CreatedAt,
+                b.TransactionId))
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<BoardResponse>> GetByPlayerIdAsync(Guid playerId)
+    {
+        return await _db.Boards
+            .Where(b => b.PlayerId == playerId)
+            .OrderByDescending(b => b.CreatedAt)
+            .Select(b => new BoardResponse(
+                b.Id,
+                b.PlayerId,
+                b.GameId,
+                b.Numbers,
+                b.IsRepeating,
+                b.CreatedAt,
+                b.TransactionId))
+            .ToListAsync();
+    }
+
+    public async Task<BoardResponse?> GetByIdAsync(Guid id)
+    {
+        var board = await _db.Boards.FindAsync(id);
+        if (board == null) return null;
+
+        return new BoardResponse(
+            board.Id,
+            board.PlayerId,
+            board.GameId,
+            board.Numbers,
+            board.IsRepeating,
+            board.CreatedAt,
+            board.TransactionId);
+    }
+
+    public async Task<BoardResponse> CreateAsync(CreateBoardRequest request)
+    {
+        // Validate number count (5-8)
+        if (request.Numbers.Length < 5 || request.Numbers.Length > 8)
+            throw new ArgumentException("Board must have 5-8 numbers");
+
+        // Validate numbers are unique
+        if (request.Numbers.Distinct().Count() != request.Numbers.Length)
+            throw new ArgumentException("Numbers must be unique");
+
+        // Validate number range (1-90)
+        if (request.Numbers.Any(n => n < 1 || n > 90))
+            throw new ArgumentException("Numbers must be between 1 and 90");
+
+        // Validate game is active
+        var game = await _db.Games.FindAsync(request.GameId);
+        if (game == null || game.Status != GameStatus.Active)
+            throw new ArgumentException("Game is not active");
+
+        // Calculate cost
+        var cost = request.Numbers.Length * PricePerNumber;
+
+        // Check player balance
+        var balance = await _playerService.GetBalanceAsync(request.PlayerId);
+        if (balance < cost)
+            throw new InvalidOperationException("Insufficient balance");
+
+        // Create purchase transaction
+        var transaction = new Transaction
+        {
+            Id = Guid.NewGuid(),
+            PlayerId = request.PlayerId,
+            Amount = -cost, // Negative for purchase
+            Type = TransactionType.Purchase,
+            IsApproved = true, // Auto-approved for purchases
+            CreatedAt = DateTime.UtcNow,
+            ApprovedAt = DateTime.UtcNow
+        };
+
+        // Create board
+        var board = new Board
+        {
+            Id = Guid.NewGuid(),
+            PlayerId = request.PlayerId,
+            GameId = request.GameId,
+            Numbers = request.Numbers,
+            IsRepeating = request.IsRepeating,
+            CreatedAt = DateTime.UtcNow,
+            TransactionId = transaction.Id
+        };
+
+        _db.Transactions.Add(transaction);
+        _db.Boards.Add(board);
+        await _db.SaveChangesAsync();
+
+        return new BoardResponse(
+            board.Id,
+            board.PlayerId,
+            board.GameId,
+            board.Numbers,
+            board.IsRepeating,
+            board.CreatedAt,
+            board.TransactionId);
+    }
+}
