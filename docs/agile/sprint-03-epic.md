@@ -29,6 +29,7 @@ This ensures the entire project meets Programming, Systems Development, and Secu
 |--------|-------------|
 | CDS.Security | JWT authentication, password hashing, authorization policies |
 | CDS.Security | Role-based access control, secure development |
+| CDS.Networking | CORS, security headers, auth headers, network boundaries |
 | PROG | Server-side validation (DataAnnotations) |
 | SDE2 | XUnit.DependencyInjection, comprehensive testing |
 
@@ -44,6 +45,9 @@ This ensures the entire project meets Programming, Systems Development, and Secu
 - [ ] XUnit.DependencyInjection configured
 - [ ] Happy + unhappy path tests for all service methods
 - [ ] No secrets in git
+- [ ] CORS policy configured
+- [ ] Security headers added
+- [ ] Network boundary diagram documented
 
 ---
 
@@ -207,6 +211,39 @@ This ensures the entire project meets Programming, Systems Development, and Secu
 
 ---
 
+### TASK-3.9: CORS and Security Headers (5 SP)
+
+**Description:** Configure CORS policy and add security headers middleware.
+
+**Requirements:**
+- CORS policy with exact allowed origins
+- Security headers (X-Content-Type-Options, X-Frame-Options, etc.)
+- Auth header requirement (Authorization: Bearer)
+
+**Acceptance Criteria:**
+- [ ] CORS configured with client origin
+- [ ] Security headers middleware added
+- [ ] Preflight requests handled
+- [ ] Invalid origins rejected
+
+---
+
+### TASK-3.10: Network Documentation (3 SP)
+
+**Description:** Document network architecture and trust boundaries.
+
+**Deliverables:**
+- Network boundary diagram (docs/explanation/networking.md)
+- HTTP communication section in README
+- Trust boundary documentation (frontend ↔ API ↔ database)
+
+**Acceptance Criteria:**
+- [ ] Network diagram created
+- [ ] Trust boundaries documented
+- [ ] HTTP communication explained
+
+---
+
 ## Story Point Summary
 
 | Task | Points |
@@ -219,7 +256,9 @@ This ensures the entire project meets Programming, Systems Development, and Secu
 | TASK-3.6: XUnit.DependencyInjection | 5 |
 | TASK-3.7: Test Coverage | 8 |
 | TASK-3.8: Security Documentation | 3 |
-| **Total** | **47** |
+| TASK-3.9: CORS + Security Headers | 5 |
+| TASK-3.10: Network Documentation | 3 |
+| **Total** | **55** |
 
 ---
 
@@ -254,6 +293,8 @@ This ensures the entire project meets Programming, Systems Development, and Secu
 - [ ] Tests use XUnit.DependencyInjection
 - [ ] All service methods tested (happy + unhappy)
 - [ ] Security documented in README
+- [ ] CORS and security headers configured
+- [ ] Network boundaries documented
 - [ ] No secrets in git
 - [ ] PR reviewed and merged
 
