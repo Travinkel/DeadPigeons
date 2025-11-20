@@ -1,0 +1,33 @@
+{
+  "name": "dead-pigeons",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dead Pigeons - Digital game management system for Jerne IF",
+  "scripts": {
+    "prepare": "husky",
+    "lint": "npm run lint --prefix client",
+    "lint:fix": "npm run lint:fix --prefix client",
+    "format": "npm run format --prefix client",
+    "typecheck": "npm run typecheck --prefix client",
+    "test:client": "npm run test --prefix client",
+    "test:api": "dotnet test DeadPigeons.sln",
+    "build:client": "npm run build --prefix client",
+    "build:api": "dotnet build DeadPigeons.sln"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
+    "lint-staged": "^15.2.10",
+    "secretlint": "^8.4.0",
+    "@secretlint/secretlint-rule-preset-recommend": "^8.4.0"
+  },
+  "lint-staged": {
+    "client/src/**/*.{ts,tsx}": [
+      "npm run lint:fix --prefix client"
+    ],
+    "client/src/**/*.{ts,tsx,json,css,md}": [
+      "npm run format --prefix client"
+    ]
+  }
+}

@@ -26,6 +26,9 @@ CLAUDE.md
 # Internal Documentation and Training Data
 /docs/internal
 
+# Windows Build File
+nul
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

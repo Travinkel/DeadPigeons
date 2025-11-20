@@ -1,5 +1,7 @@
 # Dead Pigeons — Exam Project (Programming II · SDII · CDS Security)
 
+**Current Version:** `v1.0.0-walking-skeleton`
+
 ## Overview
 
 Distributed full-stack application implementing the Jerne IF "Dead Pigeons" game.
@@ -136,16 +138,24 @@ See `.github/workflows`:
 
 # 6. Current State / Known Bugs
 
-- Implemented:
-
+- **Sprint 1 Complete (v1.0.0-walking-skeleton):**
   - Repo scaffolds
-  - CI
-  - Linting
-  - API bootstrapping
+  - CI pipeline (build, test, lint)
+  - Linting (ESLint + Prettier)
+  - API bootstrapping with health endpoint
+  - NSwag TypeScript client generation
+  - Testcontainers integration tests
 
-- Next:
-  - Data model
-  - Auth baseline
-  - Repeat logic
+- **Sprint 2 In Progress:**
+  - Husky + Git hooks
+  - commitlint (conventional commits)
+  - secretlint (secret detection)
+  - lint-staged
+  - Enhanced CI quality gates
+
+- **Next Sprints:**
+  - Authentication & Authorization
+  - Core domain & boards system
+  - Deployment & polish
 
 ---
