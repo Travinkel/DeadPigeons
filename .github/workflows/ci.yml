@@ -42,6 +42,9 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Install root dependencies
+        run: npm ci
+
       - name: Frontend install
         run: npm ci --prefix client
 
@@ -50,6 +53,12 @@ jobs:
 
       - name: Lint client
         run: npm run lint --prefix client
+
+      - name: TypeScript type check
+        run: npm run typecheck --prefix client
+
+      - name: Secret scan
+        run: npx secretlint "**/*"
 
       - name: Start API for NSwag
         run: dotnet run --project server/DeadPigeons.Api --urls "http://localhost:5000" &

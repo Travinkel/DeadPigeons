@@ -1,0 +1,2 @@
+npm run test:client
+dotnet test DeadPigeons.sln --verbosity minimal
