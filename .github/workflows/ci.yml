@@ -76,10 +76,23 @@ jobs:
         run: npx secretlint "**/*"
 
       - name: Start API for NSwag
+        env:
+          ConnectionStrings__Default: "Host=localhost;Database=deadpigeons;Username=postgres;Password=postgres"
+          Jwt__Secret: "SuperSecretKeyForTestingOnly32Chars!"
+          Jwt__Issuer: "DeadPigeons"
+          Jwt__Audience: "DeadPigeons"
         run: dotnet run --project server/DeadPigeons.Api --urls "http://localhost:5000" &
 
       - name: Wait for API to be ready
-        run: sleep 8
+        run: |
+          for i in {1..30}; do
+            if curl -s http://localhost:5000/swagger/v1/swagger.json > /dev/null; then
+              echo "API is ready"
+              break
+            fi
+            echo "Waiting for API... ($i/30)"
+            sleep 1
+          done
 
       - name: Install NSwag
         run: dotnet tool install -g NSwag.ConsoleCore --version 14.6.2

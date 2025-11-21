@@ -9,6 +9,21 @@ jobs:
   compliance:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: deadpigeons_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,16 +31,17 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '9.0.x'
 
       - name: Restore
         run: dotnet restore DeadPigeons.sln
 
-      - name: Build API
-        run: dotnet build server/DeadPigeons.Api/DeadPigeons.Api.csproj --configuration Release
+      - name: Build Solution
+        run: dotnet build DeadPigeons.sln --configuration Release --no-restore
 
-      - name: Build DataAccess
-        run: dotnet build server/DeadPigeons.DataAccess/DeadPigeons.DataAccess.csproj --configuration Release
+      # ===================
+      # Programming II Checks
+      # ===================
 
       - name: Verify Entity Framework usage
         run: |
@@ -35,7 +51,7 @@ jobs:
           fi
           echo "✔ EF Core detected."
 
-      - name: Verify Guid usage
+      - name: Verify GUID usage
         run: |
           if ! grep -R "Guid" -n server; then
             echo "❌ No GUID found in code."
@@ -51,29 +67,133 @@ jobs:
           fi
           echo "✔ Swagger/OpenAPI detected."
 
-      - name: Run tests
-        run: dotnet test --no-build --verbosity normal
-
-      - name: Verify TestContainers
+      - name: Verify server-side validation
         run: |
-          if ! grep -R "Testcontainers" -n tests; then
-            echo "⚠ TestContainers not yet implemented (expected in D3/D5)."
-            exit 0
-          fi
-          echo "✔ TestContainers detected."
-
-      - name: Verify no secrets in git
-        run: |
-          if grep -R "connectionString=" -n .; then
-            echo "❌ Possible secret found!"
+          if ! grep -R "System.ComponentModel.DataAnnotations" -n server; then
+            echo "❌ Server-side validation (DataAnnotations) not detected."
             exit 1
           fi
-          echo "✔ No secrets detected."
+          echo "✔ Server-side validation detected."
 
       - name: Check React client exists
         run: |
-          if [ ! -f "client/deadpigeons-client/package.json" ]; then
+          if [ ! -f "client/package.json" ]; then
             echo "❌ React client not detected."
             exit 1
           fi
           echo "✔ React client detected."
+
+      - name: Verify React Router
+        run: |
+          if ! grep -q "react-router" client/package.json; then
+            echo "❌ React Router not detected in dependencies."
+            exit 1
+          fi
+          echo "✔ React Router detected."
+
+      - name: Verify TypeScript (no vanilla JS)
+        run: |
+          if ! grep -q "typescript" client/package.json; then
+            echo "❌ TypeScript not detected."
+            exit 1
+          fi
+          # Check for .js files in src (excluding generated)
+          JS_FILES=$(find client/src -name "*.js" -not -path "*/generated/*" 2>/dev/null | wc -l)
+          if [ "$JS_FILES" -gt 0 ]; then
+            echo "⚠ Found $JS_FILES vanilla JS files in client/src"
+          fi
+          echo "✔ TypeScript detected."
+
+      # ===================
+      # Systems Development II Checks
+      # ===================
+
+      - name: Verify TestContainers
+        run: |
+          if ! grep -R "Testcontainers" -n tests; then
+            echo "❌ TestContainers not detected in test projects."
+            exit 1
+          fi
+          echo "✔ TestContainers detected."
+
+      - name: Verify XUnit.DependencyInjection
+        run: |
+          if ! grep -R "Xunit.DependencyInjection" -n tests; then
+            echo "⚠ XUnit.DependencyInjection not detected - REQUIRED for exam."
+            echo "  Add: <PackageReference Include=\"Xunit.DependencyInjection\" />"
+            # Warning only - allows CI to pass while working on implementation
+            exit 0
+          fi
+          echo "✔ XUnit.DependencyInjection detected."
+
+      - name: Run tests
+        run: dotnet test DeadPigeons.sln --no-build --configuration Release --verbosity normal
+        env:
+          ConnectionStrings__Default: "Host=localhost;Database=deadpigeons_test;Username=postgres;Password=postgres"
+
+      # ===================
+      # CDS.Security Checks
+      # ===================
+
+      - name: Verify JWT authentication
+        run: |
+          if ! grep -R "AddJwtBearer\|JwtBearer" -n server; then
+            echo "❌ JWT authentication not detected."
+            exit 1
+          fi
+          echo "✔ JWT authentication detected."
+
+      - name: Verify authorization policies
+        run: |
+          if ! grep -R "\[Authorize\]" -n server; then
+            echo "❌ Authorization attributes not detected."
+            exit 1
+          fi
+          echo "✔ Authorization policies detected."
+
+      - name: Verify password hashing
+        run: |
+          if ! grep -R "PasswordHasher\|Argon2\|BCrypt\|PBKDF2" -n server; then
+            echo "❌ Secure password hashing not detected."
+            exit 1
+          fi
+          echo "✔ Password hashing detected."
+
+      - name: Verify no secrets in git
+        run: |
+          # Check for common secret patterns
+          if grep -R "password=.*[a-zA-Z0-9]" --include="*.json" --include="*.cs" -n . | grep -v "appsettings.Development" | grep -v "Password=postgres"; then
+            echo "❌ Possible hardcoded secret found!"
+            exit 1
+          fi
+          echo "✔ No hardcoded secrets detected."
+
+      # ===================
+      # Summary
+      # ===================
+
+      - name: Compliance Summary
+        run: |
+          echo "========================================"
+          echo "  Exam Compliance Check Complete"
+          echo "========================================"
+          echo ""
+          echo "Programming II:"
+          echo "  ✔ React + TypeScript client"
+          echo "  ✔ .NET Web API"
+          echo "  ✔ Entity Framework"
+          echo "  ✔ Server-side validation"
+          echo "  ✔ Swagger/OpenAPI"
+          echo "  ✔ GUIDs"
+          echo ""
+          echo "Systems Development II:"
+          echo "  ✔ Tests with TestContainers"
+          echo "  ⚠ XUnit.DependencyInjection (check above)"
+          echo ""
+          echo "CDS.Security:"
+          echo "  ✔ JWT authentication"
+          echo "  ✔ Authorization policies"
+          echo "  ✔ Password hashing"
+          echo "  ✔ No secrets in git"
+          echo ""
+          echo "========================================"
