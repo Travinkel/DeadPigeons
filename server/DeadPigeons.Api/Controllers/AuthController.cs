@@ -3,6 +3,7 @@ using DeadPigeons.Api.Services;
 using DeadPigeons.DataAccess;
 using DeadPigeons.DataAccess.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DeadPigeons.Api.Controllers;
 
@@ -41,17 +42,17 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<LoginResponse>> Register([FromBody] RegisterRequest request)
+    public async Task<ActionResult<RegisterResponse>> Register([FromBody] RegisterRequest request)
     {
-        // Check if email already exists
-        if (_context.Players.Any(p => p.Email == request.Email))
+        // Check if email already exists (case-insensitive)
+        if (await _context.Players.AnyAsync(p => p.Email.ToLower() == request.Email.ToLower()))
             return Conflict(new { message = "Email already registered" });
 
         var player = new Player
         {
             Id = Guid.NewGuid(),
             Name = request.Name,
-            Email = request.Email,
+            Email = request.Email.ToLower(), // Normalize email
             Phone = request.Phone,
             PasswordHash = _authService.HashPassword(request.Password),
             Role = Role.Player,
@@ -63,14 +64,10 @@ public class AuthController : ControllerBase
         _context.Players.Add(player);
         await _context.SaveChangesAsync();
 
-        // Return token for immediate login (if account were active)
-        var token = _authService.GenerateJwtToken(player);
-
-        return CreatedAtAction(nameof(Login), new LoginResponse(
-            token,
+        return Created(string.Empty, new RegisterResponse(
             player.Id,
             player.Email,
-            player.Role.ToString()
+            "Registration successful. Account pending admin activation."
         ));
     }
 }

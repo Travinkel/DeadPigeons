@@ -15,6 +15,10 @@ builder.Services.AddSwaggerGen();
 // JWT Authentication
 var jwtSecret = builder.Configuration["Jwt:Secret"]
     ?? throw new InvalidOperationException("JWT Secret not configured");
+
+if (jwtSecret.Length < 32)
+    throw new InvalidOperationException("JWT Secret must be at least 32 characters");
+
 var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "DeadPigeons";
 var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "DeadPigeons";
 

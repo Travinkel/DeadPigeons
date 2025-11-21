@@ -24,8 +24,9 @@ public class AuthService : IAuthService
 
     public async Task<Player?> ValidateCredentialsAsync(string email, string password)
     {
+        var normalizedEmail = email.ToLower();
         var player = await _context.Players
-            .FirstOrDefaultAsync(p => p.Email == email);
+            .FirstOrDefaultAsync(p => p.Email == normalizedEmail);
 
         if (player == null)
             return null;

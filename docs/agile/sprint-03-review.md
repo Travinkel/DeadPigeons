@@ -13,7 +13,7 @@
 
 | ID | Item | Status | Notes |
 |----|------|--------|-------|
-| TASK-3.1 | Identity Model | ✅ Done | Role enum, PasswordHash, RefreshToken, LastLoginAt |
+| TASK-3.1 | Identity Model | ✅ Done | Role enum, PasswordHash, LastLoginAt |
 | TASK-3.2 | JWT Authentication | ✅ Done | Login/register endpoints, token generation |
 | TASK-3.3 | Password Hashing | ✅ Done | ASP.NET Core Identity PasswordHasher |
 | TASK-3.4 | Authorization Policies | ✅ Done | RequireAdmin, RequirePlayer, RequireAuthenticated |
@@ -107,8 +107,8 @@ Sprint 3 delivers complete security infrastructure:
 | Story Points Planned | 55 |
 | Story Points Completed | 55 |
 | Velocity | 100% |
-| Unit Tests Added | 9 |
-| Total Unit Tests | 39 |
+| Unit Tests Added | 10 |
+| Total Unit Tests | 40 |
 
 ---
 
@@ -120,6 +120,21 @@ Sprint 3 delivers complete security infrastructure:
    - Winner detection algorithm
    - React pages with auth
    - Cloud deployment with HTTPS
+
+---
+
+## Code Review Fixes
+
+Issues addressed after PR review:
+
+| Issue | Resolution |
+|-------|------------|
+| Register returned token for inactive account | Now returns message, no token |
+| Sync DB query in register | Changed to `AnyAsync()` |
+| Missing ownership checks | Added to GetById, Update, GetBalance |
+| JWT secret not validated | Added 32-char minimum check |
+| Unused RefreshToken field | Removed from Player entity |
+| Email case sensitivity | Normalized to lowercase |
 
 ---
 

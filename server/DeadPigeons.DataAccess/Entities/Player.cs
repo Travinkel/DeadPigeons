@@ -14,7 +14,6 @@ public class Player
     // Identity fields
     public string PasswordHash { get; set; } = string.Empty;
     public Role Role { get; set; } = Role.Player;
-    public string? RefreshToken { get; set; }
     public DateTime? LastLoginAt { get; set; }
 
     // Navigation properties

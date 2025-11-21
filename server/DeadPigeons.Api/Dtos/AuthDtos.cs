@@ -15,3 +15,5 @@ public record RegisterRequest(
     [Required, StringLength(20)] string Phone,
     [Required, MinLength(6)] string Password
 );
+
+public record RegisterResponse(Guid PlayerId, string Email, string Message);
