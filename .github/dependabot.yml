@@ -1,0 +1,28 @@
+ # .github/dependabot.yml                                                                                                                                    
+  version: 2                                                                                                                                                  
+  updates:                                                                                                                                                    
+    # .NET dependencies                                                                                                                                       
+    - package-ecosystem: "nuget"                                                                                                                              
+      directory: "/"                                                                                                                                          
+      schedule:                                                                                                                                               
+        interval: "weekly"                                                                                                                                    
+      groups:                                                                                                                                                 
+        dotnet:                                                                                                                                               
+          patterns:                                                                                                                                           
+            - "*"                                                                                                                                             
+
+    # npm dependencies (client)                                                                                                                               
+    - package-ecosystem: "npm"                                                                                                                                
+      directory: "/client"                                                                                                                                    
+      schedule:                                                                                                                                               
+        interval: "weekly"                                                                                                                                    
+      groups:                                                                                                                                                 
+        npm:                                                                                                                                                  
+          patterns:                                                                                                                                           
+            - "*"                                                                                                                                             
+
+    # GitHub Actions                                                                                                                                          
+    - package-ecosystem: "github-actions"                                                                                                                     
+      directory: "/"                                                                                                                                          
+      schedule:                                                                                                                                               
+        interval: "weekly"   
