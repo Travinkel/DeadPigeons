@@ -81,7 +81,7 @@ Sprint 3 delivers complete security infrastructure:
 - [x] All endpoints protected
 - [x] DTOs validated
 - [x] Documentation updated
-- [ ] Code reviewed and merged to main
+- [x] Code reviewed and merged to main
 - [ ] Sprint increment tagged
 
 ---
