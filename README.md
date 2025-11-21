@@ -2,7 +2,7 @@
 
 **Courses:** Programming II · Systems Development II · CDS.Security · CDS.Networking
 
-**Current Version:** `v1.3.0`
+**Current Version:** `v1.3.2`
 **Branch:** `main`
 
 ---
@@ -174,14 +174,14 @@ Integration tests use XUnit with TestContainers for database isolation. Unit tes
 |--------|-------|--------|-----|
 | Sprint 1 | Walking Skeleton + DevOps | Done | v1.0.0, v1.1.0 |
 | Sprint 2 | Data Model + Basic Endpoints | Done | v1.2.0 |
-| Sprint 3 | Auth + Authz + Validation | Done | v1.3.0 |
-| Sprint 4 | Game Logic + React UI + Deploy | Planned | — |
+| Sprint 3 | Auth + Authz + Validation | Done | v1.3.0, v1.3.1, v1.3.2 |
+| Sprint 4 | Game Logic + React UI + Deploy | In Progress | — |
 
 ---
 
 ## Current State
 
-### What Works (v1.3.0)
+### What Works (v1.3.2)
 - ✅ CI/CD pipeline (GitHub Actions)
 - ✅ DevOps hardening (Husky, commitlint, secretlint)
 - ✅ Health endpoint operational
@@ -198,9 +198,10 @@ Integration tests use XUnit with TestContainers for database isolation. Unit tes
 - ✅ CORS and security headers
 
 ### Test Suite
-- ✅ Unit tests with xUnit (40 tests)
+- ✅ Unit tests with XUnit.DependencyInjection (40 tests)
 - ✅ Integration tests with TestContainers (PostgreSQL)
 - ✅ Constructor injection DI pattern
+- ✅ Exam-compliance CI workflow
 
 ### Planned (Sprint 4)
 - ⏳ React UI pages

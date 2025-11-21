@@ -23,11 +23,7 @@
     "@secretlint/secretlint-rule-preset-recommend": "^8.4.0"
   },
   "lint-staged": {
-    "client/src/**/*.{ts,tsx}": [
-      "npx --prefix client eslint --fix"
-    ],
-    "client/src/**/*.{ts,tsx,json,css,md}": [
-      "npx --prefix client prettier --write"
-    ]
+    "client/**/*.{ts,tsx}": "npm run lint:fix --prefix client",
+    "client/**/*.{ts,tsx,json,css,md}": "npm run format --prefix client"
   }
 }
