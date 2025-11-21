@@ -37,17 +37,17 @@ This ensures the entire project meets Programming, Systems Development, and Secu
 
 ## Acceptance Criteria
 
-- [ ] JWT login/logout functional
-- [ ] Password hashing (PBKDF2/Identity Core)
-- [ ] Authorization policies (Admin/Player roles)
-- [ ] All endpoints protected with `[Authorize]`
-- [ ] DTO validation with DataAnnotations
-- [ ] XUnit.DependencyInjection configured
-- [ ] Happy + unhappy path tests for all service methods
-- [ ] No secrets in git
-- [ ] CORS policy configured
-- [ ] Security headers added
-- [ ] Network boundary diagram documented
+- [x] JWT login/logout functional
+- [x] Password hashing (PBKDF2/Identity Core)
+- [x] Authorization policies (Admin/Player roles)
+- [x] All endpoints protected with `[Authorize]`
+- [x] DTO validation with DataAnnotations
+- [x] XUnit.DependencyInjection configured
+- [x] Happy + unhappy path tests for all service methods
+- [x] No secrets in git
+- [x] CORS policy configured
+- [x] Security headers added
+- [x] Network boundary diagram documented
 
 ---
 
@@ -77,9 +77,9 @@ This ensures the entire project meets Programming, Systems Development, and Secu
 - LastLoginAt (optional)
 
 **Acceptance Criteria:**
-- [ ] Identity fields added
-- [ ] Migration created
-- [ ] No plaintext passwords
+- [x] Identity fields added
+- [x] Migration created
+- [x] No plaintext passwords
 
 ---
 
@@ -97,9 +97,9 @@ This ensures the entire project meets Programming, Systems Development, and Secu
 - Secure secret management (env vars)
 
 **Acceptance Criteria:**
-- [ ] Login returns JWT token
-- [ ] Token contains correct claims
-- [ ] Invalid credentials return 401
+- [x] Login returns JWT token
+- [x] Token contains correct claims
+- [x] Invalid credentials return 401
 
 ---
 
@@ -113,9 +113,9 @@ This ensures the entire project meets Programming, Systems Development, and Secu
 - Salt per password
 
 **Acceptance Criteria:**
-- [ ] Passwords hashed on registration
-- [ ] Verification works for login
-- [ ] No plaintext in database
+- [x] Passwords hashed on registration
+- [x] Verification works for login
+- [x] No plaintext in database
 
 ---
 
@@ -136,10 +136,10 @@ This ensures the entire project meets Programming, Systems Development, and Secu
 | Any Auth | GET /api/games, GET /api/players/{id}/balance |
 
 **Acceptance Criteria:**
-- [ ] Policies configured in Program.cs
-- [ ] `[Authorize]` on all endpoints
-- [ ] 403 for insufficient permissions
-- [ ] 401 for unauthenticated
+- [x] Policies configured in Program.cs
+- [x] `[Authorize]` on all endpoints
+- [x] 403 for insufficient permissions
+- [x] 401 for unauthenticated
 
 ---
 
@@ -155,9 +155,9 @@ This ensures the entire project meets Programming, Systems Development, and Secu
 - Custom validation attributes
 
 **Acceptance Criteria:**
-- [ ] All DTOs have validation attributes
-- [ ] Invalid requests return 400
-- [ ] Error messages are clear
+- [x] All DTOs have validation attributes
+- [x] Invalid requests return 400
+- [x] Error messages are clear
 
 ---
 
@@ -171,9 +171,9 @@ This ensures the entire project meets Programming, Systems Development, and Secu
 - Align with exam requirements
 
 **Acceptance Criteria:**
-- [ ] Tests use DI
-- [ ] Services injected correctly
-- [ ] Tests still pass
+- [x] Tests use DI
+- [x] Services injected correctly
+- [x] Tests still pass
 
 ---
 
@@ -188,10 +188,10 @@ This ensures the entire project meets Programming, Systems Development, and Secu
 - Business rules (balance checks, game states)
 
 **Acceptance Criteria:**
-- [ ] All service methods tested
-- [ ] Happy paths covered
-- [ ] Unhappy paths covered (exceptions, errors)
-- [ ] Edge cases tested
+- [x] All service methods tested
+- [x] Happy paths covered
+- [x] Unhappy paths covered (exceptions, errors)
+- [x] Edge cases tested
 
 ---
 
@@ -205,9 +205,9 @@ This ensures the entire project meets Programming, Systems Development, and Secu
 - Environment variable documentation
 
 **Acceptance Criteria:**
-- [ ] README has auth matrix
-- [ ] Policies documented
-- [ ] No secrets in git verified
+- [x] README has auth matrix
+- [x] Policies documented
+- [x] No secrets in git verified
 
 ---
 
@@ -221,10 +221,10 @@ This ensures the entire project meets Programming, Systems Development, and Secu
 - Auth header requirement (Authorization: Bearer)
 
 **Acceptance Criteria:**
-- [ ] CORS configured with client origin
-- [ ] Security headers middleware added
-- [ ] Preflight requests handled
-- [ ] Invalid origins rejected
+- [x] CORS configured with client origin
+- [x] Security headers middleware added
+- [x] Preflight requests handled
+- [x] Invalid origins rejected
 
 ---
 
@@ -238,9 +238,9 @@ This ensures the entire project meets Programming, Systems Development, and Secu
 - Trust boundary documentation (frontend ↔ API ↔ database)
 
 **Acceptance Criteria:**
-- [ ] Network diagram created
-- [ ] Trust boundaries documented
-- [ ] HTTP communication explained
+- [x] Network diagram created
+- [x] Trust boundaries documented
+- [x] HTTP communication explained
 
 ---
 
@@ -296,7 +296,7 @@ This ensures the entire project meets Programming, Systems Development, and Secu
 - [x] CORS and security headers configured
 - [x] Network boundaries documented
 - [x] No secrets in git
-- [ ] PR reviewed and merged
+- [x] PR reviewed and merged
 
 ---
 
