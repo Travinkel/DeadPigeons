@@ -17,7 +17,7 @@
 |--------|-------|--------|-----|
 | Sprint 1 | Walking Skeleton + DevOps | Done | v1.0.0, v1.1.0 |
 | Sprint 2 | Data Model + Basic Endpoints | Done | v1.2.0 |
-| Sprint 3 | Auth + Authz + Validation | Planned | — |
+| Sprint 3 | Auth + Authz + Validation | Done | v1.3.0 |
 | Sprint 4 | Game Logic + React UI + Deploy | Planned | — |
 
 ---

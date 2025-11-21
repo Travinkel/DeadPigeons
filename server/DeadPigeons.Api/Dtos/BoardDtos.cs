@@ -1,10 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace DeadPigeons.Api.Dtos;
 
 // Request DTOs
 public record CreateBoardRequest(
-    Guid PlayerId,
-    Guid GameId,
-    int[] Numbers,
+    [Required] Guid PlayerId,
+    [Required] Guid GameId,
+    [Required, MinLength(5), MaxLength(8)] int[] Numbers,
     bool IsRepeating
 );
 

@@ -2,20 +2,8 @@
 
 **Courses:** Programming II · Systems Development II · CDS.Security · CDS.Networking
 
-**Current Version:** `v1.2.0`
+**Current Version:** `v1.3.0`
 **Branch:** `main`
-
----
-
-## ⚠️ Security Notice
-
-**This branch has unprotected endpoints.** Authentication and authorization are implemented in Sprint 3. Do not deploy to production until the `feature/auth` branch is merged.
-
-Current status:
-- ✅ Data model and basic CRUD endpoints
-- ❌ JWT authentication (Sprint 3)
-- ❌ Authorization policies (Sprint 3)
-- ❌ Protected endpoints (Sprint 3)
 
 ---
 
@@ -194,7 +182,7 @@ fly status
 |--------|-------|--------|-----|
 | Sprint 1 | Walking Skeleton + DevOps | Done | v1.0.0, v1.1.0 |
 | Sprint 2 | Data Model + Basic Endpoints | Done | v1.2.0 |
-| Sprint 3 | Auth + Authz + Validation | Planned | — |
+| Sprint 3 | Auth + Authz + Validation | Done | v1.3.0 |
 | Sprint 4 | Game Logic + React UI + Deploy | Planned | — |
 
 ---
@@ -212,15 +200,22 @@ fly status
 ### Completed (Sprint 2)
 - ✅ EF Core entities (Player, Transaction, Board, Game)
 - ✅ Database migrations
-- ✅ Basic CRUD endpoints (unprotected)
+- ✅ Basic CRUD endpoints
 - ✅ Unit test suite (30 tests)
 - ✅ Integration test suite (5 tests)
 
+### Completed (Sprint 3)
+- ✅ JWT authentication
+- ✅ Authorization policies (Admin/Player)
+- ✅ Password hashing (PBKDF2)
+- ✅ DTO validation (DataAnnotations)
+- ✅ CORS and security headers
+- ✅ Auth unit tests (9 tests)
+
 ### Planned
-- ⏳ JWT authentication
-- ⏳ Authorization policies
 - ⏳ React UI pages
 - ⏳ Fly.io deployment
+- ⏳ Game logic implementation
 
 ---
 

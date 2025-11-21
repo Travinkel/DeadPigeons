@@ -1,16 +1,18 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace DeadPigeons.Api.Dtos;
 
 // Request DTOs
 public record CreatePlayerRequest(
-    string Name,
-    string Email,
-    string? Phone
+    [Required, StringLength(100, MinimumLength = 2)] string Name,
+    [Required, EmailAddress] string Email,
+    [StringLength(20)] string? Phone
 );
 
 public record UpdatePlayerRequest(
-    string Name,
-    string Email,
-    string? Phone,
+    [Required, StringLength(100, MinimumLength = 2)] string Name,
+    [Required, EmailAddress] string Email,
+    [StringLength(20)] string? Phone,
     bool IsActive
 );
 

@@ -1,11 +1,13 @@
 using DeadPigeons.Api.Dtos;
 using DeadPigeons.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeadPigeons.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class TransactionsController : ControllerBase
 {
     private readonly ITransactionService _transactionService;
@@ -23,6 +25,7 @@ public class TransactionsController : ControllerBase
     }
 
     [HttpGet("pending")]
+    [Authorize(Policy = "RequireAdmin")]
     public async Task<ActionResult<IEnumerable<TransactionResponse>>> GetPending()
     {
         var transactions = await _transactionService.GetPendingAsync();
@@ -30,6 +33,7 @@ public class TransactionsController : ControllerBase
     }
 
     [HttpPost("deposit")]
+    [Authorize(Policy = "RequireAdmin")]
     public async Task<ActionResult<TransactionResponse>> CreateDeposit([FromBody] CreateDepositRequest request)
     {
         try
@@ -44,6 +48,7 @@ public class TransactionsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/approve")]
+    [Authorize(Policy = "RequireAdmin")]
     public async Task<ActionResult<TransactionResponse>> Approve(Guid id, [FromBody] ApproveTransactionRequest request)
     {
         var transaction = await _transactionService.ApproveAsync(id, request);

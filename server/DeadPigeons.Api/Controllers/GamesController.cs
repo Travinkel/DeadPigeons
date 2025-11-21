@@ -1,11 +1,13 @@
 using DeadPigeons.Api.Dtos;
 using DeadPigeons.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeadPigeons.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class GamesController : ControllerBase
 {
     private readonly IGameService _gameService;
@@ -39,6 +41,7 @@ public class GamesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "RequireAdmin")]
     public async Task<ActionResult<GameResponse>> Create([FromBody] CreateGameRequest request)
     {
         try
@@ -57,6 +60,7 @@ public class GamesController : ControllerBase
     }
 
     [HttpPost("{id:guid}/complete")]
+    [Authorize(Policy = "RequireAdmin")]
     public async Task<ActionResult<GameResultResponse>> Complete(Guid id, [FromBody] CompleteGameRequest request)
     {
         try

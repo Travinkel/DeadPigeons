@@ -1,11 +1,13 @@
 using DeadPigeons.Api.Dtos;
 using DeadPigeons.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeadPigeons.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class PlayersController : ControllerBase
 {
     private readonly IPlayerService _playerService;
@@ -16,6 +18,7 @@ public class PlayersController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "RequireAdmin")]
     public async Task<ActionResult<IEnumerable<PlayerResponse>>> GetAll()
     {
         var players = await _playerService.GetAllAsync();
@@ -31,6 +34,7 @@ public class PlayersController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "RequireAdmin")]
     public async Task<ActionResult<PlayerResponse>> Create([FromBody] CreatePlayerRequest request)
     {
         var player = await _playerService.CreateAsync(request);
@@ -46,6 +50,7 @@ public class PlayersController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "RequireAdmin")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _playerService.DeleteAsync(id);
