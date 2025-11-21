@@ -7,12 +7,12 @@
 
 /* Jerne IF Custom Theme - Red/White/Black */
 [data-theme="jerneif"] {
-  /* Primary - Jerne IF Red */
-  --color-primary: #d02028;
+  /* Primary - Jerne IF Red (darkened for WCAG AA contrast) */
+  --color-primary: #b91c1c;
   --color-primary-content: #ffffff;
 
   /* Secondary - Dark Red */
-  --color-secondary: #a2151e;
+  --color-secondary: #991b1b;
   --color-secondary-content: #ffffff;
 
   /* Accent - Black */
@@ -70,4 +70,24 @@
 .app-shell input,
 .app-shell label {
   font-size: 0.9375rem;
+}
+
+/* Ensure readable text on colored backgrounds */
+.btn {
+  font-weight: 500;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-accent,
+.btn-error,
+.btn-info,
+.btn-success {
+  font-weight: 600;
+}
+
+.bg-primary,
+.bg-secondary,
+.bg-accent {
+  font-weight: 500;
 }

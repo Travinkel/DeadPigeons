@@ -9,9 +9,9 @@ export default {
     themes: [
       {
         jerneif: {
-          primary: "#DC2626", // Red-600 - Jerne IF red
+          primary: "#b91c1c", // Red-700 - Jerne IF red (WCAG AA contrast)
           "primary-content": "#FFFFFF", // White text on red
-          secondary: "#991B1B", // Red-800
+          secondary: "#991b1b", // Red-800
           accent: "#F87171", // Red-400
           neutral: "#1F2937", // Gray-800
           "base-100": "#FFFFFF", // White background
