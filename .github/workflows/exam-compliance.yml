@@ -119,10 +119,9 @@ jobs:
       - name: Verify XUnit.DependencyInjection
         run: |
           if ! grep -R "Xunit.DependencyInjection" -n tests; then
-            echo "⚠ XUnit.DependencyInjection not detected - REQUIRED for exam."
+            echo "❌ XUnit.DependencyInjection not detected - REQUIRED for exam."
             echo "  Add: <PackageReference Include=\"Xunit.DependencyInjection\" />"
-            # Warning only - allows CI to pass while working on implementation
-            exit 0
+            exit 1
           fi
           echo "✔ XUnit.DependencyInjection detected."
 
@@ -188,7 +187,7 @@ jobs:
           echo ""
           echo "Systems Development II:"
           echo "  ✔ Tests with TestContainers"
-          echo "  ⚠ XUnit.DependencyInjection (check above)"
+          echo "  ✔ XUnit.DependencyInjection"
           echo ""
           echo "CDS.Security:"
           echo "  ✔ JWT authentication"

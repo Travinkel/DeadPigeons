@@ -1,3 +1,7 @@
 npm run typecheck --prefix client
 npm run lint --prefix client
+
+# NSwag client verification runs in CI
+# To manually verify: nswag run nswag.json
+
 # Skip .NET tests locally - GitHub Actions runs full test suite with Docker

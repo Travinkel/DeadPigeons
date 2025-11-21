@@ -6,35 +6,15 @@ using Microsoft.Extensions.Configuration;
 
 namespace DeadPigeons.Tests;
 
-public class AuthServiceTests : IDisposable
+public class AuthServiceTests
 {
     private readonly AppDbContext _db;
-    private readonly AuthService _service;
+    private readonly IAuthService _service;
 
-    public AuthServiceTests()
+    public AuthServiceTests(AppDbContext db, IAuthService service)
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        _db = new AppDbContext(options);
-
-        var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["Jwt:Secret"] = "TestSecretKeyThatIsAtLeast32Characters!",
-                ["Jwt:Issuer"] = "TestIssuer",
-                ["Jwt:Audience"] = "TestAudience",
-                ["Jwt:ExpirationMinutes"] = "60"
-            })
-            .Build();
-
-        _service = new AuthService(_db, configuration);
-    }
-
-    public void Dispose()
-    {
-        _db.Dispose();
+        _db = db;
+        _service = service;
     }
 
     [Fact]
