@@ -12,7 +12,7 @@ public class GamesApiTests
 
     public GamesApiTests(ApiFactory factory)
     {
-        _client = factory.CreateClient();
+        _client = factory.CreateAuthenticatedClient("Admin");
     }
 
     private async Task CompleteAnyActiveGame()

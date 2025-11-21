@@ -40,17 +40,17 @@ jobs:
         run: dotnet restore DeadPigeons.sln
 
       - name: Backend build
-        run: dotnet build DeadPigeons.sln --configuration Release --no-restore || true
+        run: dotnet build DeadPigeons.sln --configuration Release --no-restore
 
       - name: Backend test
-        if: always()
+        env:
+          USE_TESTCONTAINERS: "true"
         run: |
           mkdir -p TestResults
           dotnet test DeadPigeons.sln --configuration Release --no-build \
             --logger "GitHubActions" \
             --logger "trx;LogFileName=test_results.trx" \
-            --results-directory "TestResults" \
-            || true
+            --results-directory "TestResults"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

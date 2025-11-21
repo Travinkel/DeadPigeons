@@ -12,7 +12,7 @@ public class BoardsApiTests
 
     public BoardsApiTests(ApiFactory factory)
     {
-        _client = factory.CreateClient();
+        _client = factory.CreateAuthenticatedClient("Admin");
     }
 
     private async Task<PlayerResponse> CreatePlayerWithBalance(decimal amount)
