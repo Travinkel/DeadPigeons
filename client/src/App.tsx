@@ -1,16 +1,7 @@
-import { useEffect, useState } from 'react'
+import ThemePreviewPage from "./features/dashboard/ThemePreviewPage";
 
 function App() {
-  const [health, setHealth] = useState('unknown')
-
-  useEffect(() => {
-    fetch('/api/health')
-      .then((r) => r.json())
-      .then((d) => setHealth(d.status))
-      .catch(() => setHealth('unavailable'))
-  }, [])
-
-  return <div>API Health: {health}</div>
+  return <ThemePreviewPage />;
 }
 
-export default App
+export default App;
