@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using DeadPigeons.Api.Dtos;
 using DeadPigeons.Api.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -20,6 +21,12 @@ public class TransactionsController : ControllerBase
     [HttpGet("player/{playerId:guid}")]
     public async Task<ActionResult<IEnumerable<TransactionResponse>>> GetByPlayerId(Guid playerId)
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = User.IsInRole("Admin");
+
+        if (!isAdmin && userId != playerId.ToString())
+            return Forbid();
+
         var transactions = await _transactionService.GetByPlayerIdAsync(playerId);
         return Ok(transactions);
     }

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using DeadPigeons.Api.Dtos;
 using DeadPigeons.Api.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -36,6 +37,12 @@ public class BoardsController : ControllerBase
     [HttpGet("player/{playerId:guid}")]
     public async Task<ActionResult<IEnumerable<BoardResponse>>> GetByPlayerId(Guid playerId)
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = User.IsInRole("Admin");
+
+        if (!isAdmin && userId != playerId.ToString())
+            return Forbid();
+
         var boards = await _boardService.GetByPlayerIdAsync(playerId);
         return Ok(boards);
     }
@@ -43,6 +50,12 @@ public class BoardsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<BoardResponse>> Create([FromBody] CreateBoardRequest request)
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = User.IsInRole("Admin");
+
+        if (!isAdmin && userId != request.PlayerId.ToString())
+            return Forbid();
+
         try
         {
             var board = await _boardService.CreateAsync(request);
