@@ -6,24 +6,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DeadPigeons.Tests;
 
-public class GameServiceTests : IDisposable
+public class GameServiceTests
 {
     private readonly AppDbContext _db;
-    private readonly GameService _service;
+    private readonly IGameService _service;
 
-    public GameServiceTests()
+    public GameServiceTests(AppDbContext db, IGameService service)
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        _db = new AppDbContext(options);
-        _service = new GameService(_db);
-    }
-
-    public void Dispose()
-    {
-        _db.Dispose();
+        _db = db;
+        _service = service;
     }
 
     [Fact]
