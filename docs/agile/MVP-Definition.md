@@ -4,7 +4,7 @@ This document defines the Minimum Viable Product requirements aligned with the e
 
 **Submission Deadline:** December 19, 2025
 **Oral Exams:** January 5-16, 2026
-**Last Updated:** 2025-11-20
+**Last Updated:** 2025-11-21
 
 ---
 
@@ -124,14 +124,14 @@ This document defines the Minimum Viable Product requirements aligned with the e
 
 ## 5. Current Status
 
-### Overall Completion: 35%
+### Overall Completion: 45%
 
 | Area | Progress | Status |
 |------|----------|--------|
-| Systems Development | 60% | 🟡 On Track |
-| Programming | 70% | 🟡 On Track |
-| CDS Security | 10% | 🔴 At Risk |
-| Functional Requirements | 30% | 🟡 On Track |
+| Systems Development | 65% | 🟡 On Track |
+| Programming | 60% | 🔴 At Risk |
+| CDS Security | 70% | 🟡 On Track |
+| Functional Requirements | 45% | 🔴 At Risk |
 
 **Days to Deadline:** 29 (December 19, 2025)
 
@@ -158,21 +158,31 @@ This document defines the Minimum Viable Product requirements aligned with the e
 - [x] Integration tests scaffolded
 - [x] EF Core migration generated
 
+**Sprint 3 - Auth + Security:**
+- [x] JWT authentication and login endpoint
+- [x] Password hashing (Identity password hasher)
+- [x] Authorization policies (Admin/Player/Authenticated) in Program.cs
+- [x] CORS + security headers middleware
+- [x] DTO validation added
+- [x] NSwag client aligned with secured API
+
 ### 5.2 In Progress
 
+- [ ] React UI scaffold + routing (theme/health preview exists in App.tsx)
 - [ ] Complete happy/unhappy path test coverage
-- [ ] Server-side validation (DataAnnotations)
-- [ ] React UI components and routing
+- [ ] Server-side validation (DataAnnotations completeness)
+- [ ] XUnit.DependencyInjection migration for remaining tests
 
 ### 5.3 Blocked / Not Started
 
 | Item | Blocker | Priority |
 |------|---------|----------|
-| JWT Authentication | None - Ready to start | 🔴 Critical |
-| Authorization Policies | Requires Auth | 🔴 Critical |
-| Cloud Deployment | Requires Auth | 🔴 Critical |
-| XUnit.DependencyInjection | None - Ready to start | 🟡 High |
-| README Security Docs | Requires Auth Matrix | 🟡 High |
+| Board purchase rules + repeats | UI wiring + pricing logic | 🔴 Critical |
+| Game completion + winner calc | Pending gameplay logic | 🔴 Critical |
+| Fly.io deployment (API + client + Postgres) | Needs stable UI/auth flow | 🟡 High |
+| E2E tests (UI/API) | Requires UI flows | 🟡 High |
+| CI smoke tests | Requires deploy target | 🟡 High |
+| README auth/security docs polish | Needs final routes/matrix | 🟡 High |
 
 ---
 
@@ -189,26 +199,23 @@ This document defines the Minimum Viable Product requirements aligned with the e
 
 ### 5.5 Critical Path to Exam
 
-**Week 1 (Nov 20-26):** Security Foundation
-- Implement JWT authentication with password hashing
-- Add authorization policies (Admin, Player)
-- Apply `[Authorize]` attributes to controllers
+**Week 1 (Nov 21-27): UI + Pricing**
+- Add React Router shell + pages (login, dashboards, boards, games, transactions)
+- Implement board purchase rules (pricing, cutoff, balance) + repeat boards
+- Wire NSwag client to UI flows
 
-**Week 2 (Nov 27 - Dec 3):** Technical Debt
-- Migrate tests to XUnit.DependencyInjection
-- Add server-side validation (DataAnnotations)
-- Complete happy/unhappy path test coverage
+**Week 2 (Nov 28 - Dec 4): Game Completion + Tests**
+- Admin game completion (3 numbers) + winner calc + prize split
+- Finish DataAnnotations coverage
+- XUnit.DependencyInjection migration + happy/unhappy tests for new logic
 
-**Week 3 (Dec 4-10):** UI & Deployment
-- Implement React UI (Admin dashboard, Player dashboard)
-- Deploy to Fly.io
-- Configure production environment variables
+**Week 3 (Dec 5-11): Deployment & E2E**
+- Fly.io deploy (API + client + Postgres, env vars, HTTPS)
+- E2E test suite for critical paths; add CI smoke checks
 
-**Week 4 (Dec 11-17):** Documentation & Polish
-- Complete README authorization matrix
-- Document environment/configuration
-- Final testing and bug fixes
-- Submission preparation
+**Week 4 (Dec 12-17): Documentation & Polish**
+- README auth matrix + security/deploy docs
+- Demo script, known issues, final bug fixes
 
 ---
 

@@ -3,7 +3,7 @@
 **Epic ID:** EPIC-04
 **Sprint:** 4
 **Branch:** `feature/game-ui-deploy`
-**Status:** In Progress
+**Status:** In Progress (React UI scaffold + theme preview started)
 
 ---
 
@@ -51,6 +51,7 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 ## Tasks
 
 ### TASK-4.1: Board Purchase Rules (8 SP)
+**Status:** Not started
 
 **Pricing Model:**
 - 5 numbers = 20 DKK
@@ -72,6 +73,7 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 ---
 
 ### TASK-4.2: Repeating Boards (5 SP)
+**Status:** Not started (blocked on TASK-4.1 pricing/cutoff wiring)
 
 **Requirements:**
 - Player specifies repeat count (X weeks)
@@ -86,6 +88,7 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 ---
 
 ### TASK-4.3: Game Completion & Winners (5 SP)
+**Status:** Not started
 
 **Requirements:**
 - Admin enters 3 winning numbers
@@ -100,6 +103,7 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 ---
 
 ### TASK-4.4: React UI Pages (13 SP)
+**Status:** In Progress — Vite/DaisyUI shell with health/theme preview in `client/src/App.tsx`; Router/pages pending
 
 **Pages:**
 - Login page
@@ -125,6 +129,7 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 ---
 
 ### TASK-4.5: Fly.io Deployment (8 SP)
+**Status:** Not started
 
 **Requirements:**
 - Dockerized API + client
@@ -141,6 +146,7 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 ---
 
 ### TASK-4.6: End-to-End Tests (5 SP)
+**Status:** Not started
 
 **Test Scenarios:**
 - Full game workflow
@@ -155,6 +161,7 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 ---
 
 ### TASK-4.7: Smoke Tests in CI (3 SP)
+**Status:** Not started
 
 **Requirements:**
 - Deployment smoke tests
@@ -169,6 +176,7 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 ---
 
 ### TASK-4.8: Exam Preparation (5 SP)
+**Status:** Not started
 
 **Deliverables:**
 - Final documentation polish
