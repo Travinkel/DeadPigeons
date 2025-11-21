@@ -1,18 +1,7 @@
 npm run typecheck --prefix client
 npm run lint --prefix client
 
-# Verify NSwag client is up to date
-echo "Checking NSwag client is up to date..."
-if command -v nswag &> /dev/null || [ -f "$HOME/.dotnet/tools/nswag" ]; then
-    # Generate to temp and compare
-    TEMP_CLIENT=$(mktemp)
-    nswag run nswag.json /output:$TEMP_CLIENT 2>/dev/null || true
-    if [ -f "$TEMP_CLIENT" ] && [ -s "$TEMP_CLIENT" ]; then
-        if ! diff -q client/src/api/client.ts $TEMP_CLIENT > /dev/null 2>&1; then
-            echo "⚠ NSwag client may be out of date. Run 'nswag run nswag.json' to regenerate."
-        fi
-    fi
-    rm -f $TEMP_CLIENT
-fi
+# NSwag client verification runs in CI
+# To manually verify: nswag run nswag.json
 
 # Skip .NET tests locally - GitHub Actions runs full test suite with Docker
