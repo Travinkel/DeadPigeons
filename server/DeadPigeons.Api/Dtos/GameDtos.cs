@@ -1,13 +1,15 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace DeadPigeons.Api.Dtos;
 
 // Request DTOs
 public record CreateGameRequest(
-    int WeekNumber,
-    int Year
+    [Required, Range(1, 53)] int WeekNumber,
+    [Required, Range(2020, 2100)] int Year
 );
 
 public record CompleteGameRequest(
-    int[] WinningNumbers
+    [Required, MinLength(3), MaxLength(3)] int[] WinningNumbers
 );
 
 // Response DTOs

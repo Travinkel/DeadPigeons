@@ -1,11 +1,14 @@
+using System.Security.Claims;
 using DeadPigeons.Api.Dtos;
 using DeadPigeons.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeadPigeons.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class PlayersController : ControllerBase
 {
     private readonly IPlayerService _playerService;
@@ -16,6 +19,7 @@ public class PlayersController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "RequireAdmin")]
     public async Task<ActionResult<IEnumerable<PlayerResponse>>> GetAll()
     {
         var players = await _playerService.GetAllAsync();
@@ -25,12 +29,20 @@ public class PlayersController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<PlayerResponse>> GetById(Guid id)
     {
+        // Check ownership: user can only access their own data unless admin
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = User.IsInRole("Admin");
+
+        if (!isAdmin && userId != id.ToString())
+            return Forbid();
+
         var player = await _playerService.GetByIdAsync(id);
         if (player == null) return NotFound();
         return Ok(player);
     }
 
     [HttpPost]
+    [Authorize(Policy = "RequireAdmin")]
     public async Task<ActionResult<PlayerResponse>> Create([FromBody] CreatePlayerRequest request)
     {
         var player = await _playerService.CreateAsync(request);
@@ -40,12 +52,20 @@ public class PlayersController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<PlayerResponse>> Update(Guid id, [FromBody] UpdatePlayerRequest request)
     {
+        // Check ownership: user can only update their own data unless admin
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = User.IsInRole("Admin");
+
+        if (!isAdmin && userId != id.ToString())
+            return Forbid();
+
         var player = await _playerService.UpdateAsync(id, request);
         if (player == null) return NotFound();
         return Ok(player);
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "RequireAdmin")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _playerService.DeleteAsync(id);
@@ -56,6 +76,13 @@ public class PlayersController : ControllerBase
     [HttpGet("{id:guid}/balance")]
     public async Task<ActionResult<PlayerBalanceResponse>> GetBalance(Guid id)
     {
+        // Check ownership: user can only access their own balance unless admin
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = User.IsInRole("Admin");
+
+        if (!isAdmin && userId != id.ToString())
+            return Forbid();
+
         var player = await _playerService.GetByIdAsync(id);
         if (player == null) return NotFound();
 

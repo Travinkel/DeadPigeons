@@ -11,6 +11,11 @@ public class Player
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? DeletedAt { get; set; }
 
+    // Identity fields
+    public string PasswordHash { get; set; } = string.Empty;
+    public Role Role { get; set; } = Role.Player;
+    public DateTime? LastLoginAt { get; set; }
+
     // Navigation properties
     public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
     public ICollection<Board> Boards { get; set; } = new List<Board>();

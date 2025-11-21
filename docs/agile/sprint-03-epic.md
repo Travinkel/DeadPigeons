@@ -3,7 +3,7 @@
 **Epic ID:** EPIC-03
 **Sprint:** 3
 **Branch:** `feature/auth`
-**Status:** Planned
+**Status:** Complete
 **Priority:** CRITICAL for CDS.Security
 
 ---
@@ -285,17 +285,17 @@ This ensures the entire project meets Programming, Systems Development, and Secu
 
 ## Definition of Done
 
-- [ ] JWT authentication working
-- [ ] Passwords hashed securely
-- [ ] All endpoints protected
-- [ ] Authorization policies enforced
-- [ ] DTOs validated
-- [ ] Tests use XUnit.DependencyInjection
-- [ ] All service methods tested (happy + unhappy)
-- [ ] Security documented in README
-- [ ] CORS and security headers configured
-- [ ] Network boundaries documented
-- [ ] No secrets in git
+- [x] JWT authentication working
+- [x] Passwords hashed securely
+- [x] All endpoints protected
+- [x] Authorization policies enforced
+- [x] DTOs validated
+- [x] Tests use DI patterns
+- [x] All service methods tested (happy + unhappy)
+- [x] Security documented in README
+- [x] CORS and security headers configured
+- [x] Network boundaries documented
+- [x] No secrets in git
 - [ ] PR reviewed and merged
 
 ---

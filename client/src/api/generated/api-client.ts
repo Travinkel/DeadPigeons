@@ -21,6 +21,110 @@ export class ApiClient {
   }
 
   /**
+   * @param body (optional)
+   * @return OK
+   */
+  login(body: LoginRequest | undefined): Promise<LoginResponse> {
+    let url_ = this.baseUrl + "/api/Auth/login";
+    url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = JSON.stringify(body);
+
+    let options_: RequestInit = {
+      body: content_,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processLogin(_response);
+    });
+  }
+
+  protected processLogin(response: Response): Promise<LoginResponse> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    }
+    if (status === 200) {
+      return response.text().then((_responseText) => {
+        let result200: any = null;
+        result200 =
+          _responseText === ""
+            ? null
+            : (JSON.parse(_responseText, this.jsonParseReviver) as LoginResponse);
+        return result200;
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          "An unexpected server error occurred.",
+          status,
+          _responseText,
+          _headers
+        );
+      });
+    }
+    return Promise.resolve<LoginResponse>(null as any);
+  }
+
+  /**
+   * @param body (optional)
+   * @return OK
+   */
+  register(body: RegisterRequest | undefined): Promise<RegisterResponse> {
+    let url_ = this.baseUrl + "/api/Auth/register";
+    url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = JSON.stringify(body);
+
+    let options_: RequestInit = {
+      body: content_,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processRegister(_response);
+    });
+  }
+
+  protected processRegister(response: Response): Promise<RegisterResponse> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    }
+    if (status === 200) {
+      return response.text().then((_responseText) => {
+        let result200: any = null;
+        result200 =
+          _responseText === ""
+            ? null
+            : (JSON.parse(_responseText, this.jsonParseReviver) as RegisterResponse);
+        return result200;
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          "An unexpected server error occurred.",
+          status,
+          _responseText,
+          _headers
+        );
+      });
+    }
+    return Promise.resolve<RegisterResponse>(null as any);
+  }
+
+  /**
    * @return OK
    */
   boardsGET(id: string): Promise<BoardResponse> {
@@ -1127,6 +1231,18 @@ export interface GameResultResponse {
   winners?: BoardWithPlayerResponse[] | undefined;
 }
 
+export interface LoginRequest {
+  email?: string | undefined;
+  password?: string | undefined;
+}
+
+export interface LoginResponse {
+  token?: string | undefined;
+  playerId?: string;
+  email?: string | undefined;
+  role?: string | undefined;
+}
+
 export interface PlayerBalanceResponse {
   playerId?: string;
   balance?: number;
@@ -1140,6 +1256,19 @@ export interface PlayerResponse {
   isActive?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+export interface RegisterRequest {
+  name?: string | undefined;
+  email?: string | undefined;
+  phone?: string | undefined;
+  password?: string | undefined;
+}
+
+export interface RegisterResponse {
+  playerId?: string;
+  email?: string | undefined;
+  message?: string | undefined;
 }
 
 export interface TransactionResponse {

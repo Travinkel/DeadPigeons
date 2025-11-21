@@ -1,11 +1,13 @@
 using DeadPigeons.Api.Dtos;
 using DeadPigeons.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeadPigeons.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class BoardsController : ControllerBase
 {
     private readonly IBoardService _boardService;
@@ -24,6 +26,7 @@ public class BoardsController : ControllerBase
     }
 
     [HttpGet("game/{gameId:guid}")]
+    [Authorize(Policy = "RequireAdmin")]
     public async Task<ActionResult<IEnumerable<BoardResponse>>> GetByGameId(Guid gameId)
     {
         var boards = await _boardService.GetByGameIdAsync(gameId);

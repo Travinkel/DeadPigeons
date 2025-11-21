@@ -2,27 +2,15 @@
 
 **Courses:** Programming II · Systems Development II · CDS.Security · CDS.Networking
 
-**Current Version:** `v1.2.0`
+**Current Version:** `v1.3.0`
 **Branch:** `main`
-
----
-
-## ⚠️ Security Notice
-
-**This branch has unprotected endpoints.** Authentication and authorization are implemented in Sprint 3. Do not deploy to production until the `feature/auth` branch is merged.
-
-Current status:
-- ✅ Data model and basic CRUD endpoints
-- ❌ JWT authentication (Sprint 3)
-- ❌ Authorization policies (Sprint 3)
-- ❌ Protected endpoints (Sprint 3)
 
 ---
 
 ## Security Policy
 
 ### Authentication
-- JWT-based authentication with refresh tokens
+- JWT-based authentication
 - Password hashing using ASP.NET Core Identity (PBKDF2)
 - Secure password requirements enforced
 
@@ -165,26 +153,18 @@ GitHub Actions workflow (`.github/workflows/ci.yml`):
 2. **API:** `restore` → `build` → `test`
 3. **Quality:** secretlint scan
 
-All tests use XUnit with TestContainers for database isolation.
+Integration tests use XUnit with TestContainers for database isolation. Unit tests use in-memory database.
 
 ---
 
 ## Deployment
 
-### Production Stack
+### Production Stack (Planned)
 - **Fly.io** — API + Client hosting
 - **Docker** — Containerized services
 - **Nginx** — Reverse proxy, TLS termination
 
-### Deploy Commands
-
-```bash
-# Deploy to Fly.io
-fly deploy
-
-# Check deployment status
-fly status
-```
+> **Note:** Deployment configuration (`fly.toml`) will be added in Sprint 4.
 
 ---
 
@@ -194,33 +174,39 @@ fly status
 |--------|-------|--------|-----|
 | Sprint 1 | Walking Skeleton + DevOps | Done | v1.0.0, v1.1.0 |
 | Sprint 2 | Data Model + Basic Endpoints | Done | v1.2.0 |
-| Sprint 3 | Auth + Authz + Validation | Planned | — |
+| Sprint 3 | Auth + Authz + Validation | Done | v1.3.0 |
 | Sprint 4 | Game Logic + React UI + Deploy | Planned | — |
 
 ---
 
 ## Current State
 
-### What Works (v1.1.0)
+### What Works (v1.3.0)
 - ✅ CI/CD pipeline (GitHub Actions)
 - ✅ DevOps hardening (Husky, commitlint, secretlint)
 - ✅ Health endpoint operational
 - ✅ NSwag TypeScript client generation
 - ✅ TestContainers integration test infrastructure
 - ✅ Swagger/OpenAPI documentation
-
-### Completed (Sprint 2)
 - ✅ EF Core entities (Player, Transaction, Board, Game)
 - ✅ Database migrations
-- ✅ Basic CRUD endpoints (unprotected)
-- ✅ Unit test suite (30 tests)
-- ✅ Integration test suite (5 tests)
+- ✅ Basic CRUD endpoints
+- ✅ JWT authentication
+- ✅ Authorization policies (Admin/Player)
+- ✅ Password hashing (PBKDF2)
+- ✅ DTO validation (DataAnnotations)
+- ✅ CORS and security headers
 
-### Planned
-- ⏳ JWT authentication
-- ⏳ Authorization policies
+### Test Suite
+- ✅ Unit tests with xUnit (40 tests)
+- ✅ Integration tests with TestContainers (PostgreSQL)
+- ✅ Constructor injection DI pattern
+
+### Planned (Sprint 4)
 - ⏳ React UI pages
 - ⏳ Fly.io deployment
+- ⏳ Game logic implementation
+- ⏳ Test coverage audit
 
 ---
 
@@ -229,7 +215,6 @@ fly status
 | Issue | Status | Notes |
 |-------|--------|-------|
 | No Docker locally (Shadow PC) | Workaround | Integration tests run in CI only |
-| Endpoints not protected | Sprint 3 | Auth implementation pending |
 | No React UI | Sprint 4 | Client pages pending |
 | Not deployed | Sprint 4 | Fly.io deployment pending |
 

@@ -1,14 +1,16 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace DeadPigeons.Api.Dtos;
 
 // Request DTOs
 public record CreateDepositRequest(
-    Guid PlayerId,
-    decimal Amount,
-    string? MobilePayTransactionId
+    [Required] Guid PlayerId,
+    [Required, Range(0.01, 10000)] decimal Amount,
+    [StringLength(50)] string? MobilePayTransactionId
 );
 
 public record ApproveTransactionRequest(
-    Guid ApprovedById
+    [Required] Guid ApprovedById
 );
 
 // Response DTOs
