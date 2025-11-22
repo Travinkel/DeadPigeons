@@ -37,14 +37,39 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         builder.ConfigureServices(services =>
         {
             // Remove ALL EF Core services to avoid provider conflicts
-            var descriptors = services
+            var efDescriptors = services
                 .Where(d => d.ServiceType.FullName?.Contains("EntityFramework") == true)
                 .ToList();
-            foreach (var d in descriptors)
+            foreach (var d in efDescriptors)
                 services.Remove(d);
 
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(_connectionString!));
+
+            // Remove and re-add JWT authentication with test settings
+            // (Program.cs captures config values before ConfigureAppConfiguration runs)
+            var authDescriptors = services
+                .Where(d => d.ServiceType.FullName?.Contains("Authentication") == true ||
+                            d.ServiceType.FullName?.Contains("JwtBearer") == true)
+                .ToList();
+            foreach (var d in authDescriptors)
+                services.Remove(d);
+
+            services.AddAuthentication("Bearer")
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = TestJwtIssuer,
+                        ValidAudience = TestJwtAudience,
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(TestJwtSecret))
+                    };
+                });
         });
     }
 
