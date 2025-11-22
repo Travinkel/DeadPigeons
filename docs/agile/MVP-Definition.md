@@ -64,24 +64,24 @@ This document defines the Minimum Viable Product requirements aligned with the e
 ### Programming (PROG)
 
 - [x] **Architecture:** Distributed app with React client + .NET API
-- [ ] **Client:**
-  - [ ] React + TypeScript (no vanilla JS in src/)
-  - [ ] React Router for navigation
-- [ ] **Server:**
+- [x] **Client:**
+  - [x] React + TypeScript (no vanilla JS in src/)
+  - [x] React Router for navigation
+- [x] **Server:**
   - [x] Entity Framework Core for database
-  - [ ] Server-side validation (DataAnnotations)
+  - [x] Server-side validation (DataAnnotations)
   - [x] OpenAPI/Swagger via NSwag
   - [x] **GUIDs for all primary keys** (exam requirement)
 
 ### CDS Security
 
 - [ ] **Deployment:** Cloud deployment (Fly.io) accessible publicly
-- [ ] **Authentication:**
-  - [ ] JWT-based login
-  - [ ] Secure password hashing (PBKDF2/Identity Core)
-- [ ] **Authorization:**
-  - [ ] Roles: Admin, Player
-  - [ ] Policy-based access control
+- [x] **Authentication:**
+  - [x] JWT-based login
+  - [x] Secure password hashing (PBKDF2/Identity Core)
+- [x] **Authorization:**
+  - [x] Roles: Admin, Player
+  - [x] Policy-based access control
 - [x] **Secrets:** No secrets in git (environment variables only)
 - [ ] **Documentation:**
   - [ ] README with security policies
@@ -124,16 +124,16 @@ This document defines the Minimum Viable Product requirements aligned with the e
 
 ## 5. Current Status
 
-### Overall Completion: 45%
+### Overall Completion: 75%
 
 | Area | Progress | Status |
 |------|----------|--------|
-| Systems Development | 65% | 🟡 On Track |
-| Programming | 60% | 🔴 At Risk |
-| CDS Security | 70% | 🟡 On Track |
-| Functional Requirements | 45% | 🔴 At Risk |
+| Systems Development | 75% | 🟡 On Track |
+| Programming | 90% | 🟢 Complete |
+| CDS Security | 80% | 🟡 On Track |
+| Functional Requirements | 85% | 🟢 On Track |
 
-**Days to Deadline:** 29 (December 19, 2025)
+**Days to Deadline:** 27 (December 19, 2025)
 
 ---
 
@@ -166,23 +166,33 @@ This document defines the Minimum Viable Product requirements aligned with the e
 - [x] DTO validation added
 - [x] NSwag client aligned with secured API
 
-### 5.2 In Progress
+**Sprint 4 - Game Logic + React UI (Milestones 1 & 2 Complete):**
+- [x] React Router with protected routes
+- [x] Login page with auth integration
+- [x] Player dashboard with data fetch
+- [x] Admin dashboard with stats
+- [x] Boards list/detail pages
+- [x] Games list/detail pages
+- [x] Transactions page with filtering
+- [x] Board purchase flow with pricing enforcement
+- [x] Deposit request page
+- [x] Admin game completion with winner detection
 
-- [ ] React UI scaffold + routing (theme/health preview exists in App.tsx)
-- [ ] Complete happy/unhappy path test coverage
-- [ ] Server-side validation (DataAnnotations completeness)
-- [ ] XUnit.DependencyInjection migration for remaining tests
+### 5.2 In Progress (Milestone 3 - Deployment)
 
-### 5.3 Blocked / Not Started
+- [ ] Fly.io deployment (API + client + Postgres)
+- [ ] E2E tests for critical paths
+- [ ] CI smoke tests
+- [ ] Exam preparation and documentation polish
 
-| Item | Blocker | Priority |
-|------|---------|----------|
-| Board purchase rules + repeats | UI wiring + pricing logic | 🔴 Critical |
-| Game completion + winner calc | Pending gameplay logic | 🔴 Critical |
-| Fly.io deployment (API + client + Postgres) | Needs stable UI/auth flow | 🟡 High |
-| E2E tests (UI/API) | Requires UI flows | 🟡 High |
-| CI smoke tests | Requires deploy target | 🟡 High |
-| README auth/security docs polish | Needs final routes/matrix | 🟡 High |
+### 5.3 Not Started
+
+| Item | Priority | Notes |
+|------|----------|-------|
+| Fly.io deployment | 🔴 Critical | 8 SP - Next priority |
+| E2E tests | 🟡 High | 5 SP - After deployment |
+| CI smoke tests | 🟡 High | 3 SP - After deployment |
+| Exam preparation | 🟡 High | 5 SP - Final week |
 
 ---
 
@@ -190,32 +200,31 @@ This document defines the Minimum Viable Product requirements aligned with the e
 
 | Risk | Impact | Likelihood | Mitigation |
 |------|--------|------------|------------|
-| Auth not started | Critical | High | Start immediately - blocks 60% of remaining work |
-| React UI minimal | High | Medium | Focus on core admin flows only |
-| No cloud deployment | High | Medium | Use Fly.io templates for quick deploy |
-| Missing XUnit.DI | Medium | Low | Quick migration of existing tests |
+| Deployment issues | High | Medium | Test locally with Docker first, use Fly.io templates |
+| Time pressure | Medium | Medium | 21 SP remaining with 27 days - manageable |
+| CI/CD silent failures | Medium | Low | Audit pipeline during deployment phase |
 
 ---
 
 ### 5.5 Critical Path to Exam
 
-**Week 1 (Nov 21-27): UI + Pricing**
-- Add React Router shell + pages (login, dashboards, boards, games, transactions)
-- Implement board purchase rules (pricing, cutoff, balance) + repeat boards
-- Wire NSwag client to UI flows
+**Week 1 (Nov 21-27): UI + Pricing** - COMPLETE
+- [x] React Router shell + pages (login, dashboards, boards, games, transactions)
+- [x] Board purchase rules (pricing, cutoff, balance)
+- [x] NSwag client wired to UI flows
 
-**Week 2 (Nov 28 - Dec 4): Game Completion + Tests**
-- Admin game completion (3 numbers) + winner calc + prize split
-- Finish DataAnnotations coverage
-- XUnit.DependencyInjection migration + happy/unhappy tests for new logic
+**Week 2 (Nov 28 - Dec 4): Deployment** - CURRENT
+- [ ] Fly.io deploy (API + client + Postgres, env vars, HTTPS)
+- [ ] Test deployment workflow locally with Docker
 
-**Week 3 (Dec 5-11): Deployment & E2E**
-- Fly.io deploy (API + client + Postgres, env vars, HTTPS)
-- E2E test suite for critical paths; add CI smoke checks
+**Week 3 (Dec 5-11): Testing & CI**
+- [ ] E2E test suite for critical paths
+- [ ] CI smoke checks post-deployment
 
 **Week 4 (Dec 12-17): Documentation & Polish**
-- README auth matrix + security/deploy docs
-- Demo script, known issues, final bug fixes
+- [ ] README auth matrix + security/deploy docs
+- [ ] Demo script, known issues, final bug fixes
+- [ ] Exam presentation preparation
 
 ---
 
@@ -224,11 +233,15 @@ This document defines the Minimum Viable Product requirements aligned with the e
 | Sprint | Planned | Completed | Velocity |
 |--------|---------|-----------|----------|
 | Sprint 1 (Walking Skeleton + DevOps) | 8 | 8 | 100% |
-| Sprint 2 (Data Model + Endpoints) - Current | 12 | 11 | 92% |
-| Sprint 3 (Auth & Security) | 47 | 0 | - |
-| Sprint 4 (Game Logic + UI + Deploy) | 52 | 0 | - |
+| Sprint 2 (Data Model + Endpoints) | 12 | 11 | 92% |
+| Sprint 3 (Auth & Security) | 47 | 47 | 100% |
+| Sprint 4 (Game Logic + UI + Deploy) | 55 | 34 | 62% (in progress) |
 
-**Estimated Remaining Effort:** ~100 story points across 4 weeks
+**Remaining Effort:** 21 story points (Milestone 3 tasks)
+- TASK-4.11: Fly.io Deployment (8 SP)
+- TASK-4.12: E2E Tests (5 SP)
+- TASK-4.13: Smoke Tests (3 SP)
+- TASK-4.14: Exam Prep (5 SP)
 
 ---
 

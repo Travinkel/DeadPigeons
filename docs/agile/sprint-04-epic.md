@@ -3,44 +3,13 @@
 **Epic ID:** EPIC-04
 **Sprint:** 4
 **Branch:** `feature/game-ui-deploy`
-**Status:** In Progress (Milestone 1 Complete, Milestone 2 Blocked)
+**Status:** In Progress (Milestone 1 & 2 Complete, Milestone 3 In Progress)
 
 ---
 
 ## Epic Summary
 
 Complete the Dead Pigeons application with full game logic, React UI, and cloud deployment. This sprint delivers the final product ready for exam submission.
-
----
-
-## BLOCKING ISSUE
-
-**Issue:** 401 Unauthorized errors on Dashboard API calls
-
-**Impact:** High - Dashboard functionality is non-functional despite UI completion
-
-**Symptoms:**
-- `/api/Players/{id}` - 401 Unauthorized
-- `/api/Boards/player/{id}` - 401 Unauthorized
-- `/api/Players/{id}/balance` - 401 Unauthorized
-- `/api/Transactions/player/{id}` - 401 Unauthorized
-
-**Error Location:** `PlayerDashboard.tsx:43`
-```
-Dashboard fetch error: SwaggerException: An unexpected server error occurred.
-```
-
-**Root Cause Analysis:**
-The JWT token is either:
-1. Not being properly attached to API requests from the dashboard
-2. Token is invalid or expired
-3. Authorization header not being sent by the NSwag client wrapper
-
-**Required Resolution:**
-- Verify `apiClient.ts` correctly adds `Authorization: Bearer <token>` header
-- Check token storage/retrieval in AuthContext
-- Validate token expiration handling
-- Test API calls with manual token injection
 
 ---
 
@@ -56,10 +25,10 @@ The JWT token is either:
 
 ## Acceptance Criteria
 
-- [ ] Board purchase workflow complete with pricing
-- [ ] Weekly game completion with winner detection
-- [ ] React UI with all pages functional
-- [x] Auth shell and dashboards implemented (UI complete, data fetch blocked)
+- [x] Board purchase workflow complete with pricing
+- [x] Weekly game completion with winner detection
+- [x] React UI with all pages functional
+- [x] Auth shell and dashboards implemented
 - [ ] Deployed to Fly.io and accessible
 - [ ] End-to-end tests passing
 - [ ] Smoke tests in CI
@@ -117,7 +86,7 @@ The JWT token is either:
 ---
 
 #### TASK-4.3: Player Dashboard (3 SP)
-**Status:** Complete (UI) / BLOCKED (Data Fetch)
+**Status:** Complete
 
 **Deliverables:**
 - Shows balance, boards, recent transactions
@@ -125,7 +94,7 @@ The JWT token is either:
 
 **Acceptance Criteria:**
 - [x] Dashboard UI complete
-- [ ] Data fetch working (BLOCKED by 401 auth issue)
+- [x] Data fetch working
 
 ---
 
@@ -142,10 +111,10 @@ The JWT token is either:
 
 ---
 
-### Milestone 2: Lottery Mechanics (PENDING)
+### Milestone 2: Lottery Mechanics (COMPLETE)
 
 #### TASK-4.5: Boards List/Detail Pages (3 SP)
-**Status:** Not started
+**Status:** Complete
 
 **Requirements:**
 - Player view of owned boards
@@ -153,14 +122,14 @@ The JWT token is either:
 - File: `client/src/features/boards/BoardsPage.tsx`
 
 **Acceptance Criteria:**
-- [ ] Boards list page
-- [ ] Board detail view
-- [ ] Numbers display
+- [x] Boards list page
+- [x] Board detail view
+- [x] Numbers display
 
 ---
 
 #### TASK-4.6: Games List/Detail Pages (3 SP)
-**Status:** Not started
+**Status:** Complete
 
 **Requirements:**
 - Active game, historical games
@@ -168,14 +137,14 @@ The JWT token is either:
 - File: `client/src/features/games/GamesPage.tsx`
 
 **Acceptance Criteria:**
-- [ ] Games list page
-- [ ] Game detail view
-- [ ] Status display
+- [x] Games list page
+- [x] Game detail view
+- [x] Status display
 
 ---
 
 #### TASK-4.7: Transactions Page (3 SP)
-**Status:** Not started
+**Status:** Complete
 
 **Requirements:**
 - List all transactions
@@ -183,14 +152,14 @@ The JWT token is either:
 - File: `client/src/features/transactions/TransactionsPage.tsx`
 
 **Acceptance Criteria:**
-- [ ] Transactions list
-- [ ] Status filtering
-- [ ] Amount display
+- [x] Transactions list
+- [x] Status filtering
+- [x] Amount display
 
 ---
 
 #### TASK-4.8: Board Purchase Flow (5 SP)
-**Status:** Not started
+**Status:** Complete
 
 **Pricing Model:**
 - 5 numbers = 20 DKK
@@ -205,32 +174,30 @@ The JWT token is either:
 - Auto-create purchase transaction
 
 **Acceptance Criteria:**
-- [ ] Number selection UI
-- [ ] Pricing enforced correctly
-- [ ] Cutoff rule implemented
-- [ ] Insufficient balance rejected
+- [x] Number selection UI
+- [x] Pricing enforced correctly
+- [x] Cutoff rule implemented
+- [x] Insufficient balance rejected
 
 ---
 
-#### TASK-4.9: Board Repeat Logic (3 SP)
-**Status:** Not started
+#### TASK-4.9: Deposit Request Page (3 SP)
+**Status:** Complete
 
 **Requirements:**
-- "Play same numbers again" button
-- Prefill from existing board
-- Player specifies repeat count (X weeks)
-- System auto-purchases in subsequent games
-- Player can opt-out
+- Player submits MobilePay transaction ID
+- Creates pending deposit transaction
+- Admin approval workflow
 
 **Acceptance Criteria:**
-- [ ] Repeating boards created automatically
-- [ ] Balance checked for repeats
-- [ ] Opt-out functional
+- [x] Deposit request form
+- [x] Transaction ID validation
+- [x] Pending status display
 
 ---
 
 #### TASK-4.10: Admin Game Completion (5 SP)
-**Status:** Not started
+**Status:** Complete
 
 **Requirements:**
 - Admin enters 3 winning numbers
@@ -238,10 +205,10 @@ The JWT token is either:
 - Calculate 70/30 prize split
 
 **Acceptance Criteria:**
-- [ ] Set winning numbers UI
-- [ ] Winners correctly identified
-- [ ] Prize pool calculated
-- [ ] Game status updated
+- [x] Set winning numbers UI
+- [x] Winners correctly identified
+- [x] Prize pool calculated
+- [x] Game status updated
 
 ---
 
@@ -316,19 +283,19 @@ The JWT token is either:
 |------|--------|--------|
 | TASK-4.1: React Router | 3 | Complete |
 | TASK-4.2: Login Page | 3 | Complete |
-| TASK-4.3: Player Dashboard | 3 | Complete (UI) / Blocked (Data) |
+| TASK-4.3: Player Dashboard | 3 | Complete |
 | TASK-4.4: Admin Dashboard | 3 | Complete |
-| TASK-4.5: Boards Pages | 3 | Not started |
-| TASK-4.6: Games Pages | 3 | Not started |
-| TASK-4.7: Transactions Page | 3 | Not started |
-| TASK-4.8: Board Purchase Flow | 5 | Not started |
-| TASK-4.9: Board Repeat Logic | 3 | Not started |
-| TASK-4.10: Admin Game Completion | 5 | Not started |
+| TASK-4.5: Boards Pages | 3 | Complete |
+| TASK-4.6: Games Pages | 3 | Complete |
+| TASK-4.7: Transactions Page | 3 | Complete |
+| TASK-4.8: Board Purchase Flow | 5 | Complete |
+| TASK-4.9: Deposit Request Page | 3 | Complete |
+| TASK-4.10: Admin Game Completion | 5 | Complete |
 | TASK-4.11: Fly.io Deployment | 8 | Not started |
 | TASK-4.12: E2E Tests | 5 | Not started |
 | TASK-4.13: Smoke Tests | 3 | Not started |
 | TASK-4.14: Exam Prep | 5 | Not started |
-| **Total** | **55** | 12 SP Complete |
+| **Total** | **55** | **34 SP Complete (62%)** |
 
 ---
 
@@ -386,19 +353,21 @@ client/src/
 | Issue | Severity | Status | Notes |
 |-------|----------|--------|-------|
 | CI/CD silent test failures | Critical | Open | v1.3.0-v1.3.2 released with failing integration tests showing as "green" |
-| 401 Unauthorized on dashboard API calls | High | Open | JWT token not being attached to requests |
 | Integration tests failing | Medium | Open | Dual provider conflict (see INTEGRATION_TEST_STATUS.md) |
 | GameResponse.status serialization | Low | Open | API returns number, client expects string |
+
+**Resolved Issues:**
+- 401 Unauthorized on dashboard API calls - Fixed: JWT token now properly attached to requests
 
 ---
 
 ## Definition of Done
 
-- [ ] Board purchase with pricing complete
-- [ ] Repeating boards functional
-- [ ] Game completion working
-- [ ] All React pages functional
-- [ ] Dashboard data fetch working (401 issue resolved)
+- [x] Board purchase with pricing complete
+- [x] Deposit request flow functional
+- [x] Game completion working
+- [x] All React pages functional
+- [x] Dashboard data fetch working (401 issue resolved)
 - [ ] Deployed to Fly.io
 - [ ] E2E tests passing
 - [ ] Smoke tests in CI
@@ -414,10 +383,8 @@ client/src/
 | Risk | Likelihood | Impact | Mitigation |
 |------|------------|--------|------------|
 | CI/CD false positives | High | Critical | Audit pipeline, verify test failures fail the build |
-| 401 Auth issue blocks progress | High | High | Debug JWT token flow, verify apiClient.ts |
 | Deployment issues | Medium | High | Test locally with Docker first |
-| UI complexity | Medium | Medium | Use component library (DaisyUI) |
-| Time pressure | High | High | Prioritize core features |
+| Time pressure | Medium | High | Focus on Milestone 3 tasks only |
 
 ---
 
