@@ -74,7 +74,7 @@ export function AdminDashboard() {
     );
   }
 
-  const activeGame = games.find((g) => g.status === 0 || g.status === "Active");
+  const activeGame = games.find((g) => g.status === "Active");
   const inactivePlayers = players.filter((p) => !p.isActive);
 
   return (
@@ -134,7 +134,7 @@ export function AdminDashboard() {
                 <tbody>
                   {pendingTransactions.slice(0, 10).map((tx) => (
                     <tr key={tx.id}>
-                      <td>{tx.playerName || tx.playerId}</td>
+                      <td>{tx.playerId}</td>
                       <td>{tx.amount?.toFixed(2)} kr</td>
                       <td>
                         {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString("da-DK") : "-"}
@@ -175,7 +175,7 @@ export function AdminDashboard() {
                       <td>{game.year}</td>
                       <td>{game.boardCount || 0}</td>
                       <td>
-                        {game.status === 0 || game.status === "Active" ? (
+                        {game.status === "Active" ? (
                           <span className="badge badge-success badge-sm">Aktiv</span>
                         ) : (
                           <span className="badge badge-ghost badge-sm">Afsluttet</span>

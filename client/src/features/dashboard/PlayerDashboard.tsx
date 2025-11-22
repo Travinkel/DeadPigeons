@@ -136,7 +136,7 @@ export function PlayerDashboard() {
                         </div>
                       </td>
                       <td>
-                        {board.isAutoplay ? (
+                        {board.isRepeating ? (
                           <span className="badge badge-success badge-sm">Ja</span>
                         ) : (
                           <span className="badge badge-ghost badge-sm">Nej</span>

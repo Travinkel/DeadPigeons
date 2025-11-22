@@ -4,39 +4,9 @@ import { RequireAuth } from "../shared/components/RequireAuth";
 import { LoginPage } from "../features/auth/LoginPage";
 import { PlayerDashboard } from "../features/dashboard/PlayerDashboard";
 import { AdminDashboard } from "../features/dashboard/AdminDashboard";
-
-function BoardsPage() {
-  return (
-    <div className="card bg-base-100 shadow-xl">
-      <div className="card-body">
-        <h2 className="card-title">Plader</h2>
-        <p>Under udvikling...</p>
-      </div>
-    </div>
-  );
-}
-
-function GamesPage() {
-  return (
-    <div className="card bg-base-100 shadow-xl">
-      <div className="card-body">
-        <h2 className="card-title">Spil</h2>
-        <p>Under udvikling...</p>
-      </div>
-    </div>
-  );
-}
-
-function TransactionsPage() {
-  return (
-    <div className="card bg-base-100 shadow-xl">
-      <div className="card-body">
-        <h2 className="card-title">Transaktioner</h2>
-        <p>Under udvikling...</p>
-      </div>
-    </div>
-  );
-}
+import { BoardsPage } from "../features/boards/BoardsPage";
+import { GamesPage } from "../features/games/GamesPage";
+import { TransactionsPage } from "../features/transactions/TransactionsPage";
 
 // Root redirect based on auth state
 function RootRedirect() {

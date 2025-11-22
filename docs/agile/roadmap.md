@@ -18,7 +18,11 @@
 | Sprint 1 | Walking Skeleton + DevOps | Done | v1.0.0, v1.1.0 |
 | Sprint 2 | Data Model + Basic Endpoints | Done | v1.2.0 |
 | Sprint 3 | Auth + Authz + Validation | Done | v1.3.0 |
-| Sprint 4 | Game Logic + React UI + Deploy | Planned | — |
+| Sprint 4 | Game Logic + React UI + Deploy | In Progress | — |
+
+**Current Blockers:**
+- 401 Unauthorized errors on dashboard API calls - JWT token not being attached to requests
+- CI/CD silent test failures - v1.3.0, v1.3.1, v1.3.2 released with failing tests showing as "green"
 
 ---
 
@@ -149,6 +153,25 @@ This ensures the project meets Programming, Systems Development, and Security re
 | Git Hooks | Sprint 1 |
 | Security | Sprint 3 |
 | Deployment & Polish | Sprint 4 |
+
+---
+
+## Process Improvements Backlog
+
+### High Priority
+
+| Item | Description | Sprint |
+|------|-------------|--------|
+| CI/CD Pipeline Audit | Fix silent test failure issue affecting v1.3.0-v1.3.2 | Sprint 4 |
+| Release Checklist | Implement verification checklist for all releases | Sprint 4 |
+| Post-Mortem Practice | Document CI/CD issues per release | Sprint 4 |
+
+### Medium Priority
+
+| Item | Description | Sprint |
+|------|-------------|--------|
+| Test Coverage Gates | Enforce minimum coverage thresholds | Sprint 5 |
+| Pipeline Observability | Add logging/metrics for CI/CD health | Sprint 5 |
 
 ---
 
