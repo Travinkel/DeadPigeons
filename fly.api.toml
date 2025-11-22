@@ -2,6 +2,7 @@ app = "deadpigeons-api"
 primary_region = "arn"
 
 [build]
+  dockerfile = "server/DeadPigeons.Api/Dockerfile"
 
 [env]
   ASPNETCORE_URLS = "http://+:8080"

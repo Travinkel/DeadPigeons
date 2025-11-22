@@ -6,7 +6,7 @@ COPY DeadPigeons.sln ./
 COPY server/DeadPigeons.Api/*.csproj ./server/DeadPigeons.Api/
 COPY server/DeadPigeons.DataAccess/*.csproj ./server/DeadPigeons.DataAccess/
 COPY tests/DeadPigeons.Tests/*.csproj ./tests/DeadPigeons.Tests/
-COPY tests/Integration/*.csproj ./tests/Integration/
+COPY tests/DeadPigeons.IntegrationTests/*.csproj ./tests/DeadPigeons.IntegrationTests/
 
 RUN dotnet restore
 
