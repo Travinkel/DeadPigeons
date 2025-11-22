@@ -75,6 +75,11 @@ jobs:
       - name: Secret scan
         run: npx secretlint "**/*"
 
+      - name: Validate Fly.io configs
+        run: |
+          test -f fly.api.toml || (echo "fly.api.toml not found" && exit 1)
+          test -f client/fly.toml || (echo "client/fly.toml not found" && exit 1)
+
       - name: Start API for NSwag
         env:
           ConnectionStrings__Default: "Host=localhost;Database=deadpigeons;Username=postgres;Password=postgres"
@@ -126,7 +131,7 @@ jobs:
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Deploy API to Fly.io
-        run: flyctl deploy --config server/DeadPigeons.Api/fly.toml --dockerfile server/DeadPigeons.Api/Dockerfile
+        run: flyctl deploy --config fly.api.toml --dockerfile server/DeadPigeons.Api/Dockerfile
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
