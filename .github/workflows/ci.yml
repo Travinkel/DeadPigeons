@@ -130,16 +130,6 @@ jobs:
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
-      - name: Normalize Fly API token
-        run: |
-          CLEANED_TOKEN=$(echo -n "${{ secrets.FLY_API_TOKEN }}" | tr -d '\r\n')
-          echo "FLY_API_TOKEN=$CLEANED_TOKEN" >> $GITHUB_ENV
-
-      - name: Deploy API to Fly.io
-        run: flyctl deploy --config fly.api.toml --dockerfile server/DeadPigeons.Api/Dockerfile
-        env:
-          FLY_API_TOKEN: ${{ env.FLY_API_TOKEN }}
-
       - name: Deploy API to Fly.io
         run: flyctl deploy --config fly.api.toml --dockerfile server/DeadPigeons.Api/Dockerfile
         env:
@@ -150,28 +140,22 @@ jobs:
           sleep 10
           curl -f https://deadpigeons-api.fly.dev/api/health || exit 1
 
-  dedeploy-client:
-    needs: [ build, deploy-api ]
+  deploy-client:
+    needs: [build, deploy-api]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
+
     steps:
       - uses: actions/checkout@v6
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
-      - name: Normalize Fly API token
-        run: |
-          CLEANED_TOKEN=$(echo -n "${{ secrets.FLY_API_TOKEN }}" | tr -d '\r\n')
-          echo "FLY_API_TOKEN=$CLEANED_TOKEN" >> $GITHUB_ENV
-
       - name: Deploy Client to Fly.io
         run: flyctl deploy --config client/fly.toml --dockerfile client/Dockerfile --build-arg VITE_API_URL=https://deadpigeons-api.fly.dev
         env:
-          FLY_API_TOKEN: ${{ env.FLY_API_TOKEN }}
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
       - name: Smoke test Client
         run: |
           sleep 10
           curl -f https://deadpigeons-client.fly.dev || exit 1
-    
