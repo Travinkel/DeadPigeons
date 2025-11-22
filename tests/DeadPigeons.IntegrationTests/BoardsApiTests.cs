@@ -49,6 +49,7 @@ public class BoardsApiTests
         var year = 2040 + new Random().Next(1, 100);
         var request = new CreateGameRequest(weekNumber, year);
         var response = await _client.PostAsJsonAsync("/api/games", request);
+        response.EnsureSuccessStatusCode();
         return (await response.Content.ReadFromJsonAsync<GameResponse>())!;
     }
 
