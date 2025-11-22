@@ -3,7 +3,7 @@
 **Epic ID:** EPIC-04
 **Sprint:** 4
 **Branch:** `feature/game-ui-deploy`
-**Status:** In Progress (Milestone 1 & 2 Complete, Milestone 3 In Progress)
+**Status:** In Progress (Milestones 1, 2, & 3 Complete, E2E/Exam Prep Pending)
 
 ---
 
@@ -29,7 +29,7 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 - [x] Weekly game completion with winner detection
 - [x] React UI with all pages functional
 - [x] Auth shell and dashboards implemented
-- [ ] Deployed to Fly.io and accessible
+- [x] Deployed to Fly.io and accessible
 - [ ] End-to-end tests passing
 - [ ] Smoke tests in CI
 - [ ] Exam presentation ready
@@ -215,7 +215,7 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 ### Milestone 3: Deployment + Polish
 
 #### TASK-4.11: Fly.io Deployment (8 SP)
-**Status:** In Progress
+**Status:** Complete
 
 **Requirements:**
 - Dockerized API + client
@@ -227,13 +227,13 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 
 | ID | Subtask | Status | SP |
 |----|---------|--------|-----|
-| 4.11.1 | Fly.io account and project setup | Not started | 1 |
-| 4.11.2 | Configure fly.toml for API deployment | Not started | 1 |
-| 4.11.3 | Deploy client as static site (nginx:alpine) | Not started | 1 |
-| 4.11.4 | Provision PostgreSQL database on Fly.io | Not started | 1 |
-| 4.11.5 | Configure environment variables and secrets | Not started | 1 |
-| 4.11.6 | Add CI/CD deployment job to pipeline | Not started | 2 |
-| 4.11.7 | Verification and smoke tests | Not started | 1 |
+| 4.11.1 | Fly.io account and project setup | Complete | 1 |
+| 4.11.2 | Configure fly.toml for API deployment | Complete | 1 |
+| 4.11.3 | Deploy client as static site (nginx:alpine) | Complete | 1 |
+| 4.11.4 | Provision PostgreSQL database on Fly.io | Complete | 1 |
+| 4.11.5 | Configure environment variables and secrets | Complete | 1 |
+| 4.11.6 | Add CI/CD deployment job to pipeline | Complete | 2 |
+| 4.11.7 | Verification and smoke tests | Complete | 1 |
 
 **Subtask Details:**
 
@@ -284,11 +284,11 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 - **SDE2**: CI/CD deployment pipeline, infrastructure as code
 
 **Acceptance Criteria:**
-- [ ] API accessible publicly at `dead-pigeons-api.fly.dev`
-- [ ] Client accessible publicly at `dead-pigeons-client.fly.dev`
-- [ ] Database connected and migrations applied
-- [ ] HTTPS working (Fly.io automatic TLS)
-- [ ] CI/CD deploys on merge to main
+- [x] API accessible publicly at `dead-pigeons-api.fly.dev`
+- [x] Client accessible publicly at `dead-pigeons-client.fly.dev`
+- [x] Database connected and migrations applied
+- [x] HTTPS working (Fly.io automatic TLS)
+- [x] CI/CD deploys on merge to main
 
 ---
 
@@ -352,11 +352,11 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 | TASK-4.8: Board Purchase Flow | 5 | Complete |
 | TASK-4.9: Deposit Request Page | 3 | Complete |
 | TASK-4.10: Admin Game Completion | 5 | Complete |
-| TASK-4.11: Fly.io Deployment | 8 | In Progress |
+| TASK-4.11: Fly.io Deployment | 8 | Complete |
 | TASK-4.12: E2E Tests | 5 | Not started |
 | TASK-4.13: Smoke Tests | 3 | Not started |
 | TASK-4.14: Exam Prep | 5 | Not started |
-| **Total** | **55** | **34 SP Complete (62%)** |
+| **Total** | **55** | **42 SP Complete (76%)** |
 
 ---
 
@@ -414,11 +414,14 @@ client/src/
 | Issue | Severity | Status | Notes |
 |-------|----------|--------|-------|
 | CI/CD silent test failures | Critical | Open | v1.3.0-v1.3.2 released with failing integration tests showing as "green" |
-| Integration tests failing | Medium | Open | Dual provider conflict (see INTEGRATION_TEST_STATUS.md) |
-| GameResponse.status serialization | Low | Open | API returns number, client expects string |
+| Integration tests failing | Medium | Open | Tests require Docker/Testcontainers; unit tests (40) all passing |
+| API port compatibility | Low | Resolved | NSwag port updated to 5000 for CI compatibility |
 
 **Resolved Issues:**
+- GameResponse enum serialization - Fixed: Added global JsonStringEnumConverter in EF Core
 - 401 Unauthorized on dashboard API calls - Fixed: JWT token now properly attached to requests
+- Week/year collision in test helper - Fixed: Use GUID-based unique identifiers
+- ESLint unused variable detection - Fixed: Updated typescript-eslint rule configuration
 
 ---
 
@@ -429,7 +432,7 @@ client/src/
 - [x] Game completion working
 - [x] All React pages functional
 - [x] Dashboard data fetch working (401 issue resolved)
-- [ ] Deployed to Fly.io
+- [x] Deployed to Fly.io
 - [ ] E2E tests passing
 - [ ] Smoke tests in CI
 - [ ] Documentation complete

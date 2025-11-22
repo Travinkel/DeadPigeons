@@ -63,6 +63,8 @@ Deploy as **two separate Fly.io applications**:
 
 ### API Configuration (fly.toml)
 
+Note: Port 8080 is used for Fly.io containers. Local development uses port 5000 (see `launchSettings.json`).
+
 ```toml
 app = "deadpigeons-api"
 primary_region = "arn"  # Stockholm
@@ -70,10 +72,17 @@ primary_region = "arn"  # Stockholm
 [env]
   ASPNETCORE_URLS = "http://+:8080"
 
+[http_service]
+  internal_port = 8080
+  force_https = true
+
 [[vm]]
   memory = "512mb"
   cpu_kind = "shared"
 ```
+
+**Local Development Port:** 5000 (configured in `Properties/launchSettings.json`)
+**Fly.io Container Port:** 8080 (exposed via https://deadpigeons-api.fly.dev)
 
 ### Client Configuration (fly.toml)
 

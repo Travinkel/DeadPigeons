@@ -31,8 +31,7 @@ We will:
 - Ensure all plugins referenced in `eslint.config.js` are installed as
   devDependencies in `client/package.json`, for example:
     - `eslint`
-    - `@typescript-eslint/parser`
-    - `@typescript-eslint/eslint-plugin`
+    - `typescript-eslint` (replaces `@typescript-eslint/parser` and `@typescript-eslint/eslint-plugin`)
     - `eslint-plugin-react`
     - `eslint-plugin-react-hooks`
     - `eslint-plugin-import`

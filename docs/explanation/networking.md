@@ -10,7 +10,7 @@ This document describes the network architecture and trust boundaries for the De
 ┌─────────────────┐      HTTPS       ┌─────────────────┐      TCP        ┌─────────────────┐
 │  React Client   │ ──────────────▶  │   .NET API      │ ──────────────▶ │   PostgreSQL    │
 │  (Browser)      │   Port 443       │   (Fly.io)      │   Port 5432     │   (Fly.io)      │
-│                 │                  │   Port 5000     │                 │                 │
+│                 │                  │   :5000 (local) │                 │                 │
 └─────────────────┘                  └─────────────────┘                 └─────────────────┘
         │                                    │
         │                                    │
@@ -25,7 +25,7 @@ This document describes the network architecture and trust boundaries for the De
 ### Boundary 1: Client ↔ API (Public Internet)
 
 **Traffic:** HTTPS (TLS 1.2+)
-**Port:** 443 (external), 5000 (internal)
+**Port:** 443 (external Fly.io), 5000 (local development)
 
 **Security Controls:**
 - JWT Bearer authentication required
@@ -104,11 +104,11 @@ Credentials: Allowed
 
 ## Port Exposure
 
-| Service | Internal Port | External Port | Protocol |
-|---------|--------------|---------------|----------|
-| API | 5000 | 443 (via Fly.io) | HTTPS |
+| Service | Local Port | External Port | Protocol |
+|---------|-----------|---------------|----------|
+| API (dev) | 5000 | 443 (via Fly.io) | HTTPS |
 | PostgreSQL | 5432 | None | TCP (private) |
-| Client Dev | 5173 | 5173 | HTTP |
+| Client (dev) | 5173 | 443 (via Fly.io) | HTTPS |
 
 ---
 

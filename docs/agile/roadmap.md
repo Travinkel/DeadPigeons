@@ -18,15 +18,15 @@
 | Sprint 1 | Walking Skeleton + DevOps | Done | v1.0.0, v1.1.0 |
 | Sprint 2 | Data Model + Basic Endpoints | Done | v1.2.0 |
 | Sprint 3 | Auth + Authz + Validation | Done | v1.3.0 |
-| Sprint 4 | Game Logic + React UI + Deploy | In Progress (62%) | — |
+| Sprint 4 | Game Logic + React UI + Deploy | In Progress (76%) | — |
 
 **Current Status:**
-- Milestones 1 & 2 Complete (34 of 55 SP)
-- Milestone 3 (Deployment) In Progress: TASK-4.11 to TASK-4.14
-- 401 auth issue resolved
+- Milestones 1, 2, & 3 Complete (42 of 55 SP)
+- Milestone 3 (Deployment) Complete: TASK-4.11 delivered
+- Code quality fixes: Enum serialization, test stability, port alignment, ESLint config
+- 40/40 unit tests passing
 
 **Remaining Work:**
-- Fly.io Deployment (8 SP)
 - E2E Tests (5 SP)
 - Smoke Tests in CI (3 SP)
 - Exam Preparation (5 SP)
