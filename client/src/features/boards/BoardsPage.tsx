@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import { createApiClient } from "../../api/apiClient";
 import { type BoardResponse } from "../../api/generated/api-client";
@@ -64,7 +65,9 @@ export function BoardsPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Mine plader</h1>
-        <div className="badge badge-lg badge-primary">{boards.length} plader</div>
+        <Link to="/boards/purchase" className="btn btn-primary">
+          Køb plade
+        </Link>
       </div>
 
       {boards.length === 0 ? (

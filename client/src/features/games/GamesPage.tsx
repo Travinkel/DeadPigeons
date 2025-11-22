@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import { createApiClient } from "../../api/apiClient";
 import { type GameResponse } from "../../api/generated/api-client";
 
 export function GamesPage() {
-  const { token } = useAuth();
+  const { user, token } = useAuth();
+  const isAdmin = user?.role === "Admin";
   const [games, setGames] = useState<GameResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -84,7 +86,17 @@ export function GamesPage() {
                   Uge {activeGame.weekNumber}, {activeGame.year}
                 </p>
               </div>
-              <span className="badge badge-secondary">Aktiv</span>
+              <div className="flex flex-col gap-2 items-end">
+                <span className="badge badge-secondary">Aktiv</span>
+                {isAdmin && (
+                  <Link
+                    to={`/games/${activeGame.id}/complete`}
+                    className="btn btn-sm btn-secondary"
+                  >
+                    Afslut spil
+                  </Link>
+                )}
+              </div>
             </div>
             <div className="stats stats-vertical lg:stats-horizontal bg-primary-focus mt-4">
               <div className="stat">

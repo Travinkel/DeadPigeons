@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import { createApiClient } from "../../api/apiClient";
 import { type TransactionResponse } from "../../api/generated/api-client";
@@ -74,7 +75,12 @@ export function TransactionsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Mine transaktioner</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Mine transaktioner</h1>
+        <Link to="/transactions/deposit" className="btn btn-primary">
+          Anmod indbetaling
+        </Link>
+      </div>
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
