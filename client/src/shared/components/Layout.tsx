@@ -14,8 +14,9 @@ export function Layout() {
     <div className="min-h-screen bg-base-200">
       <nav className="navbar bg-primary text-primary-content shadow-lg">
         <div className="flex-1">
-          <Link to="/" className="btn btn-ghost text-xl font-bold">
-            Jerne IF - Dead Pigeons
+          <Link to="/" className="btn btn-ghost text-xl font-bold gap-2">
+            <img src="/logo.png" alt="Jerne IF" className="h-8 w-8" />
+            Dead Pigeons
           </Link>
         </div>
 

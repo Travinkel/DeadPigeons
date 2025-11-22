@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "./useAuth";
 import { createApiClient } from "../../api/apiClient";
 
@@ -150,6 +150,15 @@ export function LoginPage() {
               {isLoading ? "Logger ind..." : "Log ind"}
             </button>
           </form>
+
+          <div className="divider">eller</div>
+
+          <p className="text-center">
+            Har du ikke en konto?{" "}
+            <Link to="/register" className="link link-primary">
+              Opret konto
+            </Link>
+          </p>
         </div>
       </div>
     </div>
