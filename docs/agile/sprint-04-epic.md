@@ -215,7 +215,7 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 ### Milestone 3: Deployment + Polish
 
 #### TASK-4.11: Fly.io Deployment (8 SP)
-**Status:** Not started
+**Status:** In Progress
 
 **Requirements:**
 - Dockerized API + client
@@ -223,11 +223,72 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 - Environment variables configured
 - HTTPS with Nginx
 
+**Subtasks:**
+
+| ID | Subtask | Status | SP |
+|----|---------|--------|-----|
+| 4.11.1 | Fly.io account and project setup | Not started | 1 |
+| 4.11.2 | Configure fly.toml for API deployment | Not started | 1 |
+| 4.11.3 | Deploy client as static site (nginx:alpine) | Not started | 1 |
+| 4.11.4 | Provision PostgreSQL database on Fly.io | Not started | 1 |
+| 4.11.5 | Configure environment variables and secrets | Not started | 1 |
+| 4.11.6 | Add CI/CD deployment job to pipeline | Not started | 2 |
+| 4.11.7 | Verification and smoke tests | Not started | 1 |
+
+**Subtask Details:**
+
+**4.11.1 - Fly.io Account and Project Setup**
+- Create Fly.io account
+- Install flyctl CLI
+- Create two apps: `dead-pigeons-api` and `dead-pigeons-client`
+- Set region (likely `ams` for Europe)
+
+**4.11.2 - Configure fly.toml for API**
+- Create `server/DeadPigeons.Api/fly.toml`
+- Configure internal port (8080)
+- Set health check endpoint (`/health`)
+- Configure auto-scaling (min 1, max 2 instances)
+
+**4.11.3 - Deploy Client as Static Site**
+- Create `client/fly.toml`
+- Use existing `client/Dockerfile` (nginx:alpine)
+- Configure nginx for SPA routing (fallback to index.html)
+- Set API URL environment variable
+
+**4.11.4 - Provision PostgreSQL Database**
+- Create Fly.io Postgres cluster
+- Attach to API app
+- Note connection string for secrets
+
+**4.11.5 - Configure Environment Variables and Secrets**
+- `DATABASE_URL` - PostgreSQL connection string
+- `JWT__Key` - JWT signing key
+- `JWT__Issuer` - Token issuer
+- `JWT__Audience` - Token audience
+- `CORS__AllowedOrigins` - Client domain
+
+**4.11.6 - Add CI/CD Deployment Job**
+- Add deployment stage to GitHub Actions
+- Configure `FLY_API_TOKEN` secret
+- Deploy on merge to main
+- Run migrations before deployment
+
+**4.11.7 - Verification and Smoke Tests**
+- Verify API health endpoint
+- Verify client loads
+- Test authentication flow
+- Confirm database connectivity
+
+**Exam Competency Coverage:**
+- **CDS.Networking**: Cloud deployment (Fly.io), Docker containerization, Nginx reverse proxy/TLS termination
+- **SDE2**: CI/CD deployment pipeline, infrastructure as code
+
 **Acceptance Criteria:**
-- [ ] API accessible publicly
-- [ ] Client accessible publicly
-- [ ] Database connected
-- [ ] HTTPS working
+- [ ] API accessible publicly at `dead-pigeons-api.fly.dev`
+- [ ] Client accessible publicly at `dead-pigeons-client.fly.dev`
+- [ ] Database connected and migrations applied
+- [ ] HTTPS working (Fly.io automatic TLS)
+- [ ] CI/CD deploys on merge to main
 
 ---
 
@@ -291,7 +352,7 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 | TASK-4.8: Board Purchase Flow | 5 | Complete |
 | TASK-4.9: Deposit Request Page | 3 | Complete |
 | TASK-4.10: Admin Game Completion | 5 | Complete |
-| TASK-4.11: Fly.io Deployment | 8 | Not started |
+| TASK-4.11: Fly.io Deployment | 8 | In Progress |
 | TASK-4.12: E2E Tests | 5 | Not started |
 | TASK-4.13: Smoke Tests | 3 | Not started |
 | TASK-4.14: Exam Prep | 5 | Not started |
