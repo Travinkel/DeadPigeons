@@ -28,9 +28,25 @@ fly apps create deadpigeons-client --org personal
 ### 3. Provision PostgreSQL Database
 
 ```bash
-# Create Postgres cluster
+# Create Postgres cluster (free tier settings)
 fly postgres create --name deadpigeons-db --region arn --vm-size shared-cpu-1x --volume-size 1
+```
 
+**Interactive prompt:** You will be asked for cluster size:
+```
+Initial cluster size - Specify at least 3 for HA (3)
+```
+
+Enter **`1`** for a single-node setup (stays within free tier).
+
+> **Note:** You'll see a warning about "Unmanaged Fly Postgres". This is expected for single-node setups and safe to proceed. Managed Postgres requires 3+ nodes which incurs costs.
+
+**Free tier requirements:**
+- `--vm-size shared-cpu-1x` - shared CPU (free)
+- `--volume-size 1` - 1GB storage (free)
+- Cluster size `1` - single node (free)
+
+```bash
 # Attach to API app (auto-sets DATABASE_URL)
 fly postgres attach deadpigeons-db --app deadpigeons-api
 ```
