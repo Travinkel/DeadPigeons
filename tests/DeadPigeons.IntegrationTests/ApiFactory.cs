@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Testcontainers.PostgreSql;
 
 namespace DeadPigeons.IntegrationTests;
 
@@ -21,14 +20,11 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     private const string TestJwtIssuer = "DeadPigeons";
     private const string TestJwtAudience = "DeadPigeons";
 
-    private readonly bool _useTestcontainers;
-    private PostgreSqlContainer? _dbContainer;
     private DbConnection? _sqliteConnection;
 
     public ApiFactory()
     {
-        var value = Environment.GetEnvironmentVariable("USE_TESTCONTAINERS");
-        _useTestcontainers = string.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
+        // Always use SQLite in-memory for tests (Testcontainers can be added later)
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -51,51 +47,22 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             if (descriptor != null)
                 services.Remove(descriptor);
 
-            if (_useTestcontainers && _dbContainer != null)
-            {
-                // Use Testcontainers PostgreSQL
-                services.AddDbContext<AppDbContext>(options =>
-                    options.UseNpgsql(_dbContainer.GetConnectionString()));
-            }
-            else
-            {
-                // Use SQLite in-memory for local development without Docker
-                services.AddDbContext<AppDbContext>(options =>
-                    options.UseSqlite(_sqliteConnection!));
-            }
+            // Use SQLite in-memory for all tests
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlite(_sqliteConnection!));
         });
     }
 
     public async Task InitializeAsync()
     {
-        if (_useTestcontainers)
-        {
-            // Build and start PostgreSQL container
-            _dbContainer = new PostgreSqlBuilder()
-                .WithImage("postgres:16")
-                .WithDatabase("deadpigeons_test")
-                .WithUsername("test")
-                .WithPassword("test")
-                .Build();
+        // Create SQLite in-memory connection (keep it open for the test lifetime)
+        _sqliteConnection = new SqliteConnection("DataSource=:memory:");
+        await _sqliteConnection.OpenAsync();
 
-            await _dbContainer.StartAsync();
-
-            // Apply migrations
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            await db.Database.MigrateAsync();
-        }
-        else
-        {
-            // Create SQLite in-memory connection (keep it open for the test lifetime)
-            _sqliteConnection = new SqliteConnection("DataSource=:memory:");
-            await _sqliteConnection.OpenAsync();
-
-            // Create database schema
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            await db.Database.EnsureCreatedAsync();
-        }
+        // Create database schema
+        using var scope = Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await db.Database.EnsureCreatedAsync();
     }
 
     public HttpClient CreateAuthenticatedClient(string role = "Admin", Guid? userId = null)
@@ -132,12 +99,6 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     public new async Task DisposeAsync()
     {
-        if (_dbContainer != null)
-        {
-            await _dbContainer.StopAsync();
-            await _dbContainer.DisposeAsync();
-        }
-
         if (_sqliteConnection != null)
         {
             await _sqliteConnection.CloseAsync();
