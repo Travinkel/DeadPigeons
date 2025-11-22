@@ -45,8 +45,10 @@ public class BoardsApiTests
             }
         }
 
-        var weekNumber = new Random().Next(1, 52);
-        var year = 2040 + new Random().Next(1, 100);
+        // Use GUID-based unique values to avoid collisions between tests
+        var hash = Math.Abs(Guid.NewGuid().GetHashCode());
+        var weekNumber = (hash % 52) + 1;
+        var year = 2020 + (hash % 81); // Years 2020-2100
         var request = new CreateGameRequest(weekNumber, year);
         var response = await _client.PostAsJsonAsync("/api/games", request);
         response.EnsureSuccessStatusCode();
