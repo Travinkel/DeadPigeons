@@ -43,6 +43,8 @@ jobs:
         run: dotnet build DeadPigeons.sln --configuration Release --no-restore
 
       - name: Backend test
+        env:
+          USE_TESTCONTAINERS: "true"
         run: |
           mkdir -p TestResults
           dotnet test DeadPigeons.sln --configuration Release --no-build \

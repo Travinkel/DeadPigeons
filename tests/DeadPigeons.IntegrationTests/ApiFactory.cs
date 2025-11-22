@@ -1,4 +1,3 @@
-using System.Data.Common;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -6,11 +5,11 @@ using System.Text;
 using DeadPigeons.DataAccess;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Testcontainers.PostgreSql;
 
 namespace DeadPigeons.IntegrationTests;
 
@@ -20,12 +19,8 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     private const string TestJwtIssuer = "DeadPigeons";
     private const string TestJwtAudience = "DeadPigeons";
 
-    private DbConnection? _sqliteConnection;
-
-    public ApiFactory()
-    {
-        // Always use SQLite in-memory for tests (Testcontainers can be added later)
-    }
+    private PostgreSqlContainer? _dbContainer;
+    private string? _connectionString;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -41,28 +36,34 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
         builder.ConfigureServices(services =>
         {
-            // Remove existing DbContext registration
-            var descriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
-            if (descriptor != null)
-                services.Remove(descriptor);
+            // Remove ALL EF Core services to avoid provider conflicts
+            var descriptors = services
+                .Where(d => d.ServiceType.FullName?.Contains("EntityFramework") == true)
+                .ToList();
+            foreach (var d in descriptors)
+                services.Remove(d);
 
-            // Use SQLite in-memory for all tests
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlite(_sqliteConnection!));
+                options.UseNpgsql(_connectionString!));
         });
     }
 
     public async Task InitializeAsync()
     {
-        // Create SQLite in-memory connection (keep it open for the test lifetime)
-        _sqliteConnection = new SqliteConnection("DataSource=:memory:");
-        await _sqliteConnection.OpenAsync();
+        _dbContainer = new PostgreSqlBuilder()
+            .WithImage("postgres:16")
+            .WithDatabase("deadpigeons_test")
+            .WithUsername("test")
+            .WithPassword("test")
+            .Build();
 
-        // Create database schema
+        await _dbContainer.StartAsync();
+        _connectionString = _dbContainer.GetConnectionString();
+
+        // Apply migrations
         using var scope = Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        await db.Database.EnsureCreatedAsync();
+        await db.Database.MigrateAsync();
     }
 
     public HttpClient CreateAuthenticatedClient(string role = "Admin", Guid? userId = null)
@@ -99,10 +100,10 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     public new async Task DisposeAsync()
     {
-        if (_sqliteConnection != null)
+        if (_dbContainer != null)
         {
-            await _sqliteConnection.CloseAsync();
-            await _sqliteConnection.DisposeAsync();
+            await _dbContainer.StopAsync();
+            await _dbContainer.DisposeAsync();
         }
     }
 }

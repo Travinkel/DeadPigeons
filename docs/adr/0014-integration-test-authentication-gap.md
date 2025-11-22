@@ -41,14 +41,14 @@ Change all API test constructors from `factory.CreateClient()` to `factory.Creat
 
 Health check tests can remain unauthenticated.
 
-### Fix 3: SQLite In-Memory Database
+### Fix 3: Dual-Mode Database Configuration
 
-Replace Testcontainers PostgreSQL with SQLite in-memory for all tests:
+Environment-based database selection via `USE_TESTCONTAINERS`:
 
-- Fast test execution without Docker dependency
-- SQLite connection kept open for test lifetime to preserve in-memory data
-- Uses `EnsureCreated()` instead of migrations for schema creation
-- Future improvement: Add optional Testcontainers support for production parity testing
+- **CI (USE_TESTCONTAINERS=true)**: PostgreSQL via Testcontainers (exam requirement)
+- **Local (no env var)**: SQLite in-memory for Docker-free development
+- Remove all existing DbContext registrations to avoid provider conflicts
+- Store connection string before ConfigureWebHost runs
 
 ### Fix 4: CI Pipeline Strictness
 
