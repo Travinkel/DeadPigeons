@@ -452,9 +452,37 @@ client/src/
 
 ---
 
+---
+
+## Future Backlog Items (Sprint 5+)
+
+Based on exam requirements and product feedback, the following items have been identified for post-Sprint 4 implementation:
+
+### High Priority UI/UX Enhancements
+
+| Story ID | Feature | Points | Why Important |
+|----------|---------|--------|-----------------|
+| US-5.1 | Player Self-Registration | 3 | Reduces admin burden; allows players to join independently |
+| US-5.2 | Jerne IF Logo & Branding | 2 | Professional appearance; club identity |
+| US-5.3 | Loading Spinner CSS Fix | 1 | Improves UX; fixes layout shift issue |
+
+### Quality & Testing
+
+| Story ID | Feature | Points | Why Important |
+|----------|---------|--------|-----------------|
+| US-5.5 | E2E Test Documentation | 2 | Exam requirement; explains test strategy |
+
+### Sprint 5 Total Estimate
+**10 story points** (Features + Testing Documentation)
+
+See [Product Backlog](product-backlog.md) for full details, acceptance criteria, and implementation guidance.
+
+---
+
 ## Related Documentation
 
 - [Roadmap](roadmap.md)
+- [Product Backlog](product-backlog.md) — Future work prioritized
 - [MVP Definition](MVP-Definition.md)
 - [Sprint 3 Epic](sprint-03-epic.md)
 - [Sprint 4 UI Status](../internal/SPRINT4_UI_STATUS.md)

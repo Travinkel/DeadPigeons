@@ -14,7 +14,7 @@ export function RequireAuth({ children, allowedRoles }: RequireAuthProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <span className="loading loading-spinner loading-lg text-primary"></span>
+        <span className="loading loading-spinner loading-md text-primary"></span>
       </div>
     );
   }

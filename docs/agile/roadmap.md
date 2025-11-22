@@ -205,6 +205,15 @@ A sprint is complete when:
 - [Sprint 4 Epic](sprint-04-epic.md)
 - [MVP Definition](MVP-Definition.md)
 
+### Backlog & Planning
+- [Product Backlog](product-backlog.md) — Prioritized future work
+  - Registration UI (US-5.1)
+  - Jerne IF Branding (US-5.2)
+  - Loading Spinner CSS Fix (US-5.3)
+  - E2E Testing Framework (US-5.4)
+  - Smoke Tests in CI (US-5.6)
+  - Sprint 5+ enhancements (US-6.x)
+
 ### Architecture Decision Records
 - [ADR-0007: DevOps Hardening](../adr/0007-devops-hardening-and-git-hooks.md)
 - [ADR-0008: Shadow PC Testing](../adr/0008-shadow-pc-and-ci-only-testing.md)
