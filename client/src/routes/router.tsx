@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { Layout } from "../shared/components/Layout";
 import { RequireAuth } from "../shared/components/RequireAuth";
 import { LoginPage } from "../features/auth/LoginPage";
+import { RegisterPage } from "../features/auth/RegisterPage";
 import { PlayerDashboard } from "../features/dashboard/PlayerDashboard";
 import { AdminDashboard } from "../features/dashboard/AdminDashboard";
 import { BoardsPage } from "../features/boards/BoardsPage";
@@ -20,6 +21,10 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
   },
   {
     path: "/",

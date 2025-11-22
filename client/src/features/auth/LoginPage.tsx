@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "./useAuth";
 import { createApiClient } from "../../api/apiClient";
 
@@ -71,8 +71,11 @@ export function LoginPage() {
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
       <div className="card w-full max-w-md bg-base-100 shadow-xl">
         <div className="card-body">
+          <div className="flex justify-center mb-4">
+            <img src="/logo.png" alt="Jerne IF" className="h-16 w-16" />
+          </div>
           <h2 className="card-title text-2xl font-bold text-center justify-center mb-4">
-            Jerne IF - Dead Pigeons
+            Dead Pigeons
           </h2>
           <p className="text-center text-base-content/70 mb-6">Log ind for at fortsætte</p>
 
@@ -150,6 +153,15 @@ export function LoginPage() {
               {isLoading ? "Logger ind..." : "Log ind"}
             </button>
           </form>
+
+          <div className="divider">eller</div>
+
+          <p className="text-center">
+            Har du ikke en konto?{" "}
+            <Link to="/register" className="link link-primary">
+              Opret konto
+            </Link>
+          </p>
         </div>
       </div>
     </div>

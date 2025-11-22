@@ -78,7 +78,7 @@ export function DepositRequestPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <span className="loading loading-spinner loading-lg text-primary"></span>
+        <span className="loading loading-spinner loading-md text-primary"></span>
       </div>
     );
   }
