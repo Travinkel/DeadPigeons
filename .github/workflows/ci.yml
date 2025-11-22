@@ -75,6 +75,11 @@ jobs:
       - name: Secret scan
         run: npx secretlint "**/*"
 
+      - name: Validate Fly.io configs
+        run: |
+          test -f fly.api.toml || (echo "fly.api.toml not found" && exit 1)
+          test -f client/fly.toml || (echo "client/fly.toml not found" && exit 1)
+
       - name: Start API for NSwag
         env:
           ConnectionStrings__Default: "Host=localhost;Database=deadpigeons;Username=postgres;Password=postgres"
