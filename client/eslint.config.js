@@ -14,8 +14,12 @@ export default tseslint.config({
     },
     parser: tseslint.parser,
   },
+  plugins: {
+    "@typescript-eslint": tseslint.plugin,
+  },
   rules: {
     ...js.configs.recommended.rules,
-    "no-unused-vars": "warn",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
   },
 });

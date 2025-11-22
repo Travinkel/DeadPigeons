@@ -1,16 +1,13 @@
-import { useEffect, useState } from 'react'
+import { RouterProvider } from "react-router-dom";
+import { AuthProvider } from "./features/auth";
+import { router } from "./routes/router";
 
 function App() {
-  const [health, setHealth] = useState('unknown')
-
-  useEffect(() => {
-    fetch('/api/health')
-      .then((r) => r.json())
-      .then((d) => setHealth(d.status))
-      .catch(() => setHealth('unavailable'))
-  }, [])
-
-  return <div>API Health: {health}</div>
+  return (
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;

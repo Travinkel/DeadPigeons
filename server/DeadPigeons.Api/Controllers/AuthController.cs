@@ -41,12 +41,29 @@ public class AuthController : ControllerBase
         ));
     }
 
+    /// <summary>
+    /// DEV ONLY: Reset all players for testing
+    /// </summary>
+    [HttpDelete("dev-reset")]
+    public async Task<ActionResult> DevReset()
+    {
+        if (!Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.Equals("Development", StringComparison.OrdinalIgnoreCase) ?? true)
+            return NotFound();
+
+        _context.Players.RemoveRange(_context.Players);
+        await _context.SaveChangesAsync();
+        return Ok(new { message = "All players deleted" });
+    }
+
     [HttpPost("register")]
     public async Task<ActionResult<RegisterResponse>> Register([FromBody] RegisterRequest request)
     {
         // Check if email already exists (case-insensitive)
         if (await _context.Players.AnyAsync(p => p.Email.ToLower() == request.Email.ToLower()))
             return Conflict(new { message = "Email already registered" });
+
+        // First user becomes active admin (bootstrap)
+        var isFirstUser = !await _context.Players.AnyAsync();
 
         var player = new Player
         {
@@ -55,8 +72,8 @@ public class AuthController : ControllerBase
             Email = request.Email.ToLower(), // Normalize email
             Phone = request.Phone,
             PasswordHash = _authService.HashPassword(request.Password),
-            Role = Role.Player,
-            IsActive = false, // Admin must activate
+            Role = isFirstUser ? Role.Admin : Role.Player,
+            IsActive = isFirstUser, // First user is active, others need admin activation
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };

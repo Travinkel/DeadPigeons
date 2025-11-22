@@ -1,2 +1,4 @@
 // Dashboard feature exports
-// TODO: Export PlayerDashboard, AdminDashboard
+export { default as ThemePreviewPage } from "./ThemePreviewPage";
+export { PlayerDashboard } from "./PlayerDashboard";
+export { AdminDashboard } from "./AdminDashboard";

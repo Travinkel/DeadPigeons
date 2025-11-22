@@ -73,6 +73,46 @@ export class ApiClient {
   }
 
   /**
+   * @return OK
+   */
+  devReset(): Promise<void> {
+    let url_ = this.baseUrl + "/api/Auth/dev-reset";
+    url_ = url_.replace(/[?&]$/, "");
+
+    let options_: RequestInit = {
+      method: "DELETE",
+      headers: {},
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processDevReset(_response);
+    });
+  }
+
+  protected processDevReset(response: Response): Promise<void> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    }
+    if (status === 200) {
+      return response.text().then((_responseText) => {
+        return;
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          "An unexpected server error occurred.",
+          status,
+          _responseText,
+          _headers
+        );
+      });
+    }
+    return Promise.resolve<void>(null as any);
+  }
+
+  /**
    * @param body (optional)
    * @return OK
    */
@@ -329,6 +369,46 @@ export class ApiClient {
   /**
    * @return OK
    */
+  health(): Promise<void> {
+    let url_ = this.baseUrl + "/api/health";
+    url_ = url_.replace(/[?&]$/, "");
+
+    let options_: RequestInit = {
+      method: "GET",
+      headers: {},
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processHealth(_response);
+    });
+  }
+
+  protected processHealth(response: Response): Promise<void> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    }
+    if (status === 200) {
+      return response.text().then((_responseText) => {
+        return;
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          "An unexpected server error occurred.",
+          status,
+          _responseText,
+          _headers
+        );
+      });
+    }
+    return Promise.resolve<void>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
   gamesAll(): Promise<GameResponse[]> {
     let url_ = this.baseUrl + "/api/Games";
     url_ = url_.replace(/[?&]$/, "");
@@ -580,7 +660,7 @@ export class ApiClient {
   /**
    * @return OK
    */
-  health(): Promise<void> {
+  health2(): Promise<void> {
     let url_ = this.baseUrl + "/health";
     url_ = url_.replace(/[?&]$/, "");
 
@@ -590,11 +670,11 @@ export class ApiClient {
     };
 
     return this.http.fetch(url_, options_).then((_response: Response) => {
-      return this.processHealth(_response);
+      return this.processHealth2(_response);
     });
   }
 
-  protected processHealth(response: Response): Promise<void> {
+  protected processHealth2(response: Response): Promise<void> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && response.headers.forEach) {

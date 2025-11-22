@@ -12,7 +12,7 @@ public class TransactionsApiTests
 
     public TransactionsApiTests(ApiFactory factory)
     {
-        _client = factory.CreateClient();
+        _client = factory.CreateAuthenticatedClient("Admin");
     }
 
     [Fact]

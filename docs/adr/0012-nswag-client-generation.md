@@ -17,7 +17,8 @@ We will use NSwag with runtime spec fetching (not static files) with the followi
 
 ### Configuration
 - **nswag.json** points to `http://localhost:5000/swagger/v1/swagger.json`
-- Port must match the CI workflow `--urls` parameter
+- Port must match both `launchSettings.json` and CI workflow `--urls` parameter
+- API now runs on port 5000 (updated from 5155)
 
 ### CI Workflow Requirements
 1. **Environment variables** for API startup:

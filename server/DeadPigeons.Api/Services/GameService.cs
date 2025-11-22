@@ -16,52 +16,91 @@ public class GameService : IGameService
 
     public async Task<IEnumerable<GameResponse>> GetAllAsync()
     {
-        return await _db.Games
-            .Select(g => new GameResponse(
+        var games = await _db.Games
+            .Select(g => new
+            {
                 g.Id,
                 g.WeekNumber,
                 g.Year,
-                g.Status.ToString(),
+                g.Status,
                 g.WinningNumbers,
                 g.StartedAt,
                 g.CompletedAt,
                 g.CreatedAt,
-                g.Boards.Count))
+                BoardCount = g.Boards.Count
+            })
             .ToListAsync();
+
+        return games.Select(g => new GameResponse(
+            g.Id,
+            g.WeekNumber,
+            g.Year,
+            g.Status.ToString(),
+            g.WinningNumbers,
+            g.StartedAt,
+            g.CompletedAt,
+            g.CreatedAt,
+            g.BoardCount));
     }
 
     public async Task<GameResponse?> GetByIdAsync(Guid id)
     {
-        return await _db.Games
+        var game = await _db.Games
             .Where(g => g.Id == id)
-            .Select(g => new GameResponse(
+            .Select(g => new
+            {
                 g.Id,
                 g.WeekNumber,
                 g.Year,
-                g.Status.ToString(),
+                g.Status,
                 g.WinningNumbers,
                 g.StartedAt,
                 g.CompletedAt,
                 g.CreatedAt,
-                g.Boards.Count))
+                BoardCount = g.Boards.Count
+            })
             .FirstOrDefaultAsync();
+
+        return game == null ? null : new GameResponse(
+            game.Id,
+            game.WeekNumber,
+            game.Year,
+            game.Status.ToString(),
+            game.WinningNumbers,
+            game.StartedAt,
+            game.CompletedAt,
+            game.CreatedAt,
+            game.BoardCount);
     }
 
     public async Task<GameResponse?> GetActiveAsync()
     {
-        return await _db.Games
+        var game = await _db.Games
             .Where(g => g.Status == GameStatus.Active)
-            .Select(g => new GameResponse(
+            .Select(g => new
+            {
                 g.Id,
                 g.WeekNumber,
                 g.Year,
-                g.Status.ToString(),
+                g.Status,
                 g.WinningNumbers,
                 g.StartedAt,
                 g.CompletedAt,
                 g.CreatedAt,
-                g.Boards.Count))
+                BoardCount = g.Boards.Count
+            })
             .FirstOrDefaultAsync();
+
+        return game == null ? null : new GameResponse(
+            game.Id,
+            game.WeekNumber,
+            game.Year,
+            game.Status.ToString(),
+            game.WinningNumbers,
+            game.StartedAt,
+            game.CompletedAt,
+            game.CreatedAt,
+            game.BoardCount);
     }
 
     public async Task<GameResponse> CreateAsync(CreateGameRequest request)

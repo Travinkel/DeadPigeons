@@ -12,7 +12,7 @@ public class PlayersApiTests
 
     public PlayersApiTests(ApiFactory factory)
     {
-        _client = factory.CreateClient();
+        _client = factory.CreateAuthenticatedClient("Admin");
     }
 
     [Fact]
