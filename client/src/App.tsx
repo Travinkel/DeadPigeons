@@ -1,7 +1,13 @@
-import ThemePreviewPage from "./features/dashboard/ThemePreviewPage";
+import { RouterProvider } from "react-router-dom";
+import { AuthProvider } from "./features/auth";
+import { router } from "./routes/router";
 
 function App() {
-  return <ThemePreviewPage />;
+  return (
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  );
 }
 
 export default App;
