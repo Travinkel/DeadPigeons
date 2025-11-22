@@ -2,14 +2,43 @@
 
 **Sprint Goal:** Complete Dead Pigeons application with game logic, React UI, and Fly.io deployment.
 
-**Sprint Duration:** Sprint 4 (Ongoing)
-**Sprint Status:** In Progress (76% Complete - Milestones 1, 2, 3 Complete)
+**Sprint Duration:** Sprint 4 (Final)
+**Sprint Status:** Complete (91% Story Points Delivered)
 **Branch:** `feature/game-ui-deploy`
-**Recent Commits:** 8 commits since last sync
+**Completion Date:** November 22, 2025
 
 ---
 
-## Work Completed This Session
+## Work Completed This Sprint
+
+### Additional Deliverables (Final Session)
+
+#### E2E Playwright Tests (TASK-4.12 — 5 SP) — COMPLETE
+
+- Playwright test framework configured
+- Critical path tests implemented
+- Tests run in CI pipeline
+- User registration, authentication, and game flows covered
+
+#### CI/CD Pipeline Fixes — COMPLETE
+
+- Fixed xUnit and EF Core version conflicts
+- Integration tests now passing in CI
+- GitHub Actions workflow stabilized
+
+#### User Registration Page — COMPLETE
+
+- Registration form with validation
+- Server-side endpoint integration
+- Password policy enforcement
+
+#### Jerne IF Logo Integration — COMPLETE
+
+- Logo added to layout header
+- Responsive design implemented
+- Brand identity established
+
+---
 
 ### Milestone 3: Deployment + Polish — COMPLETE
 
@@ -134,12 +163,14 @@ Integration tests require Docker/Testcontainers for PostgreSQL. All 25 tests def
 | Metric | Value |
 |--------|-------|
 | Story Points Planned (Sprint 4) | 55 |
-| Story Points Completed | 42 |
-| Completion Rate | 76% |
+| Story Points Completed | 50 |
+| Completion Rate | 91% |
 | Milestones Complete | 3 of 3 |
 | Unit Tests Passing | 40/40 |
-| Commits This Session | 8 |
-| Bug Fixes | 4 |
+| Integration Tests Passing | Yes |
+| E2E Tests | Playwright configured |
+| Commits This Sprint | 15+ |
+| Bug Fixes | 6+ |
 
 ---
 

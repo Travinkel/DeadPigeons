@@ -10,21 +10,28 @@
 
 | Total Stories | Estimated Points | Current Sprint | Product Status |
 |---------------|------------------|-----------------|-----------------|
-| 23 | 68 | Sprint 4 | 76% Complete |
+| 23 | 68 | Sprint 4 | 91% Complete |
 
 ---
 
 ## Active Sprint (Sprint 4)
 
-### Currently Committed (42 SP Delivered, 13 SP Remaining)
+### Sprint 4 Final Status (50 SP Delivered, 5 SP Remaining)
 
-#### Critical Path - Must Complete by Dec 19
+#### Completed Items
 
 | Story ID | User Story | Points | Priority | Status |
 |----------|-----------|--------|----------|--------|
-| TASK-4.12 | As a QA engineer, I need E2E tests so end-to-end workflows are validated | 5 | CRITICAL | Not Started |
-| TASK-4.13 | As a DevOps engineer, I need smoke tests in CI so deployments are verified | 3 | CRITICAL | Not Started |
-| TASK-4.14 | As an examiner, I need exam preparation complete so the project is submission-ready | 5 | CRITICAL | Not Started |
+| TASK-4.12 | As a QA engineer, I need E2E tests so end-to-end workflows are validated | 5 | CRITICAL | Complete |
+| TASK-4.13 | As a DevOps engineer, I need smoke tests in CI so deployments are verified | 3 | CRITICAL | Complete |
+| US-5.1 | As a new player, I want to register myself without admin intervention | 3 | HIGH | Complete |
+| US-5.2 | As a Jerne IF administrator, I want the club logo displayed prominently | 2 | MEDIUM | Complete |
+
+#### Remaining Work
+
+| Story ID | User Story | Points | Priority | Status |
+|----------|-----------|--------|----------|--------|
+| TASK-4.14 | As an examiner, I need exam preparation complete so the project is submission-ready | 5 | CRITICAL | In Progress |
 
 ---
 
