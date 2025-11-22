@@ -157,7 +157,8 @@ Backlog items ordered by business value, exam compliance requirements, and depen
 - Recommend: `h-16 w-16` (Tailwind) or `64px` in rem
 - Center with: `flex items-center justify-center min-h-screen`
 - Test on mobile (verify no layout shift)
-
+  git commit -m "fix: align openapi and xunit dependencies" 
+git push
 ---
 
 ### Testing & Quality (Critical for Exam)
