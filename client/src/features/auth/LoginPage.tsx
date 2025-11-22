@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "./useAuth";
-import { ApiClient } from "../../api/generated/api-client";
+import { createApiClient } from "../../api/apiClient";
 
 interface LoginForm {
   email: string;
@@ -34,7 +34,7 @@ export function LoginPage() {
     setIsLoading(true);
 
     try {
-      const client = new ApiClient(import.meta.env.VITE_API_URL || "http://localhost:5000");
+      const client = createApiClient();
       const response = await client.login({
         email: data.email,
         password: data.password,
