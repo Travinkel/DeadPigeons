@@ -29,13 +29,19 @@ public class GamesApiTests
         }
     }
 
+    private static (int weekNumber, int year) GenerateUniqueWeekYear()
+    {
+        var hash = Math.Abs(Guid.NewGuid().GetHashCode());
+        return ((hash % 52) + 1, 2020 + (hash % 81));
+    }
+
     [Fact]
     public async Task Create_ReturnsCreatedGame()
     {
         // Arrange
         await CompleteAnyActiveGame();
-        var weekNumber = new Random().Next(1, 52);
-        var request = new CreateGameRequest(weekNumber, 2030);
+        var (weekNumber, year) = GenerateUniqueWeekYear();
+        var request = new CreateGameRequest(weekNumber, year);
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/games", request);
@@ -45,7 +51,7 @@ public class GamesApiTests
         var game = await response.Content.ReadFromJsonAsync<GameResponse>();
         game.Should().NotBeNull();
         game!.WeekNumber.Should().Be(weekNumber);
-        game.Year.Should().Be(2030);
+        game.Year.Should().Be(year);
         game.Status.Should().Be("Active");
         game.WinningNumbers.Should().BeNull();
     }
@@ -55,8 +61,8 @@ public class GamesApiTests
     {
         // Arrange
         await CompleteAnyActiveGame();
-        var weekNumber = new Random().Next(1, 52);
-        var createRequest = new CreateGameRequest(weekNumber, 2031);
+        var (weekNumber, year) = GenerateUniqueWeekYear();
+        var createRequest = new CreateGameRequest(weekNumber, year);
         await _client.PostAsJsonAsync("/api/games", createRequest);
 
         // Act
@@ -74,8 +80,8 @@ public class GamesApiTests
     {
         // Arrange
         await CompleteAnyActiveGame();
-        var weekNumber = new Random().Next(1, 52);
-        var createRequest = new CreateGameRequest(weekNumber, 2032);
+        var (weekNumber, year) = GenerateUniqueWeekYear();
+        var createRequest = new CreateGameRequest(weekNumber, year);
         var createResponse = await _client.PostAsJsonAsync("/api/games", createRequest);
         var createdGame = await createResponse.Content.ReadFromJsonAsync<GameResponse>();
 
@@ -98,8 +104,8 @@ public class GamesApiTests
     {
         // Arrange
         await CompleteAnyActiveGame();
-        var weekNumber = new Random().Next(1, 52);
-        var createRequest = new CreateGameRequest(weekNumber, 2033);
+        var (weekNumber, year) = GenerateUniqueWeekYear();
+        var createRequest = new CreateGameRequest(weekNumber, year);
         var createResponse = await _client.PostAsJsonAsync("/api/games", createRequest);
         var createdGame = await createResponse.Content.ReadFromJsonAsync<GameResponse>();
 
@@ -117,8 +123,8 @@ public class GamesApiTests
     {
         // Arrange
         await CompleteAnyActiveGame();
-        var weekNumber = new Random().Next(1, 52);
-        var request = new CreateGameRequest(weekNumber, 2034);
+        var (weekNumber, year) = GenerateUniqueWeekYear();
+        var request = new CreateGameRequest(weekNumber, year);
         var firstResponse = await _client.PostAsJsonAsync("/api/games", request);
         firstResponse.EnsureSuccessStatusCode();
 
@@ -128,7 +134,7 @@ public class GamesApiTests
             new CompleteGameRequest(new int[] { 1, 2, 3 }));
 
         // Try to create another game with same week/year
-        var duplicateRequest = new CreateGameRequest(weekNumber, 2034);
+        var duplicateRequest = new CreateGameRequest(weekNumber, year);
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/games", duplicateRequest);
