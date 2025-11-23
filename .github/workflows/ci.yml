@@ -153,7 +153,7 @@ jobs:
       - name: Deploy Client to Fly.io
         run: flyctl deploy --config client/fly.toml --dockerfile client/Dockerfile --build-arg VITE_API_URL=https://deadpigeons-api.fly.dev
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          FLY_API_TOKEN: ${{ secrets.FLY_CLIENT_TOKEN }}
 
       - name: Smoke test Client
         run: |
