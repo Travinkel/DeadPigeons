@@ -69,11 +69,15 @@ export function RegisterPage() {
       <div className="card w-full max-w-sm bg-base-100 shadow-xl rounded-xl">
         <div className="card-body p-8">
           <div className="flex justify-center mb-4">
-            <img src="/logo.png" alt="Jerne IF" className="h-16 w-16" />
+            <div className="bg-gray-100 rounded-full p-3">
+              <img src="/logo.png" alt="Jerne IF" className="h-16 w-16" />
+            </div>
           </div>
-          <p className="text-center text-sm font-medium text-slate-700">Dead Pigeons</p>
-          <h1 className="text-center text-3xl font-extrabold text-gray-900 mt-2">Opret konto</h1>
-          <p className="text-center text-gray-400 text-sm mt-1 mb-6">
+          <p className="text-center text-sm font-medium text-slate-700 tracking-tight mt-3">
+            Dead Pigeons
+          </p>
+          <h1 className="text-center text-3xl font-extrabold text-gray-900 mt-1">Opret konto</h1>
+          <p className="text-center text-gray-500 text-sm mt-1 mb-6">
             Registrer dig for at deltage i spillet
           </p>
 

@@ -46,9 +46,10 @@ public class BoardsApiTests
         }
 
         // Use GUID-based unique values to avoid collisions between tests
+        // Use a future year beyond seeded data (seeder seeds up to 2044)
         var hash = Math.Abs(Guid.NewGuid().GetHashCode());
         var weekNumber = (hash % 52) + 1;
-        var year = 2020 + (hash % 81); // Years 2020-2100
+        var year = 2100 + (hash % 20); // 2100-2119
         var request = new CreateGameRequest(weekNumber, year);
         var response = await _client.PostAsJsonAsync("/api/games", request);
         response.EnsureSuccessStatusCode();

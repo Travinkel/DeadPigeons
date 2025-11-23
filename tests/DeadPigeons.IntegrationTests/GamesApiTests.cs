@@ -31,8 +31,9 @@ public class GamesApiTests
 
     private static (int weekNumber, int year) GenerateUniqueWeekYear()
     {
+        // Use a future year beyond seeded data (seeder seeds up to 2044)
         var hash = Math.Abs(Guid.NewGuid().GetHashCode());
-        return ((hash % 52) + 1, 2020 + (hash % 81));
+        return ((hash % 52) + 1, 2100 + (hash % 20));
     }
 
     [Fact]
