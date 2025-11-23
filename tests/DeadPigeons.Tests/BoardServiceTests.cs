@@ -3,21 +3,29 @@ using DeadPigeons.Api.Services;
 using DeadPigeons.DataAccess;
 using DeadPigeons.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DeadPigeons.Tests;
 
-public class BoardServiceTests
+public class BoardServiceTests : IClassFixture<TestServiceFixture>, IDisposable
 {
     private readonly AppDbContext _db;
     private readonly IBoardService _boardService;
     private readonly IPlayerService _playerService;
+    private readonly IServiceScope _scope;
 
-    public BoardServiceTests(AppDbContext db, IBoardService boardService, IPlayerService playerService)
+    public BoardServiceTests(TestServiceFixture fixture)
     {
-        _db = db;
-        _boardService = boardService;
-        _playerService = playerService;
+        _scope = fixture.CreateScope();
+        _db = _scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        _boardService = _scope.ServiceProvider.GetRequiredService<IBoardService>();
+        _playerService = _scope.ServiceProvider.GetRequiredService<IPlayerService>();
+
+        _db.Database.EnsureDeleted();
+        _db.Database.EnsureCreated();
     }
+
+    public void Dispose() => _scope.Dispose();
 
     [Theory]
     [InlineData(new int[] { 1, 2, 3, 4 })] // Too few

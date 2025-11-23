@@ -3,19 +3,27 @@ using DeadPigeons.Api.Services;
 using DeadPigeons.DataAccess;
 using DeadPigeons.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DeadPigeons.Tests;
 
-public class GameServiceTests
+public class GameServiceTests : IClassFixture<TestServiceFixture>, IDisposable
 {
     private readonly AppDbContext _db;
     private readonly IGameService _service;
+    private readonly IServiceScope _scope;
 
-    public GameServiceTests(AppDbContext db, IGameService service)
+    public GameServiceTests(TestServiceFixture fixture)
     {
-        _db = db;
-        _service = service;
+        _scope = fixture.CreateScope();
+        _db = _scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        _service = _scope.ServiceProvider.GetRequiredService<IGameService>();
+
+        _db.Database.EnsureDeleted();
+        _db.Database.EnsureCreated();
     }
+
+    public void Dispose() => _scope.Dispose();
 
     [Fact]
     public async Task CreateAsync_CreatesActiveGame()
