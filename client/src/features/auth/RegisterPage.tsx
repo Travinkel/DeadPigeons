@@ -66,13 +66,14 @@ export function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
-      <div className="card w-full max-w-md bg-base-100 shadow-xl overflow-hidden">
-        <div className="card-body">
+      <div className="card w-full max-w-sm bg-base-100 shadow-xl">
+        <div className="card-body p-8">
           <div className="flex justify-center mb-4">
             <img src="/logo.png" alt="Jerne IF" className="h-16 w-16" />
           </div>
-          <h1 className="text-center mb-4">Opret konto</h1>
-          <p className="text-center text-base-content/70 mb-6">
+          <p className="text-sm text-center text-neutral/70 mb-2">Dead Pigeons</p>
+          <h1 className="text-[28px] font-bold text-center mb-1">Opret konto</h1>
+          <p className="text-sm text-center text-neutral/70 mb-6">
             Registrer dig for at deltage i spillet
           </p>
 
@@ -122,7 +123,7 @@ export function RegisterPage() {
               <input
                 type="text"
                 placeholder="Dit fulde navn"
-                className={`input input-bordered w-full ${errors.name ? "input-error" : ""}`}
+                className={`input input-bordered w-full h-12 ${errors.name ? "input-error" : ""}`}
                 {...register("name", {
                   required: "Navn er påkrævet",
                   minLength: {
@@ -145,7 +146,7 @@ export function RegisterPage() {
               <input
                 type="email"
                 placeholder="din@email.dk"
-                className={`input input-bordered w-full ${errors.email ? "input-error" : ""}`}
+                className={`input input-bordered w-full h-12 ${errors.email ? "input-error" : ""}`}
                 {...register("email", {
                   required: "Email er påkrævet",
                   pattern: {
@@ -168,7 +169,7 @@ export function RegisterPage() {
               <input
                 type="tel"
                 placeholder="+45 12 34 56 78"
-                className={`input input-bordered w-full ${errors.phone ? "input-error" : ""}`}
+                className={`input input-bordered w-full h-12 ${errors.phone ? "input-error" : ""}`}
                 {...register("phone", {
                   pattern: {
                     value: /^[+]?[\d\s-]{8,}$/,
@@ -190,7 +191,7 @@ export function RegisterPage() {
               <input
                 type="password"
                 placeholder="••••••••"
-                className={`input input-bordered w-full ${errors.password ? "input-error" : ""}`}
+                className={`input input-bordered w-full h-12 ${errors.password ? "input-error" : ""}`}
                 {...register("password", {
                   required: "Adgangskode er påkrævet",
                   minLength: {
@@ -217,7 +218,7 @@ export function RegisterPage() {
               <input
                 type="password"
                 placeholder="••••••••"
-                className={`input input-bordered w-full ${errors.confirmPassword ? "input-error" : ""}`}
+                className={`input input-bordered w-full h-12 ${errors.confirmPassword ? "input-error" : ""}`}
                 {...register("confirmPassword", {
                   required: "Bekræft adgangskode",
                   validate: (value) => value === password || "Adgangskoderne matcher ikke",
@@ -234,7 +235,7 @@ export function RegisterPage() {
 
             <button
               type="submit"
-              className="btn btn-primary w-full"
+              className="btn btn-primary w-full h-10"
               disabled={isLoading || !!success}
             >
               {isLoading ? (

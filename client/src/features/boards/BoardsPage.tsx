@@ -64,20 +64,21 @@ export function BoardsPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Mine plader</h1>
-        <Link to="/boards/purchase" className="btn btn-primary">
+        <h1 className="text-[28px] font-bold mb-6">Mine plader</h1>
+        <Link
+          to="/boards/purchase"
+          className="btn bg-primary text-white h-11 px-6 text-[17px] font-semibold shadow-md hover:bg-secondary active:bg-[#7A0000]"
+        >
           Køb plade
         </Link>
       </div>
 
       {boards.length === 0 ? (
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body text-center">
-            <p className="text-base-content/70">Du har ingen plader endnu.</p>
-            <p className="text-sm text-base-content/50">
-              Plader oprettes automatisk nar du deltager i et spil.
-            </p>
-          </div>
+        <div className="bg-white rounded-xl shadow-md p-8 text-center">
+          <p className="text-[17px] font-medium text-neutral">Du har ingen plader endnu.</p>
+          <p className="text-[15px] text-neutral/70 mt-1">
+            Plader oprettes automatisk, når du deltager i et spil.
+          </p>
         </div>
       ) : (
         <div className="grid gap-4">

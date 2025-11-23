@@ -12,44 +12,58 @@ export function Layout() {
 
   return (
     <div className="min-h-screen bg-base-200">
-      <nav className="navbar bg-primary text-primary-content shadow-lg">
-        <div className="flex-1">
-          <Link to="/" className="btn btn-ghost text-xl font-bold gap-2">
-            <img src="/logo.png" alt="Jerne IF" className="h-8 w-8" />
-            Dead Pigeons
+      <nav className="w-full h-[64px] bg-primary text-primary-content shadow-lg flex items-center px-6">
+        <div className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-3">
+            <img src="/logo.png" alt="Jerne IF" className="w-10 h-10" />
+            <span className="text-[22px] font-bold tracking-wide">Dead Pigeons</span>
           </Link>
         </div>
 
         {isAuthenticated && user && (
-          <div className="flex-none gap-2">
-            <div className="dropdown dropdown-end">
-              <div className="flex items-center gap-4">
-                {user.role === "Admin" && (
-                  <Link to="/admin" className="btn btn-ghost btn-sm">
-                    Admin
-                  </Link>
-                )}
-                <Link to="/dashboard" className="btn btn-ghost btn-sm">
-                  Dashboard
-                </Link>
-                <Link to="/boards" className="btn btn-ghost btn-sm">
-                  Plader
-                </Link>
-                <Link to="/games" className="btn btn-ghost btn-sm">
-                  Spil
-                </Link>
-                <Link to="/transactions" className="btn btn-ghost btn-sm">
-                  Transaktioner
-                </Link>
+          <div className="flex items-center gap-8 ml-auto">
+            {user.role === "Admin" && (
+              <Link
+                to="/admin"
+                className="px-4 py-3 text-[17px] font-semibold hover:opacity-90 transition"
+              >
+                Admin
+              </Link>
+            )}
+            <Link
+              to="/dashboard"
+              className="px-4 py-3 text-[17px] font-semibold hover:opacity-90 transition"
+            >
+              Dashboard
+            </Link>
+            <Link
+              to="/boards"
+              className="px-4 py-3 text-[17px] font-semibold hover:opacity-90 transition"
+            >
+              Plader
+            </Link>
+            <Link
+              to="/games"
+              className="px-4 py-3 text-[17px] font-semibold hover:opacity-90 transition"
+            >
+              Spil
+            </Link>
+            <Link
+              to="/transactions"
+              className="px-4 py-3 text-[17px] font-semibold hover:opacity-90 transition"
+            >
+              Transaktioner
+            </Link>
 
-                <div className="divider divider-horizontal mx-0"></div>
+            <div className="divider divider-horizontal mx-0"></div>
 
-                <span className="text-sm opacity-80">{user.email}</span>
-                <button onClick={handleLogout} className="btn btn-ghost btn-sm">
-                  Log ud
-                </button>
-              </div>
-            </div>
+            <span className="text-[17px] font-medium">{user.email}</span>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-3 text-[17px] font-semibold hover:opacity-90 transition"
+            >
+              Log ud
+            </button>
           </div>
         )}
       </nav>

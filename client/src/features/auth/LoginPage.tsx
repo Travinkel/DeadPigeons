@@ -69,13 +69,14 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
-      <div className="card w-full max-w-md bg-base-100 shadow-xl overflow-hidden">
-        <div className="card-body">
+      <div className="card w-full max-w-sm bg-base-100 shadow-xl">
+        <div className="card-body p-8">
           <div className="flex justify-center mb-4">
             <img src="/logo.png" alt="Jerne IF" className="h-16 w-16" />
           </div>
-          <h1 className="text-center mb-4">Dead Pigeons</h1>
-          <p className="text-center text-base-content/70 mb-6">Log ind for at fortsætte</p>
+          <p className="text-sm text-center text-neutral/70 mb-2">Dead Pigeons</p>
+          <h1 className="text-[28px] font-bold text-center mb-1">Log ind</h1>
+          <p className="text-sm text-center text-neutral/70 mb-6">Log ind for at fortsætte</p>
 
           {error && (
             <div className="alert alert-error mb-4">
@@ -104,7 +105,7 @@ export function LoginPage() {
               <input
                 type="email"
                 placeholder="din@email.dk"
-                className={`input input-bordered w-full ${errors.email ? "input-error" : ""}`}
+                className={`input input-bordered w-full h-12 ${errors.email ? "input-error" : ""}`}
                 {...register("email", {
                   required: "Email er påkrævet",
                   pattern: {
@@ -127,7 +128,7 @@ export function LoginPage() {
               <input
                 type="password"
                 placeholder="••••••••"
-                className={`input input-bordered w-full ${errors.password ? "input-error" : ""}`}
+                className={`input input-bordered w-full h-12 ${errors.password ? "input-error" : ""}`}
                 {...register("password", {
                   required: "Adgangskode er påkrævet",
                   minLength: {
@@ -143,7 +144,7 @@ export function LoginPage() {
               )}
             </div>
 
-            <button type="submit" className="btn btn-primary w-full" disabled={isLoading}>
+            <button type="submit" className="btn btn-primary w-full h-10" disabled={isLoading}>
               {isLoading ? <span className="loading loading-spinner loading-sm"></span> : "Log ind"}
             </button>
           </form>
