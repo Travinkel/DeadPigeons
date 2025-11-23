@@ -120,7 +120,7 @@ public static class DatabaseSeeder
             for (int week = 1; week <= weeksInYear; week++)
             {
                 var status = DetermineGameStatus(year, week, currentYear, currentWeek);
-                var startDate = ISOWeek.ToDateTime(year, week, DayOfWeek.Monday);
+                var startDate = DateTime.SpecifyKind(ISOWeek.ToDateTime(year, week, DayOfWeek.Monday), DateTimeKind.Utc);
 
                 games.Add(new Game
                 {
