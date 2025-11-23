@@ -69,7 +69,7 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
-      <div className="card w-full max-w-md bg-base-100 shadow-xl">
+      <div className="card w-full max-w-md bg-base-100 shadow-xl overflow-hidden">
         <div className="card-body">
           <div className="flex justify-center mb-4">
             <img src="/logo.png" alt="Jerne IF" className="h-16 w-16" />
