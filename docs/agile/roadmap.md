@@ -18,20 +18,35 @@
 | Sprint 1 | Walking Skeleton + DevOps | Done | v1.0.0, v1.1.0 |
 | Sprint 2 | Data Model + Basic Endpoints | Done | v1.2.0 |
 | Sprint 3 | Auth + Authz + Validation | Done | v1.3.0 |
-| Sprint 4 | Game Logic + React UI + Deploy | Complete (100%) | v1.4.0 |
+| Sprint 4 | Game Logic + React UI + Deploy | Done | v1.4.0 |
 
-**Sprint 4 Completion Summary:**
+**MVP Status:** Delivered - November 23, 2024
+
+---
+
+## Current Phase: Exam Preparation
+
+**Branch:** `exam-prep`
+**Status:** In Progress
+**Target:** December 19, 2024 (Submission Deadline)
+
+This is NOT a traditional sprint as it does not deliver incremental user value. Instead, it focuses on:
+
+- Documentation polish and completeness
+- Demo preparation and practice
+- Database seeder enhancement with demo data
+- Final testing verification (56+ tests passing)
+- Fly.io deployment stability
+- Exam presentation materials
+
+**Sprint 4 Final Summary:**
 - All milestones delivered (55 of 55 SP)
-- Fly.io deployment complete with CI/CD pipeline (TASK-4.11)
-- E2E Playwright tests added (TASK-4.12)
-- CI/CD pipeline fixes: xUnit, EF Core version conflicts resolved
+- Fly.io deployment complete with CI/CD pipeline
+- E2E Playwright tests configured
 - Database seeder for initial data population
 - User registration page functional
 - Jerne IF logo integrated
-- 40/40 unit tests + integration tests passing
-- Exam preparation complete (TASK-4.14)
-
-**MVP Status:** Complete - November 23, 2024
+- All tests passing (unit + integration)
 
 ---
 

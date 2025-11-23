@@ -118,6 +118,7 @@ app.MapGet("/api/health", () => Results.Ok(new { status = "healthy", timestamp =
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await context.Database.MigrateAsync();
     await DatabaseSeeder.SeedAsync(context);
 }
 

@@ -66,14 +66,14 @@ export function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
-      <div className="card w-full max-w-sm bg-base-100 shadow-xl">
+      <div className="card w-full max-w-sm bg-base-100 shadow-xl rounded-xl">
         <div className="card-body p-8">
           <div className="flex justify-center mb-4">
             <img src="/logo.png" alt="Jerne IF" className="h-16 w-16" />
           </div>
-          <p className="text-sm text-center text-neutral/70 mb-2">Dead Pigeons</p>
-          <h1 className="text-[28px] font-bold text-center mb-1">Opret konto</h1>
-          <p className="text-sm text-center text-neutral/70 mb-6">
+          <p className="text-center text-sm font-medium text-slate-700">Dead Pigeons</p>
+          <h1 className="text-center text-3xl font-extrabold text-gray-900 mt-2">Opret konto</h1>
+          <p className="text-center text-gray-400 text-sm mt-1 mb-6">
             Registrer dig for at deltage i spillet
           </p>
 
@@ -117,13 +117,15 @@ export function RegisterPage() {
 
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text">Navn</span>
+              <label className="label mb-1">
+                <span className="label-text text-sm text-gray-600 font-medium">Navn</span>
               </label>
               <input
                 type="text"
                 placeholder="Dit fulde navn"
-                className={`input input-bordered w-full h-12 ${errors.name ? "input-error" : ""}`}
+                className={`w-full px-3 py-2 rounded-md border ${
+                  errors.name ? "border-red-500" : "border-gray-300"
+                } bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-2 focus:ring-red-200 transition-all duration-150`}
                 {...register("name", {
                   required: "Navn er påkrævet",
                   minLength: {
@@ -140,13 +142,15 @@ export function RegisterPage() {
             </div>
 
             <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text">Email</span>
+              <label className="label mb-1">
+                <span className="label-text text-sm text-gray-600 font-medium">Email</span>
               </label>
               <input
                 type="email"
                 placeholder="din@email.dk"
-                className={`input input-bordered w-full h-12 ${errors.email ? "input-error" : ""}`}
+                className={`w-full px-3 py-2 rounded-md border ${
+                  errors.email ? "border-red-500" : "border-gray-300"
+                } bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-2 focus:ring-red-200 transition-all duration-150`}
                 {...register("email", {
                   required: "Email er påkrævet",
                   pattern: {
@@ -163,13 +167,17 @@ export function RegisterPage() {
             </div>
 
             <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text">Telefon (valgfrit)</span>
+              <label className="label mb-1">
+                <span className="label-text text-sm text-gray-600 font-medium">
+                  Telefon (valgfrit)
+                </span>
               </label>
               <input
                 type="tel"
                 placeholder="+45 12 34 56 78"
-                className={`input input-bordered w-full h-12 ${errors.phone ? "input-error" : ""}`}
+                className={`w-full px-3 py-2 rounded-md border ${
+                  errors.phone ? "border-red-500" : "border-gray-300"
+                } bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-2 focus:ring-red-200 transition-all duration-150`}
                 {...register("phone", {
                   pattern: {
                     value: /^[+]?[\d\s-]{8,}$/,
@@ -185,13 +193,15 @@ export function RegisterPage() {
             </div>
 
             <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text">Adgangskode</span>
+              <label className="label mb-1">
+                <span className="label-text text-sm text-gray-600 font-medium">Adgangskode</span>
               </label>
               <input
                 type="password"
                 placeholder="••••••••"
-                className={`input input-bordered w-full h-12 ${errors.password ? "input-error" : ""}`}
+                className={`w-full px-3 py-2 rounded-md border ${
+                  errors.password ? "border-red-500" : "border-gray-300"
+                } bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-2 focus:ring-red-200 transition-all duration-150`}
                 {...register("password", {
                   required: "Adgangskode er påkrævet",
                   minLength: {
@@ -212,13 +222,17 @@ export function RegisterPage() {
             </div>
 
             <div className="form-control mb-6">
-              <label className="label">
-                <span className="label-text">Bekræft adgangskode</span>
+              <label className="label mb-1">
+                <span className="label-text text-sm text-gray-600 font-medium">
+                  Bekræft adgangskode
+                </span>
               </label>
               <input
                 type="password"
                 placeholder="••••••••"
-                className={`input input-bordered w-full h-12 ${errors.confirmPassword ? "input-error" : ""}`}
+                className={`w-full px-3 py-2 rounded-md border ${
+                  errors.confirmPassword ? "border-red-500" : "border-gray-300"
+                } bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-2 focus:ring-red-200 transition-all duration-150`}
                 {...register("confirmPassword", {
                   required: "Bekræft adgangskode",
                   validate: (value) => value === password || "Adgangskoderne matcher ikke",
@@ -235,7 +249,7 @@ export function RegisterPage() {
 
             <button
               type="submit"
-              className="btn btn-primary w-full h-10"
+              className="w-full py-2 mt-4 rounded-md text-white font-semibold bg-gradient-to-b from-red-600 to-red-700 shadow-sm hover:shadow-md transition-all duration-150"
               disabled={isLoading || !!success}
             >
               {isLoading ? (

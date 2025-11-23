@@ -36,6 +36,21 @@ The CI pipeline configuration did not properly propagate test failure exit codes
 
 ---
 
+### Additional Findings (Nov 2025)
+
+- A PR merged to `main` with integration tests silently failing on GitHub (missing `Players` table) — discovered post-merge.
+- Fly.io deployment failed because both a Fly API token **and** a client app token were needed; deploy job stalled.
+- Multiple commits landed directly on `main`, violating GitHub Flow; work should move to feature branches (e.g., `exam-prep`) and merge via PRs.
+
+**Action Items:**
+| Action | Owner | Status |
+|--------|-------|--------|
+| Enforce branch protection and required green integration tests | DevOps | Pending |
+| Document Fly token requirements and gate deploy jobs on token presence | DevOps | Pending |
+| Move ongoing work to feature branch (`exam-prep`) and keep `main` clean | Team | Pending |
+
+---
+
 ## Process Improvements
 
 ### Recommended: Release Post-Mortem Practice

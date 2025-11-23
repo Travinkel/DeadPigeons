@@ -69,14 +69,16 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
-      <div className="card w-full max-w-sm bg-base-100 shadow-xl">
+      <div className="card w-full max-w-sm bg-base-100 shadow-xl rounded-xl">
         <div className="card-body p-8">
           <div className="flex justify-center mb-4">
-            <img src="/logo.png" alt="Jerne IF" className="h-16 w-16" />
+            <div className="bg-gray-100 rounded-full p-3">
+              <img src="/logo.png" alt="Jerne IF" className="w-16 h-16" />
+            </div>
           </div>
-          <p className="text-sm text-center text-neutral/70 mb-2">Dead Pigeons</p>
-          <h1 className="text-[28px] font-bold text-center mb-1">Log ind</h1>
-          <p className="text-sm text-center text-neutral/70 mb-6">Log ind for at fortsætte</p>
+          <p className="text-center text-sm font-medium text-slate-700">Dead Pigeons</p>
+          <h1 className="text-center text-3xl font-extrabold text-gray-900 mt-2">Log ind</h1>
+          <p className="text-center text-gray-400 text-sm mt-1 mb-6">Log ind for at fortsætte</p>
 
           {error && (
             <div className="alert alert-error mb-4">
@@ -99,13 +101,17 @@ export function LoginPage() {
 
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text">Email</span>
+              <label className="label mb-1">
+                <span className="label-text text-sm text-gray-600 font-medium">Email</span>
               </label>
               <input
                 type="email"
                 placeholder="din@email.dk"
-                className={`input input-bordered w-full h-12 ${errors.email ? "input-error" : ""}`}
+                className={`w-full px-3 py-2 rounded-md border ${
+                  errors.email ? "border-red-500" : "border-gray-300"
+                } bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-2 focus:ring-red-200 transition-all duration-150 ${
+                  errors.email ? "input-error" : ""
+                }`}
                 {...register("email", {
                   required: "Email er påkrævet",
                   pattern: {
@@ -122,13 +128,17 @@ export function LoginPage() {
             </div>
 
             <div className="form-control mb-6">
-              <label className="label">
-                <span className="label-text">Adgangskode</span>
+              <label className="label mb-1">
+                <span className="label-text text-sm text-gray-600 font-medium">Adgangskode</span>
               </label>
               <input
                 type="password"
                 placeholder="••••••••"
-                className={`input input-bordered w-full h-12 ${errors.password ? "input-error" : ""}`}
+                className={`w-full px-3 py-2 rounded-md border ${
+                  errors.password ? "border-red-500" : "border-gray-300"
+                } bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-2 focus:ring-red-200 transition-all duration-150 ${
+                  errors.password ? "input-error" : ""
+                }`}
                 {...register("password", {
                   required: "Adgangskode er påkrævet",
                   minLength: {
@@ -144,7 +154,11 @@ export function LoginPage() {
               )}
             </div>
 
-            <button type="submit" className="btn btn-primary w-full h-10" disabled={isLoading}>
+            <button
+              type="submit"
+              className="w-full py-2 mt-4 rounded-md text-white font-semibold bg-gradient-to-b from-red-600 to-red-700 shadow-sm hover:shadow-md transition-all duration-150"
+              disabled={isLoading}
+            >
               {isLoading ? <span className="loading loading-spinner loading-sm"></span> : "Log ind"}
             </button>
           </form>
