@@ -210,7 +210,11 @@ export function DepositRequestPage() {
               className="btn btn-primary w-full"
               disabled={isSubmitting || !amount}
             >
-              {isSubmitting ? <span className="loading loading-spinner"></span> : "Send anmodning"}
+              {isSubmitting ? (
+                <span className="loading loading-spinner loading-sm"></span>
+              ) : (
+                "Send anmodning"
+              )}
             </button>
           </form>
         </div>

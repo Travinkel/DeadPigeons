@@ -236,10 +236,14 @@ export function RegisterPage() {
 
             <button
               type="submit"
-              className={`btn btn-primary w-full ${isLoading ? "loading" : ""}`}
+              className="btn btn-primary w-full"
               disabled={isLoading || !!success}
             >
-              {isLoading ? "Opretter konto..." : "Opret konto"}
+              {isLoading ? (
+                <span className="loading loading-spinner loading-sm"></span>
+              ) : (
+                "Opret konto"
+              )}
             </button>
           </form>
 

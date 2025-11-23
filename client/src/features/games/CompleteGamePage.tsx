@@ -368,7 +368,11 @@ export function CompleteGamePage() {
             disabled={winningNumbers.length !== 3 || isSubmitting}
             onClick={handleComplete}
           >
-            {isSubmitting ? <span className="loading loading-spinner"></span> : "Afslut spil"}
+            {isSubmitting ? (
+              <span className="loading loading-spinner loading-sm"></span>
+            ) : (
+              "Afslut spil"
+            )}
           </button>
         </div>
       </div>

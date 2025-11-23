@@ -145,12 +145,8 @@ export function LoginPage() {
               )}
             </div>
 
-            <button
-              type="submit"
-              className={`btn btn-primary w-full ${isLoading ? "loading" : ""}`}
-              disabled={isLoading}
-            >
-              {isLoading ? "Logger ind..." : "Log ind"}
+            <button type="submit" className="btn btn-primary w-full" disabled={isLoading}>
+              {isLoading ? <span className="loading loading-spinner loading-sm"></span> : "Log ind"}
             </button>
           </form>
 

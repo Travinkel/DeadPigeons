@@ -368,7 +368,11 @@ export function PurchaseBoardPage() {
               disabled={!canPurchase || isSubmitting}
               onClick={handleSubmit}
             >
-              {isSubmitting ? <span className="loading loading-spinner"></span> : "Kob plade"}
+              {isSubmitting ? (
+                <span className="loading loading-spinner loading-sm"></span>
+              ) : (
+                "Kob plade"
+              )}
             </button>
           </div>
         </div>
