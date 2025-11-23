@@ -33,23 +33,24 @@ public class BoardsApiTests
 
     private async Task<GameResponse> CreateActiveGame()
     {
-        // Complete any existing active game first
+        // Complete any existing active game first (seeder creates one)
         var activeResponse = await _client.GetAsync("/api/games/active");
         if (activeResponse.IsSuccessStatusCode)
         {
             var activeGame = await activeResponse.Content.ReadFromJsonAsync<GameResponse>();
             if (activeGame != null)
             {
-                await _client.PostAsJsonAsync($"/api/games/{activeGame.Id}/complete",
-                    new CompleteGameRequest(new int[] { 1, 2, 3 }));
+                await _client.PostAsJsonAsync(
+                    $"/api/games/{activeGame.Id}/complete",
+                    new CompleteGameRequest(new[] { 1, 2, 3 }));
             }
         }
 
-        // Use GUID-based unique values to avoid collisions between tests
-        // Use a future year beyond seeded data (seeder seeds up to 2044)
+        // Use GUID-based unique values within allowed DTO range (Year 2020-2100)
+        // Keep year > seeder range (2044) but <= 2100
         var hash = Math.Abs(Guid.NewGuid().GetHashCode());
         var weekNumber = (hash % 52) + 1;
-        var year = 2100 + (hash % 20); // 2100-2119
+        var year = 2050 + (hash % 50); // 2050-2099
         var request = new CreateGameRequest(weekNumber, year);
         var response = await _client.PostAsJsonAsync("/api/games", request);
         response.EnsureSuccessStatusCode();
