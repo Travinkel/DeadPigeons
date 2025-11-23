@@ -114,6 +114,13 @@ app.MapControllers();
 // Health check endpoint for deployment verification
 app.MapGet("/api/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
+// Seed database on startup (for development/demo)
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await DatabaseSeeder.SeedAsync(context);
+}
+
 app.Run();
 
 public partial class Program;

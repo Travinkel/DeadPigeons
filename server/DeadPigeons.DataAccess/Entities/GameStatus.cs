@@ -2,7 +2,8 @@ namespace DeadPigeons.DataAccess.Entities;
 
 public enum GameStatus
 {
-    Active,
-    Completed,
+    Pending,    // Future scheduled game
+    Active,     // Current week's game
+    Completed,  // Game with winning numbers drawn
     Cancelled
 }

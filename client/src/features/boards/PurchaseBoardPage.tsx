@@ -138,8 +138,8 @@ export function PurchaseBoardPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <span className="loading loading-spinner loading-md text-primary"></span>
+      <div className="flex items-center justify-center min-h-[200px]">
+        <span className="loading loading-spinner loading-sm text-primary"></span>
       </div>
     );
   }
