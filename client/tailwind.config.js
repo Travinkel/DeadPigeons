@@ -2,27 +2,13 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
-  },
-  plugins: [require("daisyui")],
-  daisyui: {
-    themes: [
-      {
-        jerneif: {
-          primary: "#b91c1c", // Red-700 - Jerne IF red (WCAG AA contrast)
-          "primary-content": "#FFFFFF", // White text on red
-          secondary: "#991b1b", // Red-800
-          accent: "#F87171", // Red-400
-          neutral: "#1F2937", // Gray-800
-          "base-100": "#FFFFFF", // White background
-          "base-200": "#F3F4F6", // Gray-100
-          "base-300": "#E5E7EB", // Gray-200
-          info: "#3B82F6",
-          success: "#22C55E",
-          warning: "#F59E0B",
-          error: "#EF4444",
-        },
+    extend: {
+      fontSize: {
+        h1: ["2.44rem", { lineHeight: "1.2", fontWeight: "900" }],
+        h2: ["1.94rem", { lineHeight: "1.25", fontWeight: "700" }],
+        h3: ["1.56rem", { lineHeight: "1.3", fontWeight: "600" }],
+        h4: ["1.25rem", { lineHeight: "1.35", fontWeight: "500" }],
       },
-    ],
+    },
   },
 };

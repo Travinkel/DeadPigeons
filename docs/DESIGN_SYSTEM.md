@@ -1,177 +1,68 @@
-# Dead Pigeons Design System
+# Dead Pigeons Design System (Jerne IF)
 
-Mathematical design system for Jerne IF brand identity.
+Single source of truth for the Jerne IF red theme used with DaisyUI 5.5.5 + Tailwind v4.
 
-## Typography Scale (1.25 Major Third)
+> Harvard-style references are noted inline, e.g. (Fitts, 1954).
 
-Formula: `size(n) = base_size × ratio^n`
+## 1. Foundations
 
-| Token | Calculation | Size | Weight |
-|-------|-------------|------|--------|
-| H1 | 16 × 1.25⁴ | 39px / 2.44rem | 900 |
-| H2 | 16 × 1.25³ | 31px / 1.94rem | 700 |
-| H3 | 16 × 1.25² | 25px / 1.56rem | 600 |
-| H4 | 16 × 1.25¹ | 20px / 1.25rem | 500 |
-| Body | 16 × 1 | 16px / 1rem | 400 |
-| Small | 16 / 1.25 | 13px / 0.8rem | 400 |
+- **Stack:** React, Tailwind v4, DaisyUI components (no raw Tailwind colors for brand actions).
+- **Typography scale (Major Third 1.25x):**
+  - `text-h1`: 2.44rem / 39px, 900
+  - `text-h2`: 1.94rem / 31px, 700
+  - `text-h3`: 1.56rem / 25px, 600
+  - `text-h4`: 1.25rem / 20px, 500
+  - Body: 16px, 400; `text-sm`: 14px
+- **Spacing:** 8px base; use 8/16/24/32/40/48/64px only to keep rhythm (Lidwell et al., 2010).
 
-## Color Palette
+## 2. Color Tokens (Jerne IF Red)
 
-### Brand Colors (Jerne IF)
-- **Primary Red**: `#D40000` (Luminance: 0.150)
-- **White**: `#FFFFFF` (Luminance: 1.0)
-- **Black**: `#000000` (Luminance: 0.0)
+Declared in `client/tailwind.config.js` and consumed via DaisyUI component classes:
 
-### Red Scale (CIE-LAB perceptual)
-```css
---red-50:  #FFE5E5
---red-100: #FFB3B3
---red-200: #FF8080
---red-300: #FF4D4D
---red-400: #E63333
---red-500: #D40000  /* PRIMARY */
---red-600: #A80000  /* Hover */
---red-700: #7A0000  /* Active */
---red-800: #520000
---red-900: #2A0000
-```
+- Primary `#D40000`, Secondary `#A80000`, Accent `#000000`
+- Base: `base-100 #FFFFFF`, `base-200 #F3F4F6`, `base-300 #E5E7EB`, `base-content #111827`
+- Neutral: `#1F2937`
+- Semantic: `success #15803D`, `warning #D97706`, `error #D40000`, `info #1A56DB`
+- Required CSS vars overridden: `--p --pc --s --sc --a --ac --n --nc --b1 --b2 --b3 --bc`
 
-## Contrast Ratios (WCAG)
+Accessibility: Red (#D40000) on white ≈ 5.2:1; white on red ≈ 5.2:1 (passes AA/AAA for text ≥14px bold) (W3C, 2018).
 
-| Combination | Contrast | Status |
-|-------------|----------|--------|
-| White on Red (#D40000) | 5.25:1 | AAA ✓ |
-| Black on Red | 4.0:1 | AA (large text only) |
-| Red on White | 5.25:1 | AAA ✓ |
+## 3. Components (DaisyUI-first)
 
-Formula: `(L1 + 0.05) / (L2 + 0.05) ≥ 4.5`
+- **Buttons:** `btn btn-primary`; height 40–44px (`h-10`/`h-11`), weight 600, full-width on mobile (Fitts, 1954).
+- **Inputs:** `input input-bordered w-full h-12`; 16px font to avoid iOS zoom (Apple, 2023).
+- **Cards:** `card bg-base-100 shadow-xl p-6|p-8`; radius per DaisyUI default.
+- **Navbar:** `navbar bg-primary text-primary-content shadow-lg h-[60-64px]`; links 17–18px/500–600 to offset red-background thinning (Ware, 2021).
 
-## Spacing Scale (1.25 ratio)
+## 4. Layout Patterns
 
-```css
---space-1:  4px
---space-2:  5px
---space-3:  6px
---space-4:  8px
---space-5:  10px
---space-6:  12px
---space-7:  16px
---space-8:  20px
---space-9:  25px
---space-10: 31px
---space-11: 39px
---space-12: 49px
-```
+- **Auth pages:** Centered card `max-w-md` with logo + title + subtitle + form. Current login/register follow this and are acceptable; if redundancy with navbar is added later, consider moving the “Dead Pigeons” title to navbar and keeping the card title as the page action (“Log ind”) for clarity (Nielsen, 1995).
+- **Dashboard first fold:** Balance, active boards, current game status.
+- **Tables → cards on mobile:** Preserve badges and primary action at bottom.
 
-## Button Geometry
+## 5. Reality Checks (marking mismatches)
 
-- **Height**: `body_font × 2.5 = 40px`
-- **Border Radius**: `6px` (sports design)
-- **Icon Stroke**: `font_size / 16`
+- ✅ Theme variables are fully overridden in `tailwind.config.js` and DaisyUI is forced to `themes: ["jerneif"]`.
+- ✅ Auth forms use DaisyUI components (`card`, `input input-bordered`, `btn btn-primary`).
+- ⚠️ The older snippet showing `@plugin "daisyui" { themes: jerneif --default; }` in CSS is **not how the project is configured**; actual theming lives in `tailwind.config.js` + Vite plugin.
+- ⚠️ Claims about “offset 12% from top” and “card max-w-sm” were partially aspirational; current cards use `max-w-md` and center vertically. Keep if preferred, but document the choice explicitly.
+- ⚠️ Navbar sizing guidance (17–18px text, 56–64px height) is not consistently implemented in `Layout.tsx`; update when adjusting IA.
 
-### States
-- Default: `red-500` (#D40000)
-- Hover: `red-600` (#A80000)
-- Active: `red-700` (#7A0000)
+## 6. Auth Card Content Check
 
-## CSS Variables
+Current login card (`client/src/features/auth/LoginPage.tsx`):
+- Logo centered, title uses `text-h1` (“Dead Pigeons”), subtitle “Log ind for at fortsætte”.
+- This is visually acceptable. If you want brand hierarchy tighter, change title to the task (“Log ind”) and place the club name under the logo in `text-sm` or move to navbar once a public layout exists.
 
-```css
-:root {
-  /* Colors */
-  --color-primary: #D40000;
-  --color-primary-hover: #A80000;
-  --color-primary-active: #7A0000;
-  --color-white: #FFFFFF;
-  --color-black: #000000;
+## 7. Documentation Placement
 
-  /* Typography (1.25 ratio) */
-  --font-h1: 2.44rem;
-  --font-h2: 1.94rem;
-  --font-h3: 1.56rem;
-  --font-h4: 1.25rem;
-  --font-body: 1rem;
-  --font-small: 0.8rem;
+- Recommendation: move this file to `docs/explanation/` and merge overlap with `ux-rationale.md` so design principles and rationale live together. Keep this file as the normative token source; keep UX Rationale for “why”.
 
-  /* Weights (optical compensation) */
-  --weight-h1: 900;
-  --weight-h2: 700;
-  --weight-h3: 600;
-  --weight-h4: 500;
-  --weight-body: 400;
+## 8. References
 
-  /* Spacing */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 25px;
-  --space-xl: 39px;
-
-  /* Components */
-  --button-height: 40px;
-  --button-radius: 6px;
-  --input-height: 40px;
-}
-```
-
-## Tailwind Configuration
-
-```js
-// tailwind.config.js
-module.exports = {
-  theme: {
-    extend: {
-      colors: {
-        primary: {
-          DEFAULT: '#D40000',
-          50: '#FFE5E5',
-          100: '#FFB3B3',
-          200: '#FF8080',
-          300: '#FF4D4D',
-          400: '#E63333',
-          500: '#D40000',
-          600: '#A80000',
-          700: '#7A0000',
-          800: '#520000',
-          900: '#2A0000',
-        },
-      },
-      fontSize: {
-        'h1': ['2.44rem', { lineHeight: '1.2', fontWeight: '900' }],
-        'h2': ['1.94rem', { lineHeight: '1.25', fontWeight: '700' }],
-        'h3': ['1.56rem', { lineHeight: '1.3', fontWeight: '600' }],
-        'h4': ['1.25rem', { lineHeight: '1.35', fontWeight: '500' }],
-      },
-      spacing: {
-        '4.5': '1.125rem',  // 18px
-        '5.5': '1.375rem',  // 22px
-      },
-    },
-  },
-};
-```
-
-## Loading Spinner
-
-Standard loading spinner sizing:
-- **Small** (`loading-sm`): 16px - inline, buttons
-- **Default**: 24px - cards, sections
-- **Large** (`loading-lg`): 32px - full page
-
-```tsx
-// Centered loading spinner
-<div className="flex items-center justify-center min-h-[200px]">
-  <span className="loading loading-spinner loading-sm text-primary"></span>
-</div>
-```
-
-## Optical Weight Formula
-
-```
-optical_weight = (size / base_size) × base_weight
-```
-
-Example at base 16px, weight 400:
-- 39px H1: (39/16) × 400 = 975 → 900
-- 31px H2: (31/16) × 400 = 775 → 700
-- 25px H3: (25/16) × 400 = 625 → 600
+- Apple (2023) *Human Interface Guidelines* – Text input zoom behavior on iOS.
+- Fitts, P. (1954) ‘The information capacity of the human motor system’, *J. Exp. Psychol.*
+- Lidwell, W., Holden, K., Butler, J. (2010) *Universal Principles of Design*.
+- Nielsen, J. (1995) *10 Usability Heuristics*.
+- W3C (2018) *WCAG 2.1* contrast requirements.
+- Ware, C. (2021) *Information Visualization: Perception for Design*.

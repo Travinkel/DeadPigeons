@@ -3,9 +3,11 @@
 **Sprint Goal:** Complete Dead Pigeons application with game logic, React UI, and Fly.io deployment.
 
 **Sprint Duration:** Sprint 4 (Final)
-**Sprint Status:** Complete (100% Story Points Delivered)
-**Branch:** `feature/game-ui-deploy`
-**Completion Date:** November 23, 2024
+**Sprint Status (corrected Nov 2025):** Incomplete — reopened items (integration tests, Fly deploy tokens, E2E/smoke tests not done)
+**Branch:** `feature/game-ui-deploy` (historical), current work continuing on `exam-prep`
+**Completion Date:** November 23, 2024 (planned); follow-up cleanup in Sprint 5
+
+> Correction: A PR merged with failing integration tests, Fly.io deploys were blocked by missing API + client tokens, and commits landed directly on `main`. E2E and smoke tests remain outstanding.
 
 ---
 
@@ -135,26 +137,15 @@ All subtasks delivered successfully:
 
 ## Test Results
 
-### Unit Tests: 40/40 PASSING
+### Unit Tests
+- Status: PASS locally (40/40) with in-memory DB.
 
-All unit tests passing with 2s execution time:
+### Integration Tests
+- Status: Failing on GitHub due to missing `Players` table when migrations/seeding were not applied; fixed locally by seeding in factory but CI is still pending rerun.
+- Dependency: Docker/Testcontainers required.
 
-- **AuthService**: Login, register, token validation
-- **BoardService**: Purchase logic, pricing validation
-- **GameService**: Winner detection, game completion
-- **TransactionService**: Approval, balance updates
-- **PlayerService**: CRUD, balance queries
-
-### Integration Tests: 25 Tests (REQUIRE DOCKER)
-
-Integration tests require Docker/Testcontainers for PostgreSQL. All 25 tests defined; Docker runtime needed for execution in CI.
-
-**Test Coverage:**
-- Players API CRUD operations
-- Transaction workflow (deposit, approval, balance update)
-- Game completion and winner detection
-- Board purchase validation
-- Health endpoint
+### E2E / Smoke
+- Status: Not implemented; remains outstanding (TASK-4.12, TASK-4.13).
 
 ---
 
@@ -354,6 +345,12 @@ Integration tests require Docker/Testcontainers for PostgreSQL. All 25 tests def
    - Current: Tests skip without Docker daemon
    - Workaround: Run unit tests in CI; integration locally
    - Action item: Ensure CI has Docker support enabled
+3. **Fly.io Token Scope (High)**
+   - Current: Deploy blocked without both Fly API token and client app token
+   - Action item: Document token requirements and gate deploy jobs on presence
+4. **GitHub Flow Violations (High)**
+   - Current: Direct commits to `main` bypassed PR checks
+   - Action item: Enforce branch protection and move active work to `exam-prep` branch
 
 ---
 

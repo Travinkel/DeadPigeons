@@ -1,36 +1,28 @@
+@config "../tailwind.config.js";
 @import "tailwindcss";
-@plugin "daisyui";
 
-@theme {
-  --font-sans: "Inter", system-ui, sans-serif;
+@plugin "daisyui" {
+  themes: jerneif;
 }
 
-/* Jerne IF Custom Theme - Mathematical Design System */
-[data-theme="jerneif"] {
-  /* Primary - Jerne IF Red #D40000 (5.25:1 contrast with white) */
+@plugin "daisyui/theme" {
+  name: "jerneif";
+  default: true;
+  color-scheme: light;
+
   --color-primary: #d40000;
   --color-primary-content: #ffffff;
-
-  /* Secondary - Dark Red (hover state) */
   --color-secondary: #a80000;
   --color-secondary-content: #ffffff;
-
-  /* Accent - Black */
   --color-accent: #000000;
   --color-accent-content: #ffffff;
-
-  /* Neutral - Dark gray */
   --color-neutral: #1f2937;
   --color-neutral-content: #ffffff;
-
-  /* Base - White backgrounds */
   --color-base-100: #ffffff;
   --color-base-200: #f3f4f6;
   --color-base-300: #e5e7eb;
   --color-base-content: #111827;
-
-  /* Status colors */
-  --color-info: #1d4ed8;
+  --color-info: #1a56db;
   --color-info-content: #ffffff;
   --color-success: #15803d;
   --color-success-content: #ffffff;
@@ -38,77 +30,44 @@
   --color-warning-content: #000000;
   --color-error: #d40000;
   --color-error-content: #ffffff;
+
+  --p: #d40000;
+  --pc: #ffffff;
+  --s: #a80000;
+  --sc: #ffffff;
+  --a: #000000;
+  --ac: #ffffff;
+  --n: #1f2937;
+  --nc: #ffffff;
+  --b1: #ffffff;
+  --b2: #f3f4f6;
+  --b3: #e5e7eb;
+  --bc: #111827;
+
+  --rounded-box: 0.5rem;
+  --rounded-btn: 0.375rem;
+  --rounded-badge: 1.9rem;
+  --animation-btn: 0.25s;
+  --animation-input: 0.2s;
+  --btn-focus-scale: 0.95;
+  --border-btn: 1px;
+  --tab-border: 1px;
+  --tab-radius: 0.5rem;
 }
 
-/* Typography Scale - 1.25 Major Third Ratio */
-/* Mobile-first responsive design */
-@layer base {
-  h1 {
-    font-size: 1.75rem; /* 28px mobile */
-    font-weight: 900;
-    line-height: 1.2;
-  }
-
-  h2 {
-    font-size: 1.5rem; /* 24px mobile */
-    font-weight: 700;
-    line-height: 1.25;
-  }
-
-  h3 {
-    font-size: 1.25rem; /* 20px mobile */
-    font-weight: 600;
-    line-height: 1.3;
-  }
-
-  h4 {
-    font-size: 1.125rem; /* 18px mobile */
-    font-weight: 500;
-    line-height: 1.35;
-  }
-
-  body {
-    font-family: var(--font-sans);
-    font-size: 1rem;
-    line-height: 1.6;
-  }
-
-  /* Desktop typography (768px+) */
-  @media (min-width: 768px) {
-    h1 {
-      font-size: 2.44rem; /* 39px */
-    }
-
-    h2 {
-      font-size: 1.94rem; /* 31px */
-    }
-
-    h3 {
-      font-size: 1.56rem; /* 25px */
-    }
-
-    h4 {
-      font-size: 1.25rem; /* 20px */
-    }
-  }
-}
-
-/* Ensure readable text on colored backgrounds */
+/* Button font weights */
 .btn {
   font-weight: 500;
 }
 
 .btn-primary,
 .btn-secondary,
-.btn-accent,
-.btn-error,
-.btn-info,
-.btn-success {
+.btn-error {
   font-weight: 600;
 }
 
-.bg-primary,
-.bg-secondary,
-.bg-accent {
-  font-weight: 500;
+@layer components {
+  .card {
+    border-radius: 0.75rem;
+  }
 }

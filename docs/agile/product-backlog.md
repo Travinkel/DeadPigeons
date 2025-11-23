@@ -10,15 +10,35 @@
 
 | Total Stories | Estimated Points | Current Sprint | Product Status |
 |---------------|------------------|-----------------|-----------------|
-| 23 | 68 | Sprint 4 | 100% Complete (MVP Delivered) |
+| 23 | 68 | Sprint 5 (Exam Prep / Cleanup) | In Progress (MVP hardening) |
 
 ---
 
-## Active Sprint (Sprint 4) - COMPLETE
+## Active Sprint (Sprint 5) - Exam Prep / Cleanup (In Progress)
 
-### Sprint 4 Final Status (55 SP Delivered - 100% Complete)
+### Focus
+- Fix integration test gate (TestContainers + migrations/seed) and unblock CI.
+- Restore GitHub Flow: branch protection, move work off `main` (use `exam-prep`).
+- Fly.io deploy: document dual-token requirement (API + client) and gate deploy job.
+- Reintroduce E2E/smoke tests (reopened TASK-4.12/4.13) and mark as required before release.
 
-#### All Items Complete
+### Reopened / Carryover Items
+
+| Story/Task | Priority | Status |
+|------------|----------|--------|
+| TASK-4.11 Fly.io deployment (token fixes) | CRITICAL | In Progress |
+| TASK-4.12 E2E tests | CRITICAL | Not Started (reopened) |
+| TASK-4.13 Smoke tests in CI | CRITICAL | Not Started (reopened) |
+| TASK-4.14 Exam prep | CRITICAL | In Progress |
+| Process: Enforce branch protection / PR-only | HIGH | Not Started |
+
+---
+
+## Sprint 4 (Historic) - Previously Marked Complete (now partially reopened)
+
+### Sprint 4 Final Status (55 SP Delivered - marked complete)
+
+#### Items (subject to reopened issues)
 
 | Story ID | User Story | Points | Priority | Status |
 |----------|-----------|--------|----------|--------|

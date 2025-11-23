@@ -19,7 +19,13 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     private const string TestJwtIssuer = "DeadPigeons";
     private const string TestJwtAudience = "DeadPigeons";
 
-    private PostgreSqlContainer? _dbContainer;
+    private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
+        .WithImage("postgres:16")
+        .WithDatabase("deadpigeons_test")
+        .WithUsername("test")
+        .WithPassword("test")
+        .Build();
+
     private string? _connectionString;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -75,20 +81,17 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        _dbContainer = new PostgreSqlBuilder()
-            .WithImage("postgres:16")
-            .WithDatabase("deadpigeons_test")
-            .WithUsername("test")
-            .WithPassword("test")
-            .Build();
-
         await _dbContainer.StartAsync();
         _connectionString = _dbContainer.GetConnectionString();
 
-        // Apply migrations
+        // Ensure the host is created with the updated connection string
+        CreateClient();
+
+        // Apply migrations + seed baseline data
         using var scope = Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await db.Database.MigrateAsync();
+        await DatabaseSeeder.SeedAsync(db);
     }
 
     public HttpClient CreateAuthenticatedClient(string role = "Admin", Guid? userId = null)
@@ -125,10 +128,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     public new async Task DisposeAsync()
     {
-        if (_dbContainer != null)
-        {
-            await _dbContainer.StopAsync();
-            await _dbContainer.DisposeAsync();
-        }
+        await _dbContainer.StopAsync();
+        await _dbContainer.DisposeAsync();
     }
 }

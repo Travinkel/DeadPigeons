@@ -2,20 +2,28 @@ using DeadPigeons.Api.Services;
 using DeadPigeons.DataAccess;
 using DeadPigeons.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DeadPigeons.Tests;
 
-public class AuthServiceTests
+public class AuthServiceTests : IClassFixture<TestServiceFixture>, IDisposable
 {
     private readonly AppDbContext _db;
     private readonly IAuthService _service;
+    private readonly IServiceScope _scope;
 
-    public AuthServiceTests(AppDbContext db, IAuthService service)
+    public AuthServiceTests(TestServiceFixture fixture)
     {
-        _db = db;
-        _service = service;
+        _scope = fixture.CreateScope();
+        _db = _scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        _service = _scope.ServiceProvider.GetRequiredService<IAuthService>();
+
+        // Fresh in-memory database per test instance
+        _db.Database.EnsureDeleted();
+        _db.Database.EnsureCreated();
     }
+
+    public void Dispose() => _scope.Dispose();
 
     [Fact]
     public void HashPassword_ReturnsHashedValue()
