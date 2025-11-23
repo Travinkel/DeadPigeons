@@ -71,9 +71,7 @@ export function RegisterPage() {
           <div className="flex justify-center mb-4">
             <img src="/logo.png" alt="Jerne IF" className="h-16 w-16" />
           </div>
-          <h2 className="card-title text-2xl font-bold text-center justify-center mb-4">
-            Opret konto
-          </h2>
+          <h1 className="text-center mb-4">Opret konto</h1>
           <p className="text-center text-base-content/70 mb-6">
             Registrer dig for at deltage i spillet
           </p>

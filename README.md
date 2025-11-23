@@ -1,8 +1,8 @@
-# Dead Pigeons — Exam Project
+# Dead Pigeons
 
-**Courses:** Programming II · Systems Development II · CDS.Security · CDS.Networking
+Digital lottery game management system for Jerne IF sports club.
 
-**Current Version:** `v1.3.2`
+**Version:** `v2.1.0`
 **Branch:** `main`
 
 ---
@@ -159,65 +159,65 @@ Integration tests use XUnit with TestContainers for database isolation. Unit tes
 
 ## Deployment
 
-### Production Stack (Planned)
-- **Fly.io** — API + Client hosting
-- **Docker** — Containerized services
-- **Nginx** — Reverse proxy, TLS termination
+### Production
+- **API:** https://deadpigeons-api.fly.dev
+- **Client:** https://deadpigeons-client.fly.dev
 
-> **Note:** Deployment configuration (`fly.toml`) will be added in Sprint 4.
+### Infrastructure
+- **Fly.io** — API + Client hosting
+- **Neon** — PostgreSQL database
+- **Docker** — Containerized services
+- **Nginx** — Reverse proxy (client)
 
 ---
 
-## Sprint Progress
+## Release History
 
-| Sprint | Focus | Status | Tag |
-|--------|-------|--------|-----|
-| Sprint 1 | Walking Skeleton + DevOps | Done | v1.0.0, v1.1.0 |
-| Sprint 2 | Data Model + Basic Endpoints | Done | v1.2.0 |
-| Sprint 3 | Auth + Authz + Validation | Done | v1.3.0, v1.3.1, v1.3.2 |
-| Sprint 4 | Game Logic + React UI + Deploy | In Progress | — |
+| Version | Focus | Tag |
+|---------|-------|-----|
+| v1.0.0 | Walking Skeleton + DevOps | v1.0.0 |
+| v1.2.0 | Data Model + Basic Endpoints | v1.2.0 |
+| v1.3.x | Auth + Authz + Validation | v1.3.2 |
+| v2.0.0 | Game Logic + React UI + Deploy | v2.0.0 |
+| v2.1.0 | Database Seeder + Design System | v2.1.0 |
 
 ---
 
 ## Current State
 
-### What Works (v1.3.2)
-- ✅ CI/CD pipeline (GitHub Actions)
-- ✅ DevOps hardening (Husky, commitlint, secretlint)
-- ✅ Health endpoint operational
-- ✅ NSwag TypeScript client generation
-- ✅ TestContainers integration test infrastructure
+### MVP Complete (v2.1.0)
+
+**Backend**
+- ✅ .NET 9 Web API with EF Core
+- ✅ JWT authentication & role-based authorization
+- ✅ All CRUD endpoints with validation
+- ✅ Game logic (boards, transactions, completion)
+- ✅ Database seeder (20 years of games)
 - ✅ Swagger/OpenAPI documentation
-- ✅ EF Core entities (Player, Transaction, Board, Game)
-- ✅ Database migrations
-- ✅ Basic CRUD endpoints
-- ✅ JWT authentication
-- ✅ Authorization policies (Admin/Player)
-- ✅ Password hashing (PBKDF2)
-- ✅ DTO validation (DataAnnotations)
-- ✅ CORS and security headers
 
-### Test Suite
-- ✅ Unit tests with XUnit.DependencyInjection (40 tests)
-- ✅ Integration tests with TestContainers (PostgreSQL)
-- ✅ Constructor injection DI pattern
-- ✅ Exam-compliance CI workflow
+**Frontend**
+- ✅ React + TypeScript SPA
+- ✅ NSwag-generated API client
+- ✅ Responsive design system (1.25 ratio)
+- ✅ Login/Register flows
+- ✅ Player & Admin dashboards
+- ✅ Board purchase & game views
 
-### Planned (Sprint 4)
-- ⏳ React UI pages
-- ⏳ Fly.io deployment
-- ⏳ Game logic implementation
-- ⏳ Test coverage audit
+**DevOps**
+- ✅ CI/CD pipeline (GitHub Actions)
+- ✅ Fly.io deployment (API + Client)
+- ✅ TestContainers integration tests
+- ✅ 56+ tests passing
+- ✅ Quality gates (Husky, commitlint, secretlint)
 
 ---
 
-## Known Issues & Limitations
+## Known Issues
 
 | Issue | Status | Notes |
 |-------|--------|-------|
-| No Docker locally (Shadow PC) | Workaround | Integration tests run in CI only |
-| No React UI | Sprint 4 | Client pages pending |
-| Not deployed | Sprint 4 | Fly.io deployment pending |
+| Balance caching | Design choice | Balance calculated from transactions on each request |
+| Physical participants | Out of scope | Prize calculation done manually by admin |
 
 ---
 

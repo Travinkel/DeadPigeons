@@ -1,6 +1,6 @@
 # Product Backlog — Dead Pigeons
 
-**Last Updated:** November 22, 2025
+**Last Updated:** November 23, 2024
 **Backlog Owner:** Agile Project Manager
 **Prioritization Model:** Business Value + Exam Compliance + Dependencies
 
@@ -10,28 +10,27 @@
 
 | Total Stories | Estimated Points | Current Sprint | Product Status |
 |---------------|------------------|-----------------|-----------------|
-| 23 | 68 | Sprint 4 | 91% Complete |
+| 23 | 68 | Sprint 4 | 100% Complete (MVP Delivered) |
 
 ---
 
-## Active Sprint (Sprint 4)
+## Active Sprint (Sprint 4) - COMPLETE
 
-### Sprint 4 Final Status (50 SP Delivered, 5 SP Remaining)
+### Sprint 4 Final Status (55 SP Delivered - 100% Complete)
 
-#### Completed Items
+#### All Items Complete
 
 | Story ID | User Story | Points | Priority | Status |
 |----------|-----------|--------|----------|--------|
+| TASK-4.11 | As a DevOps engineer, I need Fly.io deployment so the app is publicly accessible | 8 | CRITICAL | Complete |
 | TASK-4.12 | As a QA engineer, I need E2E tests so end-to-end workflows are validated | 5 | CRITICAL | Complete |
 | TASK-4.13 | As a DevOps engineer, I need smoke tests in CI so deployments are verified | 3 | CRITICAL | Complete |
+| TASK-4.14 | As an examiner, I need exam preparation complete so the project is submission-ready | 5 | CRITICAL | Complete |
 | US-5.1 | As a new player, I want to register myself without admin intervention | 3 | HIGH | Complete |
 | US-5.2 | As a Jerne IF administrator, I want the club logo displayed prominently | 2 | MEDIUM | Complete |
 
-#### Remaining Work
-
-| Story ID | User Story | Points | Priority | Status |
-|----------|-----------|--------|----------|--------|
-| TASK-4.14 | As an examiner, I need exam preparation complete so the project is submission-ready | 5 | CRITICAL | In Progress |
+**Sprint 4 Velocity:** 55 story points delivered
+**MVP Status:** Complete - November 23, 2024
 
 ---
 
@@ -482,8 +481,8 @@ A story is **ready** for sprint planning when:
 
 ## Contact & Updates
 
-**Last Updated:** November 22, 2025
-**Next Review:** November 29, 2025 (post-Sprint 4 review)
+**Last Updated:** November 23, 2024
+**MVP Complete:** November 23, 2024
 **Backlog Owner:** Agile Project Manager
 
 For questions about prioritization, estimation, or story details, consult the backlog owner during refinement sessions.

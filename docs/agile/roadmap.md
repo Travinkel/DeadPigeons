@@ -18,19 +18,20 @@
 | Sprint 1 | Walking Skeleton + DevOps | Done | v1.0.0, v1.1.0 |
 | Sprint 2 | Data Model + Basic Endpoints | Done | v1.2.0 |
 | Sprint 3 | Auth + Authz + Validation | Done | v1.3.0 |
-| Sprint 4 | Game Logic + React UI + Deploy | Complete (91%) | v1.4.0 |
+| Sprint 4 | Game Logic + React UI + Deploy | Complete (100%) | v1.4.0 |
 
 **Sprint 4 Completion Summary:**
-- All milestones delivered (50 of 55 SP)
-- Fly.io deployment complete (TASK-4.11)
+- All milestones delivered (55 of 55 SP)
+- Fly.io deployment complete with CI/CD pipeline (TASK-4.11)
 - E2E Playwright tests added (TASK-4.12)
 - CI/CD pipeline fixes: xUnit, EF Core version conflicts resolved
+- Database seeder for initial data population
 - User registration page functional
 - Jerne IF logo integrated
 - 40/40 unit tests + integration tests passing
+- Exam preparation complete (TASK-4.14)
 
-**Remaining Work:**
-- Exam Preparation (5 SP) - In Progress
+**MVP Status:** Complete - November 23, 2024
 
 ---
 

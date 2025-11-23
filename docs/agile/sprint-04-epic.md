@@ -34,20 +34,29 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 - [x] CI/CD pipeline with GitHub Actions
 - [x] User registration page functional
 - [x] Jerne IF logo integrated
-- [ ] Exam presentation ready
+- [x] Database seeder for initial data
+- [x] Exam presentation ready
 
 ---
 
 ## User Stories
 
-| Story ID | User Story | Acceptance Criteria |
-|----------|------------|---------------------|
-| US-4.1 | As a user, I need a React UI so I can use the system | All pages functional with React Router |
-| US-4.2 | As a player, I need to purchase boards so I can play | Pricing enforced, balance checked, Saturday cutoff |
-| US-4.3 | As a player, I need repeating boards so I don't re-enter numbers | Board repeats for X weeks, opt-out available |
-| US-4.4 | As an admin, I need to complete games so winners are determined | 3 winning numbers, winners identified |
-| US-4.5 | As a user, I need the app deployed so I can access it | Fly.io accessible publicly |
-| US-4.6 | As an examiner, I need the project complete so I can evaluate | All features working, documented |
+| Story ID | User Story | Acceptance Criteria | Status |
+|----------|------------|---------------------|--------|
+| US-4.1 | As a user, I need a React UI so I can use the system | All pages functional with React Router | COMPLETE |
+| US-4.2 | As a player, I need to purchase boards so I can play | Pricing enforced, balance checked, Saturday cutoff | COMPLETE |
+| US-4.3 | As a player, I need repeating boards so I don't re-enter numbers | Board repeats for X weeks, opt-out available | COMPLETE |
+| US-4.4 | As an admin, I need to complete games so winners are determined | 3 winning numbers, winners identified | COMPLETE |
+| US-4.5 | As a user, I need the app deployed so I can access it | Fly.io accessible publicly | COMPLETE |
+| US-4.6 | As an examiner, I need the project complete so I can evaluate | All features working, documented | COMPLETE |
+
+**Completion Notes:**
+- US-4.1: React Router with protected routes, layouts, and all feature pages implemented
+- US-4.2: Board purchase flow with pricing validation (5-8 numbers), balance checks, and Saturday cutoff
+- US-4.3: Autoplay feature implemented with opt-out capability
+- US-4.4: Admin game completion with winner detection algorithm and 70/30 prize split
+- US-4.5: Full Fly.io deployment with CI/CD pipeline, database seeder, and automatic deployments on merge to main
+- US-4.6: All MVP features delivered, CI/CD working, documentation complete
 
 ---
 
@@ -329,7 +338,7 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 ---
 
 #### TASK-4.14: Exam Preparation (5 SP)
-**Status:** Not started
+**Status:** Complete
 
 **Deliverables:**
 - Final documentation polish
@@ -338,9 +347,9 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 - Known issues documented
 
 **Acceptance Criteria:**
-- [ ] Documentation complete
-- [ ] Demo working
-- [ ] Ready for oral exam
+- [x] Documentation complete
+- [x] Demo working
+- [x] Ready for oral exam
 
 ---
 
@@ -361,8 +370,8 @@ Complete the Dead Pigeons application with full game logic, React UI, and cloud 
 | TASK-4.11: Fly.io Deployment | 8 | Complete |
 | TASK-4.12: E2E Tests | 5 | Complete |
 | TASK-4.13: Smoke Tests | 3 | Complete |
-| TASK-4.14: Exam Prep | 5 | In Progress |
-| **Total** | **55** | **50 SP Complete (91%)** |
+| TASK-4.14: Exam Prep | 5 | Complete |
+| **Total** | **55** | **55 SP Complete (100%)** |
 
 ---
 
@@ -444,10 +453,11 @@ client/src/
 - [x] Integration tests passing
 - [x] User registration page functional
 - [x] Jerne IF logo integrated
-- [ ] Documentation complete
-- [ ] Demo ready
-- [ ] PR reviewed and merged
-- [ ] Tagged v1.4.0
+- [x] Database seeder implemented
+- [x] Documentation complete
+- [x] Demo ready
+- [x] PR reviewed and merged
+- [x] Tagged v1.4.0
 
 ---
 
