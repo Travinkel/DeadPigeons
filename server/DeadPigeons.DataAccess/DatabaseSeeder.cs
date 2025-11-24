@@ -8,100 +8,143 @@ public static class DatabaseSeeder
 {
     public static async Task SeedAsync(AppDbContext context)
     {
-        // Check if already seeded
-        if (await context.Players.AnyAsync())
-            return;
+        var hasher = new Microsoft.AspNetCore.Identity.PasswordHasher<Player>();
 
-        // Create admin user
-        var admin = new Player
+        // Upsert admin
+        var admin = await context.Players.IgnoreQueryFilters().FirstOrDefaultAsync(p => p.Email == "admin@jerneif.dk");
+        if (admin == null)
         {
-            Id = Guid.NewGuid(),
-            Name = "Admin",
-            Email = "admin@jerneif.dk",
-            Phone = "+4512345678",
-            IsActive = true,
-            Role = Role.Admin,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!")
-        };
-
-        // Create test player
-        var player = new Player
+            admin = new Player
+            {
+                Id = Guid.NewGuid(),
+                Name = "Admin",
+                Email = "admin@jerneif.dk",
+                Phone = "+4512345678",
+                IsActive = true,
+                Role = Role.Admin
+            };
+            admin.PasswordHash = hasher.HashPassword(admin, "Admin123!");
+            context.Players.Add(admin);
+        }
+        else
         {
-            Id = Guid.NewGuid(),
-            Name = "Test Spiller",
-            Email = "player@jerneif.dk",
-            Phone = "+4587654321",
-            IsActive = true,
-            Role = Role.Player,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Player123!")
-        };
+            if (string.IsNullOrWhiteSpace(admin.PasswordHash))
+            {
+                admin.PasswordHash = hasher.HashPassword(admin, "Admin123!");
+            }
+            // Preserve admin-chosen password/flags; only revive if soft-deleted.
+            admin.DeletedAt = null;
+        }
 
-        context.Players.AddRange(admin, player);
+        // Upsert test player
+        var player = await context.Players.IgnoreQueryFilters().FirstOrDefaultAsync(p => p.Email == "player@jerneif.dk");
+        if (player == null)
+        {
+            player = new Player
+            {
+                Id = Guid.NewGuid(),
+                Name = "Test Spiller",
+                Email = "player@jerneif.dk",
+                Phone = "+4587654321",
+                IsActive = true,
+                Role = Role.Player
+            };
+            player.PasswordHash = hasher.HashPassword(player, "Player123!");
+            context.Players.Add(player);
+        }
+        else
+        {
+            if (string.IsNullOrWhiteSpace(player.PasswordHash))
+            {
+                player.PasswordHash = hasher.HashPassword(player, "Player123!");
+            }
+            player.DeletedAt = null;
+        }
 
-        // Seed games for 20 years (per exam Tip 1)
-        var games = GenerateGames(2024, 2044).ToList();
-        context.Games.AddRange(games);
-
-        // Find current week's game for demo boards
+        // Seed games around the current year to avoid out-of-range failures
         var now = DateTime.UtcNow;
-        var currentWeek = ISOWeek.GetWeekOfYear(now);
         var currentYear = now.Year;
-        var currentGame = games.First(g => g.Year == currentYear && g.WeekNumber == currentWeek);
+        var startYear = Math.Min(2024, currentYear);          // include historical lower bound
+        var endYear = Math.Max(currentYear + 5, 2044);        // at least 5 years ahead or tip range
 
-        // Seed demo transactions for player balance (exam demo requirement)
-        var approvedDeposit = new Transaction
+        // Seed games for the computed range (per exam Tip 1)
+        var games = await context.Games.AnyAsync()
+            ? await context.Games.ToListAsync()
+            : GenerateGames(startYear, endYear).ToList();
+
+        if (!await context.Games.AnyAsync())
         {
-            Id = Guid.NewGuid(),
-            PlayerId = player.Id,
-            Amount = 500m,
-            Type = TransactionType.Deposit,
-            MobilePayTransactionId = "DEMO-001",
-            IsApproved = true,
-            CreatedAt = DateTime.UtcNow.AddDays(-7),
-            ApprovedAt = DateTime.UtcNow.AddDays(-7),
-            ApprovedById = admin.Id
-        };
+            context.Games.AddRange(games);
+        }
 
-        // Pending deposit for admin approval demo
-        var pendingDeposit = new Transaction
+        // Find current week's game for demo boards (guard against missing week)
+        var currentWeek = ISOWeek.GetWeekOfYear(now);
+        var currentGame = games.FirstOrDefault(g => g.Year == currentYear && g.WeekNumber == currentWeek)
+                          ?? games.FirstOrDefault(g => g.Status == GameStatus.Active)
+                          ?? games.First(); // fallback to any game
+
+        // Seed demo transactions for player balance (exam demo requirement) if not already present
+        if (!await context.Transactions.AnyAsync(t => t.MobilePayTransactionId == "DEMO-001"))
         {
-            Id = Guid.NewGuid(),
-            PlayerId = player.Id,
-            Amount = 200m,
-            Type = TransactionType.Deposit,
-            MobilePayTransactionId = "DEMO-002",
-            IsApproved = false,
-            CreatedAt = DateTime.UtcNow.AddHours(-2)
-        };
+            var approvedDeposit = new Transaction
+            {
+                Id = Guid.NewGuid(),
+                PlayerId = player.Id,
+                Amount = 500m,
+                Type = TransactionType.Deposit,
+                MobilePayTransactionId = "DEMO-001",
+                IsApproved = true,
+                CreatedAt = DateTime.UtcNow.AddDays(-7),
+                ApprovedAt = DateTime.UtcNow.AddDays(-7),
+                ApprovedById = admin.Id
+            };
+            context.Transactions.Add(approvedDeposit);
+        }
 
-        context.Transactions.AddRange(approvedDeposit, pendingDeposit);
-
-        // Seed demo boards for current week (5 numbers = 20 DKK)
-        var boardTransaction = new Transaction
+        if (!await context.Transactions.AnyAsync(t => t.MobilePayTransactionId == "DEMO-002"))
         {
-            Id = Guid.NewGuid(),
-            PlayerId = player.Id,
-            Amount = -20m,
-            Type = TransactionType.Purchase,
-            IsApproved = true,
-            CreatedAt = DateTime.UtcNow.AddDays(-1),
-            ApprovedAt = DateTime.UtcNow.AddDays(-1),
-            ApprovedById = admin.Id
-        };
+            var pendingDeposit = new Transaction
+            {
+                Id = Guid.NewGuid(),
+                PlayerId = player.Id,
+                Amount = 200m,
+                Type = TransactionType.Deposit,
+                MobilePayTransactionId = "DEMO-002",
+                IsApproved = false,
+                CreatedAt = DateTime.UtcNow.AddHours(-2)
+            };
+            context.Transactions.Add(pendingDeposit);
+        }
 
-        var demoBoard = new Board
+        // Seed demo board/purchase if not already present
+        if (!await context.Boards.AnyAsync(b => b.PlayerId == player.Id && b.GameId == currentGame.Id))
         {
-            Id = Guid.NewGuid(),
-            PlayerId = player.Id,
-            GameId = currentGame.Id,
-            Numbers = new[] { 3, 7, 12, 15, 18 },
-            IsRepeating = false,
-            CreatedAt = DateTime.UtcNow.AddDays(-1),
-            TransactionId = boardTransaction.Id
-        };
+            var boardTransaction = new Transaction
+            {
+                Id = Guid.NewGuid(),
+                PlayerId = player.Id,
+                Amount = -20m,
+                Type = TransactionType.Purchase,
+                IsApproved = true,
+                CreatedAt = DateTime.UtcNow.AddDays(-1),
+                ApprovedAt = DateTime.UtcNow.AddDays(-1),
+                ApprovedById = admin.Id
+            };
 
-        context.Transactions.Add(boardTransaction);
-        context.Boards.Add(demoBoard);
+            var demoBoard = new Board
+            {
+                Id = Guid.NewGuid(),
+                PlayerId = player.Id,
+                GameId = currentGame.Id,
+                Numbers = new[] { 3, 7, 12, 15, 18 },
+                IsRepeating = false,
+                CreatedAt = DateTime.UtcNow.AddDays(-1),
+                TransactionId = boardTransaction.Id
+            };
+
+            context.Transactions.Add(boardTransaction);
+            context.Boards.Add(demoBoard);
+        }
 
         await context.SaveChangesAsync();
     }
