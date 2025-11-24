@@ -6,7 +6,7 @@ namespace DeadPigeons.Api.Dtos;
 public record CreateDepositRequest(
     [Required] Guid PlayerId,
     [Required, Range(0.01, 10000)] decimal Amount,
-    [StringLength(50)] string? MobilePayTransactionId
+    [Required, StringLength(50)] string MobilePayTransactionId
 );
 
 public record ApproveTransactionRequest(
@@ -23,5 +23,6 @@ public record TransactionResponse(
     bool IsApproved,
     DateTime CreatedAt,
     DateTime? ApprovedAt,
-    Guid? ApprovedById
+    Guid? ApprovedById,
+    string? PlayerNameOrEmail
 );

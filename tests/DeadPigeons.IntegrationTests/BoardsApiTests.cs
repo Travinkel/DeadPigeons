@@ -23,7 +23,7 @@ public class BoardsApiTests
         var player = await playerResponse.Content.ReadFromJsonAsync<PlayerResponse>();
 
         // Create and approve deposit
-        var depositRequest = new CreateDepositRequest(player!.Id, amount, null);
+        var depositRequest = new CreateDepositRequest(player!.Id, amount, "MP-SEED-DEP" );
         var depositResponse = await _client.PostAsJsonAsync("/api/transactions/deposit", depositRequest);
         var transaction = await depositResponse.Content.ReadFromJsonAsync<TransactionResponse>();
         await _client.PostAsJsonAsync($"/api/transactions/{transaction!.Id}/approve", new ApproveTransactionRequest(Guid.NewGuid()));
@@ -65,7 +65,7 @@ public class BoardsApiTests
         var game = await CreateActiveGame();
 
         var numbers = new int[] { 1, 2, 3, 4, 5 };
-        var request = new CreateBoardRequest(player.Id, game.Id, numbers, false);
+        var request = new CreateBoardRequest(player.Id, game.Id, numbers, false, "MP-BUY-API");
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/boards", request);
@@ -88,7 +88,7 @@ public class BoardsApiTests
         var game = await CreateActiveGame();
 
         // 5 numbers = 25 DKK
-        var request = new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4, 5 }, false);
+        var request = new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4, 5 }, false, "MP-BUY-API");
 
         // Act
         await _client.PostAsJsonAsync("/api/boards", request);
@@ -107,7 +107,7 @@ public class BoardsApiTests
         var game = await CreateActiveGame();
 
         // 5 numbers = 25 DKK (more than balance)
-        var request = new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4, 5 }, false);
+        var request = new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4, 5 }, false, "MP-BUY-API");
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/boards", request);
@@ -123,7 +123,7 @@ public class BoardsApiTests
         var player = await CreatePlayerWithBalance(100m);
         var game = await CreateActiveGame();
 
-        var request = new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4 }, false);
+        var request = new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4 }, false, "MP-BUY-API");
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/boards", request);
@@ -139,7 +139,7 @@ public class BoardsApiTests
         var player = await CreatePlayerWithBalance(100m);
         var game = await CreateActiveGame();
 
-        var request = new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, false);
+        var request = new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, false, "MP-BUY-API");
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/boards", request);
@@ -155,7 +155,7 @@ public class BoardsApiTests
         var player = await CreatePlayerWithBalance(100m);
         var game = await CreateActiveGame();
 
-        await _client.PostAsJsonAsync("/api/boards", new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4, 5 }, false));
+        await _client.PostAsJsonAsync("/api/boards", new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4, 5 }, false, "MP-BUY-API"));
 
         // Act
         var response = await _client.GetAsync($"/api/boards/game/{game.Id}");
@@ -174,7 +174,7 @@ public class BoardsApiTests
         var player = await CreatePlayerWithBalance(100m);
         var game = await CreateActiveGame();
 
-        await _client.PostAsJsonAsync("/api/boards", new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4, 5 }, false));
+        await _client.PostAsJsonAsync("/api/boards", new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4, 5 }, false, "MP-BUY-API"));
 
         // Act
         var response = await _client.GetAsync($"/api/boards/player/{player.Id}");

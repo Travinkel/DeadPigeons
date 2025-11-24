@@ -33,7 +33,7 @@ public class BoardServiceTests : IClassFixture<TestServiceFixture>, IDisposable
     public async Task CreateAsync_InvalidNumberCount_ThrowsException(int[] numbers)
     {
         // Arrange
-        var request = new CreateBoardRequest(Guid.NewGuid(), Guid.NewGuid(), numbers, false);
+        var request = new CreateBoardRequest(Guid.NewGuid(), Guid.NewGuid(), numbers, false, "MP-BUY-TEST");
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
@@ -46,7 +46,7 @@ public class BoardServiceTests : IClassFixture<TestServiceFixture>, IDisposable
     {
         // Arrange
         var numbers = new int[] { 1, 2, 3, 3, 5 }; // Duplicate 3
-        var request = new CreateBoardRequest(Guid.NewGuid(), Guid.NewGuid(), numbers, false);
+        var request = new CreateBoardRequest(Guid.NewGuid(), Guid.NewGuid(), numbers, false, "MP-BUY-TEST");
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
@@ -59,7 +59,7 @@ public class BoardServiceTests : IClassFixture<TestServiceFixture>, IDisposable
     {
         // Arrange
         var numbers = new int[] { 0, 1, 2, 3, 4 }; // 0 is invalid
-        var request = new CreateBoardRequest(Guid.NewGuid(), Guid.NewGuid(), numbers, false);
+        var request = new CreateBoardRequest(Guid.NewGuid(), Guid.NewGuid(), numbers, false, "MP-BUY-TEST");
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
@@ -72,7 +72,7 @@ public class BoardServiceTests : IClassFixture<TestServiceFixture>, IDisposable
     {
         // Arrange
         var numbers = new int[] { 1, 2, 3, 4, 91 }; // 91 is invalid
-        var request = new CreateBoardRequest(Guid.NewGuid(), Guid.NewGuid(), numbers, false);
+        var request = new CreateBoardRequest(Guid.NewGuid(), Guid.NewGuid(), numbers, false, "MP-BUY-TEST");
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
@@ -97,7 +97,7 @@ public class BoardServiceTests : IClassFixture<TestServiceFixture>, IDisposable
         await _db.SaveChangesAsync();
 
         var numbers = new int[] { 1, 2, 3, 4, 5 };
-        var request = new CreateBoardRequest(Guid.NewGuid(), game.Id, numbers, false);
+        var request = new CreateBoardRequest(Guid.NewGuid(), game.Id, numbers, false, "MP-BUY-TEST");
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
@@ -135,7 +135,7 @@ public class BoardServiceTests : IClassFixture<TestServiceFixture>, IDisposable
         // No transactions = 0 balance
         // 5 numbers = 25 DKK cost
         var numbers = new int[] { 1, 2, 3, 4, 5 };
-        var request = new CreateBoardRequest(playerId, game.Id, numbers, false);
+        var request = new CreateBoardRequest(playerId, game.Id, numbers, false, "MP-BUY-TEST");
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() =>
@@ -183,7 +183,7 @@ public class BoardServiceTests : IClassFixture<TestServiceFixture>, IDisposable
 
         // 5 numbers = 25 DKK
         var numbers = new int[] { 1, 2, 3, 4, 5 };
-        var request = new CreateBoardRequest(playerId, game.Id, numbers, false);
+        var request = new CreateBoardRequest(playerId, game.Id, numbers, false, "MP-BUY-TEST");
 
         // Act
         var result = await _boardService.CreateAsync(request);

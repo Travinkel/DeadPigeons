@@ -47,7 +47,7 @@ public class TransactionsApiTests
         var playerResponse = await _client.PostAsJsonAsync("/api/players", playerRequest);
         var player = await playerResponse.Content.ReadFromJsonAsync<PlayerResponse>();
 
-        var depositRequest = new CreateDepositRequest(player!.Id, 50m, null);
+        var depositRequest = new CreateDepositRequest(player!.Id, 50m, "MP-APPROVE-1");
         var depositResponse = await _client.PostAsJsonAsync("/api/transactions/deposit", depositRequest);
         var transaction = await depositResponse.Content.ReadFromJsonAsync<TransactionResponse>();
 
@@ -72,7 +72,7 @@ public class TransactionsApiTests
         var player = await playerResponse.Content.ReadFromJsonAsync<PlayerResponse>();
 
         // Create deposit
-        var depositRequest = new CreateDepositRequest(player!.Id, 75m, null);
+        var depositRequest = new CreateDepositRequest(player!.Id, 75m, "MP-PENDING-1");
         await _client.PostAsJsonAsync("/api/transactions/deposit", depositRequest);
 
         // Act
@@ -94,8 +94,8 @@ public class TransactionsApiTests
         var player = await playerResponse.Content.ReadFromJsonAsync<PlayerResponse>();
 
         // Create two deposits
-        await _client.PostAsJsonAsync("/api/transactions/deposit", new CreateDepositRequest(player!.Id, 100m, null));
-        await _client.PostAsJsonAsync("/api/transactions/deposit", new CreateDepositRequest(player.Id, 200m, null));
+        await _client.PostAsJsonAsync("/api/transactions/deposit", new CreateDepositRequest(player!.Id, 100m, "MP-BULK-1"));
+        await _client.PostAsJsonAsync("/api/transactions/deposit", new CreateDepositRequest(player.Id, 200m, "MP-BULK-2"));
 
         // Act
         var response = await _client.GetAsync($"/api/transactions/player/{player.Id}");
@@ -115,7 +115,7 @@ public class TransactionsApiTests
         var playerResponse = await _client.PostAsJsonAsync("/api/players", playerRequest);
         var player = await playerResponse.Content.ReadFromJsonAsync<PlayerResponse>();
 
-        var depositRequest = new CreateDepositRequest(player!.Id, 100m, null);
+        var depositRequest = new CreateDepositRequest(player!.Id, 100m, "MP-BAL-1");
         var depositResponse = await _client.PostAsJsonAsync("/api/transactions/deposit", depositRequest);
         var transaction = await depositResponse.Content.ReadFromJsonAsync<TransactionResponse>();
 

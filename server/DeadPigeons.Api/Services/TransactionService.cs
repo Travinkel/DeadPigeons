@@ -16,10 +16,13 @@ public class TransactionService : ITransactionService
 
     public async Task<IEnumerable<TransactionResponse>> GetByPlayerIdAsync(Guid playerId)
     {
-        return await _db.Transactions
-            .Where(t => t.PlayerId == playerId)
-            .OrderByDescending(t => t.CreatedAt)
-            .Select(t => new TransactionResponse(
+        return await (
+            from t in _db.Transactions
+            where t.PlayerId == playerId
+            orderby t.CreatedAt descending
+            join p in _db.Players on t.PlayerId equals p.Id into gp
+            from p in gp.DefaultIfEmpty()
+            select new TransactionResponse(
                 t.Id,
                 t.PlayerId,
                 t.Amount,
@@ -28,16 +31,20 @@ public class TransactionService : ITransactionService
                 t.IsApproved,
                 t.CreatedAt,
                 t.ApprovedAt,
-                t.ApprovedById))
-            .ToListAsync();
+                t.ApprovedById,
+                p != null && !string.IsNullOrEmpty(p.Name) ? p.Name : p != null ? p.Email : null)
+        ).ToListAsync();
     }
 
     public async Task<IEnumerable<TransactionResponse>> GetPendingAsync()
     {
-        return await _db.Transactions
-            .Where(t => !t.IsApproved)
-            .OrderBy(t => t.CreatedAt)
-            .Select(t => new TransactionResponse(
+        return await (
+            from t in _db.Transactions
+            where !t.IsApproved
+            orderby t.CreatedAt
+            join p in _db.Players on t.PlayerId equals p.Id into gp
+            from p in gp.DefaultIfEmpty()
+            select new TransactionResponse(
                 t.Id,
                 t.PlayerId,
                 t.Amount,
@@ -46,14 +53,17 @@ public class TransactionService : ITransactionService
                 t.IsApproved,
                 t.CreatedAt,
                 t.ApprovedAt,
-                t.ApprovedById))
-            .ToListAsync();
+                t.ApprovedById,
+                p != null && !string.IsNullOrEmpty(p.Name) ? p.Name : p != null ? p.Email : null)
+        ).ToListAsync();
     }
 
     public async Task<TransactionResponse> CreateDepositAsync(CreateDepositRequest request)
     {
         if (request.Amount <= 0)
             throw new ArgumentException("Deposit amount must be positive");
+        if (string.IsNullOrWhiteSpace(request.MobilePayTransactionId))
+            throw new ArgumentException("MobilePay transaction ID is required");
 
         var transaction = new Transaction
         {
@@ -69,6 +79,7 @@ public class TransactionService : ITransactionService
         _db.Transactions.Add(transaction);
         await _db.SaveChangesAsync();
 
+        var player = await _db.Players.FindAsync(transaction.PlayerId);
         return new TransactionResponse(
             transaction.Id,
             transaction.PlayerId,
@@ -78,7 +89,8 @@ public class TransactionService : ITransactionService
             transaction.IsApproved,
             transaction.CreatedAt,
             transaction.ApprovedAt,
-            transaction.ApprovedById);
+            transaction.ApprovedById,
+            player?.Name != null && player.Name != "" ? player.Name : player?.Email);
     }
 
     public async Task<TransactionResponse?> ApproveAsync(Guid id, ApproveTransactionRequest request)
@@ -92,6 +104,7 @@ public class TransactionService : ITransactionService
 
         await _db.SaveChangesAsync();
 
+        var player2 = await _db.Players.FindAsync(transaction.PlayerId);
         return new TransactionResponse(
             transaction.Id,
             transaction.PlayerId,
@@ -101,6 +114,7 @@ public class TransactionService : ITransactionService
             transaction.IsApproved,
             transaction.CreatedAt,
             transaction.ApprovedAt,
-            transaction.ApprovedById);
+            transaction.ApprovedById,
+            player2?.Name != null && player2.Name != "" ? player2.Name : player2?.Email);
     }
 }

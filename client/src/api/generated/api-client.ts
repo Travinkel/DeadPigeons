@@ -1251,6 +1251,9 @@ export interface BoardResponse {
   isRepeating?: boolean;
   createdAt?: Date;
   transactionId?: string;
+  weekNumber?: number;
+  year?: number;
+  friendlyTitle?: string | undefined;
 }
 
 export interface BoardWithPlayerResponse {
@@ -1272,6 +1275,7 @@ export interface CreateBoardRequest {
   gameId?: string;
   numbers?: number[] | undefined;
   isRepeating?: boolean;
+  mobilePayTransactionId?: string | undefined;
 }
 
 export interface CreateDepositRequest {
@@ -1361,6 +1365,7 @@ export interface TransactionResponse {
   createdAt?: Date;
   approvedAt?: Date | undefined;
   approvedById?: string | undefined;
+  playerNameOrEmail?: string | undefined;
 }
 
 export interface UpdatePlayerRequest {
