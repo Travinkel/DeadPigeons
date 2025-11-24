@@ -52,7 +52,8 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
                 ["Jwt:Secret"] = TestJwtSecret,
                 ["Jwt:Issuer"] = TestJwtIssuer,
                 ["Jwt:Audience"] = TestJwtAudience,
-                ["HttpsRedirection:Enabled"] = "false" // Disable HTTPS redirect for TestServer
+                ["HttpsRedirection:Enabled"] = "false", // Disable HTTPS redirect for TestServer
+                ["ConnectionStrings:Default"] = _connectionString ?? string.Empty
             });
         });
 
