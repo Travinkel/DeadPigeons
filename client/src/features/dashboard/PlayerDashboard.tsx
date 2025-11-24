@@ -165,37 +165,66 @@ export function PlayerDashboard() {
           {transactions.length === 0 ? (
             <p className="text-base-content/70">Ingen transaktioner endnu.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Dato</th>
-                    <th>Type</th>
-                    <th>Beløb</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.map((tx) => (
-                    <tr key={tx.id}>
-                      <td>
+            <div className="space-y-3 md:space-y-0 md:overflow-x-auto">
+              {/* Card layout on mobile */}
+              <div className="grid gap-3 md:hidden">
+                {transactions.map((tx) => (
+                  <div key={tx.id} className="rounded-box border border-base-300 bg-base-100 p-3 shadow-sm">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="text-sm text-base-content/70">
                         {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString("da-DK") : "-"}
-                      </td>
-                      <td>{tx.type}</td>
-                      <td className={tx.amount && tx.amount > 0 ? "text-success" : "text-error"}>
+                      </div>
+                      <span
+                        className={`badge badge-sm ${tx.approvedAt ? "badge-success" : "badge-warning"}`}
+                      >
+                        {tx.approvedAt ? "Godkendt" : "Afventer"}
+                      </span>
+                    </div>
+                    <div className="mt-1 flex justify-between items-center">
+                      <div className="text-sm font-semibold">{tx.type}</div>
+                      <div
+                        className={`text-sm font-bold ${
+                          tx.amount && tx.amount > 0 ? "text-success" : "text-error"
+                        }`}
+                      >
                         {tx.amount?.toFixed(2)} kr
-                      </td>
-                      <td>
-                        {tx.approvedAt ? (
-                          <span className="badge badge-success badge-sm">Godkendt</span>
-                        ) : (
-                          <span className="badge badge-warning badge-sm">Afventer</span>
-                        )}
-                      </td>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Table layout on md+ */}
+              <div className="hidden md:block">
+                <table className="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Dato</th>
+                      <th>Type</th>
+                      <th>Beløb</th>
+                      <th>Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {transactions.map((tx) => (
+                      <tr key={tx.id}>
+                        <td>{tx.createdAt ? new Date(tx.createdAt).toLocaleDateString("da-DK") : "-"}</td>
+                        <td>{tx.type}</td>
+                        <td className={tx.amount && tx.amount > 0 ? "text-success" : "text-error"}>
+                          {tx.amount?.toFixed(2)} kr
+                        </td>
+                        <td>
+                          {tx.approvedAt ? (
+                            <span className="badge badge-success badge-sm">Godkendt</span>
+                          ) : (
+                            <span className="badge badge-warning badge-sm">Afventer</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>
