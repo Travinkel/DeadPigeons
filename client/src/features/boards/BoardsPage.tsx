@@ -1,21 +1,30 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
-import { createApiClient } from "../../api/apiClient";
-import { type BoardResponse } from "../../api/generated/api-client";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+type PlayerBoard = {
+  id?: string;
+  playerId?: string;
+  gameId?: string;
+  numbers?: number[];
+  isRepeating?: boolean;
+  createdAt?: string;
+  friendlyTitle?: string;
+  weekNumber?: number;
+  year?: number;
+};
+
+type ErrorResponse = {
+  message?: string;
+};
 
 export function BoardsPage() {
   const { user, token } = useAuth();
-  const [boards, setBoards] = useState<BoardResponse[]>([]);
+  const [boards, setBoards] = useState<PlayerBoard[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const formatGameLabel = (board: BoardResponse) => {
-    if (board.friendlyTitle) return board.friendlyTitle;
-    if (board.weekNumber && board.year) return `Uge ${board.weekNumber}, ${board.year}`;
-    if (board.gameId) return `Spil ${board.gameId.slice(0, 8)}...`;
-    return "Spil";
-  };
 
   useEffect(() => {
     if (!user?.playerId || !token) return;
@@ -25,11 +34,27 @@ export function BoardsPage() {
       setError(null);
 
       try {
-        const client = createApiClient(token);
-        const boardsData = await client.player(user.playerId);
+        const resp = await fetch(`${API_URL}/api/Boards/player/${user.playerId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        });
+
+        if (!resp.ok) {
+          const err: ErrorResponse | undefined = await resp.json().catch(() => undefined);
+          throw new Error(err?.message || "Failed to fetch boards");
+        }
+
+        const boardsData: PlayerBoard[] = await resp.json();
+        boardsData.sort((a, b) => {
+          const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const bDate = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return bDate - aDate;
+        });
         setBoards(boardsData);
       } catch (err) {
-        setError("Kunne ikke hente plader. Prov igen senere.");
+        setError("Kunne ikke hente plader. Prøv igen senere.");
         console.error("Boards fetch error:", err);
       } finally {
         setIsLoading(false);
@@ -89,12 +114,23 @@ export function BoardsPage() {
         </div>
       ) : (
         <div className="grid gap-4">
-          {boards.map((board) => (
-            <div key={board.id} className="card bg-base-100 shadow-xl">
+          {boards.map((board, index) => (
+            <div
+              key={board.id ?? `${board.gameId ?? "board"}-${index}`}
+              className="card bg-base-100 shadow-xl"
+            >
               <div className="card-body">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h2 className="card-title">{formatGameLabel(board)}</h2>
+                    <h2 className="card-title">
+                      {board.friendlyTitle
+                        ? board.friendlyTitle
+                        : board.weekNumber && board.year
+                          ? `Uge ${board.weekNumber}, ${board.year}`
+                          : board.gameId
+                            ? `Spil: ${board.gameId.slice(0, 8)}…`
+                            : "Spil"}
+                    </h2>
                     <p className="text-sm text-base-content/70">
                       Oprettet:{" "}
                       {board.createdAt
@@ -115,7 +151,7 @@ export function BoardsPage() {
                     {board.numbers?.map((num) => (
                       <div
                         key={num}
-                        className="w-11 h-11 rounded-full bg-primary text-primary-content flex items-center justify-center font-extrabold shadow-sm"
+                        className="w-10 h-10 rounded-full bg-primary text-primary-content flex items-center justify-center font-bold"
                       >
                         {num}
                       </div>

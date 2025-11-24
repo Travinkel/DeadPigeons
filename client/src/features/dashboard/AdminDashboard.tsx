@@ -1,15 +1,28 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth/useAuth";
 import { createApiClient } from "../../api/apiClient";
-import {
-  type TransactionResponse,
-  type GameResponse,
-  type PlayerResponse,
-} from "../../api/generated/api-client";
+import { type GameResponse, type PlayerResponse } from "../../api/generated/api-client";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+type AdminTransaction = {
+  id?: string;
+  playerId?: string;
+  playerNameOrEmail?: string;
+  amount?: number;
+  mobilePayTransactionId?: string | null;
+  isApproved?: boolean;
+  createdAt?: string;
+  type?: string;
+};
+
+type ErrorResponse = {
+  message?: string;
+};
 
 export function AdminDashboard() {
   const { token } = useAuth();
-  const [pendingTransactions, setPendingTransactions] = useState<TransactionResponse[]>([]);
+  const [pendingTransactions, setPendingTransactions] = useState<AdminTransaction[]>([]);
   const [games, setGames] = useState<GameResponse[]>([]);
   const [players, setPlayers] = useState<PlayerResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,11 +38,29 @@ export function AdminDashboard() {
       try {
         const client = createApiClient(token);
 
-        const [pendingData, gamesData, playersData] = await Promise.all([
-          client.pending(),
+        const [gamesData, playersData] = await Promise.all([
           client.gamesAll(),
           client.playersAll(),
         ]);
+
+        const pendingResp = await fetch(`${API_URL}/api/Transactions/pending`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        });
+
+        if (!pendingResp.ok) {
+          const err: ErrorResponse | undefined = await pendingResp.json().catch(() => undefined);
+          throw new Error(err?.message || "Failed to fetch pending transactions");
+        }
+
+        const pendingData: AdminTransaction[] = await pendingResp.json();
+        pendingData.sort((a, b) => {
+          const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const bDate = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return bDate - aDate;
+        });
 
         setPendingTransactions(pendingData);
         setGames(gamesData);
@@ -122,25 +153,25 @@ export function AdminDashboard() {
             <p className="text-base-content/70">Ingen afventende indbetalinger.</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="table table-sm w-full whitespace-normal">
+              <table className="table">
                 <thead>
                   <tr>
-                    <th className="text-xs">Spiller</th>
-                    <th className="text-xs">Beløb</th>
-                    <th className="text-xs">Dato</th>
-                    <th className="text-xs">Handling</th>
+                    <th>Spiller</th>
+                    <th>Beløb</th>
+                    <th>Dato</th>
+                    <th>MobilePay</th>
                   </tr>
                 </thead>
                 <tbody>
                   {pendingTransactions.slice(0, 10).map((tx) => (
-                    <tr key={tx.id}>
-                      <td className="max-w-[180px] break-words text-sm">{tx.playerId}</td>
-                      <td className="text-sm">{tx.amount?.toFixed(2)} kr</td>
-                      <td className="text-sm">
+                    <tr key={tx.id ?? `${tx.playerId}-${tx.createdAt}`}>
+                      <td>{tx.playerNameOrEmail || tx.playerId}</td>
+                      <td>{tx.amount?.toFixed(2)} kr</td>
+                      <td>
                         {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString("da-DK") : "-"}
                       </td>
-                      <td className="text-sm">
-                        <button className="btn btn-success btn-sm whitespace-nowrap">Godkend</button>
+                      <td className="text-xs text-base-content/70">
+                        {tx.mobilePayTransactionId || "-"}
                       </td>
                     </tr>
                   ))}
@@ -159,22 +190,22 @@ export function AdminDashboard() {
             <p className="text-base-content/70">Ingen spil oprettet endnu.</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="table table-sm w-full whitespace-normal">
+              <table className="table">
                 <thead>
                   <tr>
-                    <th className="text-xs">Uge</th>
-                    <th className="text-xs">År</th>
-                    <th className="text-xs">Plader</th>
-                    <th className="text-xs">Status</th>
+                    <th>Uge</th>
+                    <th>År</th>
+                    <th>Plader</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {games.slice(0, 5).map((game) => (
                     <tr key={game.id}>
-                      <td className="text-sm">{game.weekNumber}</td>
-                      <td className="text-sm">{game.year}</td>
-                      <td className="text-sm">{game.boardCount || 0}</td>
-                      <td className="text-sm">
+                      <td>{game.weekNumber}</td>
+                      <td>{game.year}</td>
+                      <td>{game.boardCount || 0}</td>
+                      <td>
                         {game.status === "Active" ? (
                           <span className="badge badge-success badge-sm">Aktiv</span>
                         ) : (
@@ -196,24 +227,22 @@ export function AdminDashboard() {
           <div className="card-body">
             <h2 className="card-title">Inaktive spillere</h2>
             <div className="overflow-x-auto">
-              <table className="table table-sm w-full whitespace-normal">
-                    <thead>
-                      <tr>
-                        <th className="text-xs">Navn</th>
-                        <th className="text-xs">Email</th>
-                        <th className="text-xs">Handling</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {inactivePlayers.map((player) => (
-                        <tr key={player.id}>
-                          <td className="text-sm">{player.name}</td>
-                          <td className="text-sm max-w-[200px] break-words">{player.email}</td>
-                          <td className="text-sm">
-                            <button className="btn btn-primary btn-sm whitespace-nowrap">Aktiver</button>
-                          </td>
-                        </tr>
-                      ))}
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Navn</th>
+                    <th>Email</th>
+                    <th>Telefon</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {inactivePlayers.slice(0, 5).map((player) => (
+                    <tr key={player.id}>
+                      <td>{player.name}</td>
+                      <td>{player.email}</td>
+                      <td>{player.phone || "-"}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -223,4 +252,3 @@ export function AdminDashboard() {
     </div>
   );
 }
-

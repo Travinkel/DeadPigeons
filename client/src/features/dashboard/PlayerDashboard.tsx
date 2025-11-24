@@ -1,28 +1,43 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth/useAuth";
 import { createApiClient } from "../../api/apiClient";
-import {
-  type PlayerResponse,
-  type PlayerBalanceResponse,
-  type BoardResponse,
-  type TransactionResponse,
-} from "../../api/generated/api-client";
+import { type PlayerResponse, type PlayerBalanceResponse } from "../../api/generated/api-client";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+type BoardSummary = {
+  id?: string;
+  gameId?: string;
+  numbers?: number[];
+  isRepeating?: boolean;
+  friendlyTitle?: string;
+  weekNumber?: number;
+  year?: number;
+};
+
+type TransactionSummary = {
+  id?: string;
+  playerId?: string;
+  amount?: number;
+  type?: string;
+  mobilePayTransactionId?: string | null;
+  isApproved?: boolean;
+  createdAt?: string;
+  approvedAt?: string | null;
+};
+
+type ErrorResponse = {
+  message?: string;
+};
 
 export function PlayerDashboard() {
   const { user, token } = useAuth();
   const [player, setPlayer] = useState<PlayerResponse | null>(null);
   const [balance, setBalance] = useState<PlayerBalanceResponse | null>(null);
-  const [boards, setBoards] = useState<BoardResponse[]>([]);
-  const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
+  const [boards, setBoards] = useState<BoardSummary[]>([]);
+  const [transactions, setTransactions] = useState<TransactionSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const formatGameLabel = (board: BoardResponse) => {
-    if (board.friendlyTitle) return board.friendlyTitle;
-    if (board.weekNumber && board.year) return `Uge ${board.weekNumber}, ${board.year}`;
-    if (board.gameId) return `Spil ${board.gameId.slice(0, 8)}...`;
-    return "Spil";
-  };
 
   useEffect(() => {
     if (!user?.playerId || !token) return;
@@ -33,13 +48,46 @@ export function PlayerDashboard() {
 
       try {
         const client = createApiClient(token);
-
-        const [playerData, balanceData, boardsData, transactionsData] = await Promise.all([
+        const [playerData, balanceData] = await Promise.all([
           client.playersGET(user.playerId),
           client.balance(user.playerId),
-          client.player(user.playerId),
-          client.player2(user.playerId),
         ]);
+
+        const [boardsResp, transactionsResp] = await Promise.all([
+          fetch(`${API_URL}/api/Boards/player/${user.playerId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+            },
+          }),
+          fetch(`${API_URL}/api/Transactions/player/${user.playerId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+            },
+          }),
+        ]);
+
+        if (!boardsResp.ok) {
+          const err: ErrorResponse | undefined = await boardsResp.json().catch(() => undefined);
+          throw new Error(err?.message || "Failed to fetch boards");
+        }
+
+        if (!transactionsResp.ok) {
+          const err: ErrorResponse | undefined = await transactionsResp
+            .json()
+            .catch(() => undefined);
+          throw new Error(err?.message || "Failed to fetch transactions");
+        }
+
+        const boardsData: BoardSummary[] = await boardsResp.json();
+        const transactionsData: TransactionSummary[] = await transactionsResp.json();
+
+        transactionsData.sort((a, b) => {
+          const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const bDate = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return bDate - aDate;
+        });
 
         setPlayer(playerData);
         setBalance(balanceData);
@@ -105,7 +153,7 @@ export function PlayerDashboard() {
         </div>
         <div className="stat bg-base-100 rounded-box shadow">
           <div className="stat-title">Email</div>
-          <div className="stat-value text-sm">{player?.email}</div>
+          <div className="stat-value text-sm break-all">{player?.email}</div>
         </div>
         <div className="stat bg-base-100 rounded-box shadow">
           <div className="stat-title">Telefon</div>
@@ -131,8 +179,16 @@ export function PlayerDashboard() {
                 </thead>
                 <tbody>
                   {boards.slice(0, 5).map((board) => (
-                    <tr key={board.id}>
-                      <td>{formatGameLabel(board)}</td>
+                    <tr key={board.id ?? `${board.gameId}-${board.numbers?.join("-")}`}>
+                      <td>
+                        {board.friendlyTitle
+                          ? board.friendlyTitle
+                          : board.weekNumber && board.year
+                            ? `Uge ${board.weekNumber}, ${board.year}`
+                            : board.gameId
+                              ? `Spil ${board.gameId.slice(0, 8)}`
+                              : "Spil"}
+                      </td>
                       <td>
                         <div className="flex gap-1 flex-wrap">
                           {board.numbers?.map((num) => (
@@ -165,66 +221,37 @@ export function PlayerDashboard() {
           {transactions.length === 0 ? (
             <p className="text-base-content/70">Ingen transaktioner endnu.</p>
           ) : (
-            <div className="space-y-3 md:space-y-0 md:overflow-x-auto">
-              {/* Card layout on mobile */}
-              <div className="grid gap-3 md:hidden">
-                {transactions.map((tx) => (
-                  <div key={tx.id} className="rounded-box border border-base-300 bg-base-100 p-3 shadow-sm">
-                    <div className="flex justify-between items-start gap-2">
-                      <div className="text-sm text-base-content/70">
+            <div className="overflow-x-auto">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Dato</th>
+                    <th>Type</th>
+                    <th>Beløb</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transactions.map((tx) => (
+                    <tr key={tx.id}>
+                      <td>
                         {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString("da-DK") : "-"}
-                      </div>
-                      <span
-                        className={`badge badge-sm ${tx.approvedAt ? "badge-success" : "badge-warning"}`}
-                      >
-                        {tx.approvedAt ? "Godkendt" : "Afventer"}
-                      </span>
-                    </div>
-                    <div className="mt-1 flex justify-between items-center">
-                      <div className="text-sm font-semibold">{tx.type}</div>
-                      <div
-                        className={`text-sm font-bold ${
-                          tx.amount && tx.amount > 0 ? "text-success" : "text-error"
-                        }`}
-                      >
+                      </td>
+                      <td>{tx.type}</td>
+                      <td className={tx.amount && tx.amount > 0 ? "text-success" : "text-error"}>
                         {tx.amount?.toFixed(2)} kr
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Table layout on md+ */}
-              <div className="hidden md:block">
-                <table className="table table-sm">
-                  <thead>
-                    <tr>
-                      <th>Dato</th>
-                      <th>Type</th>
-                      <th>Beløb</th>
-                      <th>Status</th>
+                      </td>
+                      <td>
+                        {tx.isApproved || tx.approvedAt ? (
+                          <span className="badge badge-success badge-sm">Godkendt</span>
+                        ) : (
+                          <span className="badge badge-warning badge-sm">Afventer</span>
+                        )}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {transactions.map((tx) => (
-                      <tr key={tx.id}>
-                        <td>{tx.createdAt ? new Date(tx.createdAt).toLocaleDateString("da-DK") : "-"}</td>
-                        <td>{tx.type}</td>
-                        <td className={tx.amount && tx.amount > 0 ? "text-success" : "text-error"}>
-                          {tx.amount?.toFixed(2)} kr
-                        </td>
-                        <td>
-                          {tx.approvedAt ? (
-                            <span className="badge badge-success badge-sm">Godkendt</span>
-                          ) : (
-                            <span className="badge badge-warning badge-sm">Afventer</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>

@@ -42,6 +42,21 @@
 - API migrates and seeds automatically on startup.  
 - Seeder fixed to avoid overwriting real admin/player credentials on each startup; CI updated to use `fly.toml`.  
 
+## Final Status
+- ✔ Active game invariant enforced: startup promotes current-week pending, GetActive fallback covers gaps, and Fly.io now returns the active game consistently.  
+- ✔ Seeder stabilized: deterministic ISOWeek seeds, demo board bound to the active game, and no drift between prod/local after reruns.  
+- ✔ Admin transactions visible and actionable: explicit joins replace lazy loading; approvals return updated balances and refresh lists.  
+- ✔ RaT checks green: deposit (player-only, token/user match), board purchase (5-8 numbers with 20/40/80/160 pricing, active game required), admin approvals, balances from approved transactions only.  
+- ✔ Fly.io debugging closed: CORS + JWT forwarding aligned with `VITE_API_URL`, correlation IDs logged with structured `{ code, message }` errors, health checks green after fixes.  
+- ✖ Additional UI polish outside auth/core flows deferred; extend Playwright smoke to cover RaT regressions.  
+
+## Acceptance Criteria Validation
+- CI/test gates: integration + RaT scripts rerun against Fly.io; no failing acceptance checks after backend fixes.  
+- Deployment: Fly.io deploy succeeds with token preflight; API migrates/seeds before serving traffic.  
+- Data invariants: exactly one active game after startup; seeds consistent week/year labels; demo board points to active game.  
+- Business logic: deposits require MobilePay ID and ownership match; board purchases blocked without active game or invalid counts; admin approvals update balances; friendly board names applied.  
+- Observability: correlation IDs present in prod logs; structured error codes returned to client; CORS origins and JWT forwarding verified in build.  
+
 ## Risks and Mitigations
 
 - **Token misconfiguration:** Add preflight check and docs.  

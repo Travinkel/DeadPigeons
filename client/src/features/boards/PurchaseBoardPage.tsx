@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import { createApiClient } from "../../api/apiClient";
-import { type GameResponse, type BoardResponse } from "../../api/generated/api-client";
+import { type GameResponse } from "../../api/generated/api-client";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+type ErrorResponse = {
+  message?: string;
+};
 
 // Pricing model: 5=20, 6=40, 7=80, 8=160 DKK
 function calculatePrice(count: number): number {
@@ -57,7 +63,7 @@ export function PurchaseBoardPage() {
         setActiveGame(gameData);
         setBalance(balanceData.balance || 0);
       } catch (err) {
-        setError("Kunne ikke hente spildata. Prov igen senere.");
+        setError("Kunne ikke hente spildata. Prøv igen senere.");
         console.error("Fetch error:", err);
       } finally {
         setIsLoading(false);
@@ -107,7 +113,7 @@ export function PurchaseBoardPage() {
 
     const trimmedMobilePayId = mobilePayId.trim();
     if (!trimmedMobilePayId) {
-      setError("MobilePay transaktions-ID er paakraevet.");
+      setError("MobilePay transaktions-ID er påkrævet.");
       return;
     }
 
@@ -116,21 +122,34 @@ export function PurchaseBoardPage() {
     setSuccess(null);
 
     try {
-      const client = createApiClient(token);
-      const board: BoardResponse = await client.boardsPOST({
-        playerId: user.playerId,
-        gameId: activeGame.id,
-        numbers: selectedNumbers,
-        isRepeating,
-        mobilePayTransactionId: trimmedMobilePayId,
+      const resp = await fetch(`${API_URL}/api/Boards`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          playerId: user.playerId,
+          gameId: activeGame.id,
+          numbers: selectedNumbers,
+          isRepeating,
+          mobilePayTransactionId: trimmedMobilePayId,
+        }),
       });
 
-      setSuccess(`Plade oprettet! Plade ID: ${board.id?.slice(0, 8)}...`);
+      if (!resp.ok) {
+        const err: ErrorResponse | undefined = await resp.json().catch(() => undefined);
+        throw new Error(err?.message || "Failed to create board");
+      }
+
+      setSuccess("Plade oprettet! Den afventer godkendelse.");
       setSelectedNumbers([]);
       setIsRepeating(false);
       setMobilePayId("");
 
       // Refresh balance
+      const client = createApiClient(token);
       const balanceData = await client.balance(user.playerId);
       setBalance(balanceData.balance || 0);
 
@@ -139,7 +158,7 @@ export function PurchaseBoardPage() {
         navigate("/boards");
       }, 2000);
     } catch (err) {
-      setError("Kunne ikke oprette plade. Tjek din saldo og prov igen.");
+      setError("Kunne ikke oprette plade. Tjek din saldo og prøv igen.");
       console.error("Board purchase error:", err);
     } finally {
       setIsSubmitting(false);
@@ -177,11 +196,9 @@ export function PurchaseBoardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col items-start gap-2 xs:flex-row xs:items-center xs:justify-between">
-        <h1 className="text-3xl font-bold">Kob plade</h1>
-        <div className="self-start xs:self-auto px-3 py-2 rounded-full bg-[#d60000] text-white font-extrabold text-sm tracking-tight shadow-sm">
-          Saldo: {balance.toFixed(2)} kr
-        </div>
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Køb plade</h1>
+        <div className="badge badge-lg badge-primary">Saldo: {balance.toFixed(2)} kr</div>
       </div>
 
       {/* Active Game Info */}
@@ -212,10 +229,7 @@ export function PurchaseBoardPage() {
               d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
             />
           </svg>
-          <span>
-            Tilmeldingsfristen er udlobet (lordag kl. 17:00). Du kan ikke kobe plader til dette
-            spil.
-          </span>
+          <span>Det er efter fristen for denne uge. Din plade bliver brugt næste uge.</span>
         </div>
       )}
 
@@ -309,7 +323,7 @@ export function PurchaseBoardPage() {
               {selectedNumbers.map((num) => (
                 <div
                   key={num}
-                  className="w-11 h-11 rounded-full bg-primary text-primary-content flex items-center justify-center font-extrabold text-base shadow-sm cursor-pointer hover:bg-primary-focus"
+                  className="w-10 h-10 rounded-full bg-primary text-primary-content flex items-center justify-center font-bold cursor-pointer hover:bg-primary-focus"
                   onClick={() => toggleNumber(num)}
                 >
                   {num}
@@ -323,8 +337,8 @@ export function PurchaseBoardPage() {
       {/* Number Grid */}
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
-          <h2 className="card-title">Vaelg numre (1-90)</h2>
-          <div className="grid grid-cols-6 sm:grid-cols-9 md:grid-cols-10 gap-2">
+          <h2 className="card-title">Vælg numre (1-90)</h2>
+          <div className="grid grid-cols-9 sm:grid-cols-10 gap-2">
             {Array.from({ length: 90 }, (_, i) => i + 1).map((num) => {
               const isSelected = selectedNumbers.includes(num);
               return (
@@ -333,9 +347,13 @@ export function PurchaseBoardPage() {
                   onClick={() => toggleNumber(num)}
                   disabled={!isSelected && selectedNumbers.length >= 8}
                   className={`
-                    w-10 h-10 sm:w-11 sm:h-11 rounded-full text-sm font-semibold
+                    w-8 h-8 sm:w-10 sm:h-10 rounded-full text-sm font-semibold
                     transition-colors duration-150
-                    ${isSelected ? "bg-primary text-primary-content" : "bg-base-200 hover:bg-base-300"}
+                    ${
+                      isSelected
+                        ? "bg-primary text-primary-content"
+                        : "bg-base-200 hover:bg-base-300"
+                    }
                     ${!isSelected && selectedNumbers.length >= 8 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                   `}
                 >
@@ -350,7 +368,7 @@ export function PurchaseBoardPage() {
       {/* Auto-repeat Option */}
       <div className="form-control">
         <label className="label cursor-pointer">
-          <span className="label-text">Gentag automatisk naeste uge</span>
+          <span className="label-text">Gentag automatisk næste uge</span>
           <input
             type="checkbox"
             className="checkbox checkbox-primary"
@@ -376,7 +394,7 @@ export function PurchaseBoardPage() {
         />
         <label className="label">
           <span className="label-text-alt text-base-content/60">
-            Paakraevet for kob; findes i MobilePay app under betalingshistorik
+            Påkrævet for køb; findes i MobilePay app under betalingshistorik
           </span>
         </label>
       </div>
@@ -389,7 +407,7 @@ export function PurchaseBoardPage() {
             <div>
               <p className="text-3xl font-bold">{price} kr</p>
               {balance < price && selectedNumbers.length >= 5 && (
-                <p className="text-error text-sm">Utilstraekkelig saldo</p>
+                <p className="text-error text-sm">Utilstrækkelig saldo</p>
               )}
             </div>
             <button
@@ -400,7 +418,7 @@ export function PurchaseBoardPage() {
               {isSubmitting ? (
                 <span className="loading loading-spinner loading-sm"></span>
               ) : (
-                "Kob plade"
+                "Køb plade"
               )}
             </button>
           </div>

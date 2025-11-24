@@ -1,12 +1,29 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
-import { createApiClient } from "../../api/apiClient";
-import { type TransactionResponse } from "../../api/generated/api-client";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+type PlayerTransaction = {
+  id?: string;
+  playerId?: string;
+  amount?: number;
+  type?: string;
+  mobilePayTransactionId?: string | null;
+  isApproved?: boolean;
+  createdAt?: string;
+  approvedAt?: string | null;
+};
+
+type ErrorResponse = {
+  code?: string;
+  message?: string;
+  correlationId?: string;
+};
 
 export function TransactionsPage() {
   const { user, token } = useAuth();
-  const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
+  const [transactions, setTransactions] = useState<PlayerTransaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,17 +35,25 @@ export function TransactionsPage() {
       setError(null);
 
       try {
-        const client = createApiClient(token);
-        const transactionsData = await client.player2(user.playerId);
-        // Sort by date descending (newest first)
-        transactionsData.sort((a, b) => {
+        const resp = await fetch(`${API_URL}/api/Transactions/player/${user.playerId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        });
+        if (!resp.ok) {
+          const err: ErrorResponse | undefined = await resp.json().catch(() => undefined);
+          throw new Error(err?.message || "Failed to fetch transactions");
+        }
+        const data: PlayerTransaction[] = await resp.json();
+        data.sort((a, b) => {
           const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
           const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
           return dateB - dateA;
         });
-        setTransactions(transactionsData);
+        setTransactions(data);
       } catch (err) {
-        setError("Kunne ikke hente transaktioner. Prov igen senere.");
+        setError("Kunne ikke hente transaktioner. Prøv igen senere.");
         console.error("Transactions fetch error:", err);
       } finally {
         setIsLoading(false);
