@@ -8,10 +8,12 @@ namespace DeadPigeons.Api.Services;
 public class TransactionService : ITransactionService
 {
     private readonly AppDbContext _db;
+    private readonly ILogger<TransactionService> _logger;
 
-    public TransactionService(AppDbContext db)
+    public TransactionService(AppDbContext db, ILogger<TransactionService> logger)
     {
         _db = db;
+        _logger = logger;
     }
 
     public async Task<IEnumerable<TransactionResponse>> GetByPlayerIdAsync(Guid playerId)

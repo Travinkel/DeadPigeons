@@ -18,6 +18,8 @@ public class BoardsController : ControllerBase
         _boardService = boardService;
     }
 
+    private string CorrelationId => HttpContext.Items.TryGetValue("X-Correlation-ID", out var id) ? id?.ToString() ?? string.Empty : string.Empty;
+
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<BoardResponse>> GetById(Guid id)
     {
@@ -54,7 +56,7 @@ public class BoardsController : ControllerBase
         var isAdmin = User.IsInRole("Admin");
 
         if (!isAdmin && userId != request.PlayerId.ToString())
-            return Forbid();
+            return Forbid(new Responses.ErrorResponse("AUTH_FORBIDDEN", "Cannot create board for another user", CorrelationId));
 
         try
         {
@@ -63,15 +65,15 @@ public class BoardsController : ControllerBase
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return BadRequest(new Responses.ErrorResponse("BOARD_INVALID", ex.Message, CorrelationId));
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return BadRequest(new Responses.ErrorResponse("BOARD_INVALID", ex.Message, CorrelationId));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "Unexpected error creating board", detail = ex.Message });
+            return StatusCode(500, new Responses.ErrorResponse("BOARD_ERROR", "Unexpected error creating board", CorrelationId));
         }
     }
 }

@@ -94,15 +94,24 @@ public class BoardService : IBoardService
     {
         // Validate number count (5-8)
         if (request.Numbers.Length < 5 || request.Numbers.Length > 8)
+        {
+            _logger.LogWarning("BOARD_INVALID_NUMBERS correlation={CorrelationId}", request.MobilePayTransactionId);
             throw new ArgumentException("Board must have 5-8 numbers");
+        }
 
         // Validate numbers are unique
         if (request.Numbers.Distinct().Count() != request.Numbers.Length)
+        {
+            _logger.LogWarning("BOARD_DUPLICATE_NUMBERS correlation={CorrelationId}", request.MobilePayTransactionId);
             throw new ArgumentException("Numbers must be unique");
+        }
 
         // Validate number range (1-90)
         if (request.Numbers.Any(n => n < 1 || n > 90))
+        {
+            _logger.LogWarning("BOARD_RANGE_INVALID correlation={CorrelationId}", request.MobilePayTransactionId);
             throw new ArgumentException("Numbers must be between 1 and 90");
+        }
 
         // Validate game is active
         var game = await _db.Games.FindAsync(request.GameId);
@@ -123,7 +132,10 @@ public class BoardService : IBoardService
         // Check player balance
         var balance = await _playerService.GetBalanceAsync(request.PlayerId);
         if (balance < cost)
+        {
+            _logger.LogWarning("BOARD_INSUFFICIENT_BALANCE player={PlayerId} balance={Balance} cost={Cost}", request.PlayerId, balance, cost);
             throw new InvalidOperationException("Insufficient balance");
+        }
 
         // Require MobilePay transaction id
         if (string.IsNullOrWhiteSpace(request.MobilePayTransactionId))

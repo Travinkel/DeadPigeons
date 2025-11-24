@@ -23,6 +23,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var httpsRedirectEnabled = builder.Configuration.GetValue("HttpsRedirection:Enabled", true);
+var envName = builder.Environment.EnvironmentName;
+var corsOrigins = new[]
+{
+    "http://localhost:5173",
+    "https://deadpigeons-client.fly.dev"
+};
+var hasConnectionString = !string.IsNullOrEmpty(builder.Configuration.GetConnectionString("Default"));
 
 // JWT Authentication
 var jwtSecret = builder.Configuration["Jwt:Secret"]
@@ -66,10 +73,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowClient", policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:5173",  // Vite dev server
-                "https://deadpigeons-client.fly.dev"  // Production
-            )
+        policy.WithOrigins(corsOrigins)
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials();
@@ -97,6 +101,8 @@ if (httpsRedirectEnabled)
 {
     app.UseHttpsRedirection();
 }
+
+app.UseMiddleware<DeadPigeons.Api.Middleware.CorrelationIdMiddleware>();
 
 // CORS must be before auth
 app.UseCors("AllowClient");
@@ -126,6 +132,9 @@ using (var scope = app.Services.CreateScope())
     await context.Database.MigrateAsync();
     await DatabaseSeeder.SeedAsync(context);
 }
+
+app.Logger.LogInformation("Startup: Env={Env}, ConnectionStringPresent={HasCs}, HttpsRedirect={Https}, CorsOrigins={Origins}",
+    envName, hasConnectionString, httpsRedirectEnabled, string.Join(",", corsOrigins));
 
 app.Run();
 

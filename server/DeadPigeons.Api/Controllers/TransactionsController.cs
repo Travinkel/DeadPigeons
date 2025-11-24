@@ -18,6 +18,8 @@ public class TransactionsController : ControllerBase
         _transactionService = transactionService;
     }
 
+    private string CorrelationId => HttpContext.Items.TryGetValue("X-Correlation-ID", out var id) ? id?.ToString() ?? string.Empty : string.Empty;
+
     [HttpGet("player/{playerId:guid}")]
     public async Task<ActionResult<IEnumerable<TransactionResponse>>> GetByPlayerId(Guid playerId)
     {
@@ -61,17 +63,17 @@ public class TransactionsController : ControllerBase
 
         if (isAdmin)
         {
-            return Forbid();
+            return Forbid(new Responses.ErrorResponse("AUTH_FORBIDDEN", "Admins cannot create deposits", CorrelationId));
         }
 
         if (string.IsNullOrWhiteSpace(userId) || !Guid.TryParse(userId, out var currentUserId))
         {
-            return Unauthorized(new { message = "Missing or invalid user id in token" });
+            return Unauthorized(new Responses.ErrorResponse("AUTH_UNAUTHORIZED", "Missing or invalid user id in token", CorrelationId));
         }
 
         if (currentUserId != request.PlayerId)
         {
-            return Forbid();
+            return Forbid(new Responses.ErrorResponse("AUTH_FORBIDDEN", "Cannot create deposit for another user", CorrelationId));
         }
 
         try
@@ -81,11 +83,11 @@ public class TransactionsController : ControllerBase
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return BadRequest(new Responses.ErrorResponse("DEPOSIT_INVALID", ex.Message, CorrelationId));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "Unexpected error creating deposit", detail = ex.Message });
+            return StatusCode(500, new Responses.ErrorResponse("DEPOSIT_ERROR", "Unexpected error creating deposit", CorrelationId));
         }
     }
 
