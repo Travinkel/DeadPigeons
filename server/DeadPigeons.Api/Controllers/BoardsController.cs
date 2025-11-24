@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using DeadPigeons.Api.Dtos;
 using DeadPigeons.Api.Services;
+using DeadPigeons.Api.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,10 +22,13 @@ public class BoardsController : ControllerBase
     private string CorrelationId => HttpContext.Items.TryGetValue("X-Correlation-ID", out var id) ? id?.ToString() ?? string.Empty : string.Empty;
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<BoardResponse>> GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id)
     {
         var board = await _boardService.GetByIdAsync(id);
-        if (board == null) return NotFound();
+        if (board == null)
+        {
+            return StatusCode(404, new ErrorResponse("BOARD_NOT_FOUND", "Board not found", CorrelationId));
+        }
         return Ok(board);
     }
 
@@ -43,20 +47,20 @@ public class BoardsController : ControllerBase
         var isAdmin = User.IsInRole("Admin");
 
         if (!isAdmin && userId != playerId.ToString())
-            return Forbid();
+            return StatusCode(403, new ErrorResponse("AUTH_FORBIDDEN", "Cannot view boards for another user", CorrelationId));
 
         var boards = await _boardService.GetByPlayerIdAsync(playerId);
         return Ok(boards);
     }
 
     [HttpPost]
-    public async Task<ActionResult<BoardResponse>> Create([FromBody] CreateBoardRequest request)
+    public async Task<IActionResult> Create([FromBody] CreateBoardRequest request)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var isAdmin = User.IsInRole("Admin");
 
         if (!isAdmin && userId != request.PlayerId.ToString())
-            return Forbid(new Responses.ErrorResponse("AUTH_FORBIDDEN", "Cannot create board for another user", CorrelationId));
+            return StatusCode(403, new ErrorResponse("AUTH_FORBIDDEN", "Cannot create board for another user", CorrelationId));
 
         try
         {
@@ -65,15 +69,15 @@ public class BoardsController : ControllerBase
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(new Responses.ErrorResponse("BOARD_INVALID", ex.Message, CorrelationId));
+            return BadRequest(new ErrorResponse("BOARD_INVALID", ex.Message, CorrelationId));
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new Responses.ErrorResponse("BOARD_INVALID", ex.Message, CorrelationId));
+            return BadRequest(new ErrorResponse("BOARD_INVALID", ex.Message, CorrelationId));
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(500, new Responses.ErrorResponse("BOARD_ERROR", "Unexpected error creating board", CorrelationId));
+            return StatusCode(500, new ErrorResponse("BOARD_ERROR", "Unexpected error creating board", CorrelationId));
         }
     }
 }
