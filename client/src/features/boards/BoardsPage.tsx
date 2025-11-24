@@ -108,7 +108,7 @@ export function BoardsPage() {
                     {board.numbers?.map((num) => (
                       <div
                         key={num}
-                        className="w-10 h-10 rounded-full bg-primary text-primary-content flex items-center justify-center font-bold"
+                        className="w-11 h-11 rounded-full bg-primary text-primary-content flex items-center justify-center font-extrabold shadow-sm"
                       >
                         {num}
                       </div>

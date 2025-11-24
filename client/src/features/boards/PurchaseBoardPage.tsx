@@ -307,7 +307,7 @@ export function PurchaseBoardPage() {
               {selectedNumbers.map((num) => (
                 <div
                   key={num}
-                  className="w-10 h-10 rounded-full bg-primary text-primary-content flex items-center justify-center font-bold cursor-pointer hover:bg-primary-focus"
+                  className="w-11 h-11 rounded-full bg-primary text-primary-content flex items-center justify-center font-extrabold text-base shadow-sm cursor-pointer hover:bg-primary-focus"
                   onClick={() => toggleNumber(num)}
                 >
                   {num}
@@ -322,7 +322,7 @@ export function PurchaseBoardPage() {
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
           <h2 className="card-title">Vaelg numre (1-90)</h2>
-          <div className="grid grid-cols-9 sm:grid-cols-10 gap-2">
+          <div className="grid grid-cols-6 sm:grid-cols-9 md:grid-cols-10 gap-2">
             {Array.from({ length: 90 }, (_, i) => i + 1).map((num) => {
               const isSelected = selectedNumbers.includes(num);
               return (
@@ -331,13 +331,9 @@ export function PurchaseBoardPage() {
                   onClick={() => toggleNumber(num)}
                   disabled={!isSelected && selectedNumbers.length >= 8}
                   className={`
-                    w-8 h-8 sm:w-10 sm:h-10 rounded-full text-sm font-semibold
+                    w-10 h-10 sm:w-11 sm:h-11 rounded-full text-sm font-semibold
                     transition-colors duration-150
-                    ${
-                      isSelected
-                        ? "bg-primary text-primary-content"
-                        : "bg-base-200 hover:bg-base-300"
-                    }
+                    ${isSelected ? "bg-primary text-primary-content" : "bg-base-200 hover:bg-base-300"}
                     ${!isSelected && selectedNumbers.length >= 8 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                   `}
                 >
