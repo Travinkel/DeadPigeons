@@ -318,7 +318,7 @@ export class ApiClient {
    * @param body (optional)
    * @return OK
    */
-  boardsPOST(body: CreateBoardRequest): Promise<BoardResponse> {
+  boardsPOST(body: CreateBoardRequest | undefined): Promise<BoardResponse> {
     let url_ = this.baseUrl + "/api/Boards";
     url_ = url_.replace(/[?&]$/, "");
 
@@ -1095,7 +1095,7 @@ export class ApiClient {
    * @param body (optional)
    * @return OK
    */
-  deposit(body: CreateDepositRequest): Promise<TransactionResponse> {
+  deposit(body: CreateDepositRequest | undefined): Promise<TransactionResponse> {
     let url_ = this.baseUrl + "/api/Transactions/deposit";
     url_ = url_.replace(/[?&]$/, "");
 
@@ -1271,17 +1271,17 @@ export interface CompleteGameRequest {
 }
 
 export interface CreateBoardRequest {
-  playerId: string;
-  gameId: string;
-  numbers: number[];
-  isRepeating: boolean;
-  mobilePayTransactionId: string;
+  playerId?: string;
+  gameId?: string;
+  numbers?: number[] | undefined;
+  isRepeating?: boolean;
+  mobilePayTransactionId?: string | undefined;
 }
 
 export interface CreateDepositRequest {
-  playerId: string;
-  amount: number;
-  mobilePayTransactionId: string;
+  playerId?: string;
+  amount?: number;
+  mobilePayTransactionId?: string | undefined;
 }
 
 export interface CreateGameRequest {
