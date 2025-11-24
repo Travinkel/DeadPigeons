@@ -167,7 +167,7 @@ export class ApiClient {
   /**
    * @return OK
    */
-  boardsGET(id: string): Promise<BoardResponse> {
+  boardsGET(id: string): Promise<void> {
     let url_ = this.baseUrl + "/api/Boards/{id}";
     if (id === undefined || id === null)
       throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -176,9 +176,7 @@ export class ApiClient {
 
     let options_: RequestInit = {
       method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
+      headers: {},
     };
 
     return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -186,7 +184,7 @@ export class ApiClient {
     });
   }
 
-  protected processBoardsGET(response: Response): Promise<BoardResponse> {
+  protected processBoardsGET(response: Response): Promise<void> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && response.headers.forEach) {
@@ -194,12 +192,7 @@ export class ApiClient {
     }
     if (status === 200) {
       return response.text().then((_responseText) => {
-        let result200: any = null;
-        result200 =
-          _responseText === ""
-            ? null
-            : (JSON.parse(_responseText, this.jsonParseReviver) as BoardResponse);
-        return result200;
+        return;
       });
     } else if (status !== 200 && status !== 204) {
       return response.text().then((_responseText) => {
@@ -211,7 +204,7 @@ export class ApiClient {
         );
       });
     }
-    return Promise.resolve<BoardResponse>(null as any);
+    return Promise.resolve<void>(null as any);
   }
 
   /**
@@ -267,7 +260,7 @@ export class ApiClient {
   /**
    * @return OK
    */
-  player(playerId: string): Promise<BoardResponse[]> {
+  playerAll(playerId: string): Promise<BoardResponse[]> {
     let url_ = this.baseUrl + "/api/Boards/player/{playerId}";
     if (playerId === undefined || playerId === null)
       throw new globalThis.Error("The parameter 'playerId' must be defined.");
@@ -282,11 +275,11 @@ export class ApiClient {
     };
 
     return this.http.fetch(url_, options_).then((_response: Response) => {
-      return this.processPlayer(_response);
+      return this.processPlayerAll(_response);
     });
   }
 
-  protected processPlayer(response: Response): Promise<BoardResponse[]> {
+  protected processPlayerAll(response: Response): Promise<BoardResponse[]> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && response.headers.forEach) {
@@ -318,7 +311,7 @@ export class ApiClient {
    * @param body (optional)
    * @return OK
    */
-  boardsPOST(body: CreateBoardRequest | undefined): Promise<BoardResponse> {
+  boardsPOST(body: CreateBoardRequest | undefined): Promise<void> {
     let url_ = this.baseUrl + "/api/Boards";
     url_ = url_.replace(/[?&]$/, "");
 
@@ -329,7 +322,6 @@ export class ApiClient {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Accept: "application/json",
       },
     };
 
@@ -338,7 +330,7 @@ export class ApiClient {
     });
   }
 
-  protected processBoardsPOST(response: Response): Promise<BoardResponse> {
+  protected processBoardsPOST(response: Response): Promise<void> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && response.headers.forEach) {
@@ -346,12 +338,7 @@ export class ApiClient {
     }
     if (status === 200) {
       return response.text().then((_responseText) => {
-        let result200: any = null;
-        result200 =
-          _responseText === ""
-            ? null
-            : (JSON.parse(_responseText, this.jsonParseReviver) as BoardResponse);
-        return result200;
+        return;
       });
     } else if (status !== 200 && status !== 204) {
       return response.text().then((_responseText) => {
@@ -363,7 +350,7 @@ export class ApiClient {
         );
       });
     }
-    return Promise.resolve<BoardResponse>(null as any);
+    return Promise.resolve<void>(null as any);
   }
 
   /**
@@ -997,7 +984,7 @@ export class ApiClient {
   /**
    * @return OK
    */
-  player2(playerId: string): Promise<TransactionResponse[]> {
+  player(playerId: string): Promise<void> {
     let url_ = this.baseUrl + "/api/Transactions/player/{playerId}";
     if (playerId === undefined || playerId === null)
       throw new globalThis.Error("The parameter 'playerId' must be defined.");
@@ -1006,17 +993,15 @@ export class ApiClient {
 
     let options_: RequestInit = {
       method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
+      headers: {},
     };
 
     return this.http.fetch(url_, options_).then((_response: Response) => {
-      return this.processPlayer2(_response);
+      return this.processPlayer(_response);
     });
   }
 
-  protected processPlayer2(response: Response): Promise<TransactionResponse[]> {
+  protected processPlayer(response: Response): Promise<void> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && response.headers.forEach) {
@@ -1024,12 +1009,7 @@ export class ApiClient {
     }
     if (status === 200) {
       return response.text().then((_responseText) => {
-        let result200: any = null;
-        result200 =
-          _responseText === ""
-            ? null
-            : (JSON.parse(_responseText, this.jsonParseReviver) as TransactionResponse[]);
-        return result200;
+        return;
       });
     } else if (status !== 200 && status !== 204) {
       return response.text().then((_responseText) => {
@@ -1041,21 +1021,19 @@ export class ApiClient {
         );
       });
     }
-    return Promise.resolve<TransactionResponse[]>(null as any);
+    return Promise.resolve<void>(null as any);
   }
 
   /**
    * @return OK
    */
-  pending(): Promise<TransactionResponse[]> {
+  pending(): Promise<void> {
     let url_ = this.baseUrl + "/api/Transactions/pending";
     url_ = url_.replace(/[?&]$/, "");
 
     let options_: RequestInit = {
       method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
+      headers: {},
     };
 
     return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -1063,7 +1041,7 @@ export class ApiClient {
     });
   }
 
-  protected processPending(response: Response): Promise<TransactionResponse[]> {
+  protected processPending(response: Response): Promise<void> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && response.headers.forEach) {
@@ -1071,12 +1049,7 @@ export class ApiClient {
     }
     if (status === 200) {
       return response.text().then((_responseText) => {
-        let result200: any = null;
-        result200 =
-          _responseText === ""
-            ? null
-            : (JSON.parse(_responseText, this.jsonParseReviver) as TransactionResponse[]);
-        return result200;
+        return;
       });
     } else if (status !== 200 && status !== 204) {
       return response.text().then((_responseText) => {
@@ -1088,14 +1061,54 @@ export class ApiClient {
         );
       });
     }
-    return Promise.resolve<TransactionResponse[]>(null as any);
+    return Promise.resolve<void>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
+  admin(): Promise<void> {
+    let url_ = this.baseUrl + "/api/Transactions/admin";
+    url_ = url_.replace(/[?&]$/, "");
+
+    let options_: RequestInit = {
+      method: "GET",
+      headers: {},
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processAdmin(_response);
+    });
+  }
+
+  protected processAdmin(response: Response): Promise<void> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    }
+    if (status === 200) {
+      return response.text().then((_responseText) => {
+        return;
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          "An unexpected server error occurred.",
+          status,
+          _responseText,
+          _headers
+        );
+      });
+    }
+    return Promise.resolve<void>(null as any);
   }
 
   /**
    * @param body (optional)
    * @return OK
    */
-  deposit(body: CreateDepositRequest | undefined): Promise<TransactionResponse> {
+  deposit(body: CreateDepositRequest | undefined): Promise<void> {
     let url_ = this.baseUrl + "/api/Transactions/deposit";
     url_ = url_.replace(/[?&]$/, "");
 
@@ -1106,7 +1119,6 @@ export class ApiClient {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Accept: "application/json",
       },
     };
 
@@ -1115,7 +1127,7 @@ export class ApiClient {
     });
   }
 
-  protected processDeposit(response: Response): Promise<TransactionResponse> {
+  protected processDeposit(response: Response): Promise<void> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && response.headers.forEach) {
@@ -1123,12 +1135,7 @@ export class ApiClient {
     }
     if (status === 200) {
       return response.text().then((_responseText) => {
-        let result200: any = null;
-        result200 =
-          _responseText === ""
-            ? null
-            : (JSON.parse(_responseText, this.jsonParseReviver) as TransactionResponse);
-        return result200;
+        return;
       });
     } else if (status !== 200 && status !== 204) {
       return response.text().then((_responseText) => {
@@ -1140,14 +1147,14 @@ export class ApiClient {
         );
       });
     }
-    return Promise.resolve<TransactionResponse>(null as any);
+    return Promise.resolve<void>(null as any);
   }
 
   /**
    * @param body (optional)
    * @return OK
    */
-  approve(id: string, body: ApproveTransactionRequest | undefined): Promise<TransactionResponse> {
+  approve(id: string, body: ApproveTransactionRequest | undefined): Promise<void> {
     let url_ = this.baseUrl + "/api/Transactions/{id}/approve";
     if (id === undefined || id === null)
       throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -1161,7 +1168,6 @@ export class ApiClient {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Accept: "application/json",
       },
     };
 
@@ -1170,7 +1176,7 @@ export class ApiClient {
     });
   }
 
-  protected processApprove(response: Response): Promise<TransactionResponse> {
+  protected processApprove(response: Response): Promise<void> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && response.headers.forEach) {
@@ -1178,12 +1184,7 @@ export class ApiClient {
     }
     if (status === 200) {
       return response.text().then((_responseText) => {
-        let result200: any = null;
-        result200 =
-          _responseText === ""
-            ? null
-            : (JSON.parse(_responseText, this.jsonParseReviver) as TransactionResponse);
-        return result200;
+        return;
       });
     } else if (status !== 200 && status !== 204) {
       return response.text().then((_responseText) => {
@@ -1195,7 +1196,7 @@ export class ApiClient {
         );
       });
     }
-    return Promise.resolve<TransactionResponse>(null as any);
+    return Promise.resolve<void>(null as any);
   }
 
   /**
@@ -1353,19 +1354,6 @@ export interface RegisterResponse {
   playerId?: string;
   email?: string | undefined;
   message?: string | undefined;
-}
-
-export interface TransactionResponse {
-  id?: string;
-  playerId?: string;
-  amount?: number;
-  type?: string | undefined;
-  mobilePayTransactionId?: string | undefined;
-  isApproved?: boolean;
-  createdAt?: Date;
-  approvedAt?: Date | undefined;
-  approvedById?: string | undefined;
-  playerNameOrEmail?: string | undefined;
 }
 
 export interface UpdatePlayerRequest {
