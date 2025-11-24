@@ -122,25 +122,25 @@ export function AdminDashboard() {
             <p className="text-base-content/70">Ingen afventende indbetalinger.</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="table">
+              <table className="table table-sm w-full whitespace-normal">
                 <thead>
                   <tr>
-                    <th>Spiller</th>
-                    <th>Beløb</th>
-                    <th>Dato</th>
-                    <th>Handling</th>
+                    <th className="text-xs">Spiller</th>
+                    <th className="text-xs">Beløb</th>
+                    <th className="text-xs">Dato</th>
+                    <th className="text-xs">Handling</th>
                   </tr>
                 </thead>
                 <tbody>
                   {pendingTransactions.slice(0, 10).map((tx) => (
                     <tr key={tx.id}>
-                      <td>{tx.playerId}</td>
-                      <td>{tx.amount?.toFixed(2)} kr</td>
-                      <td>
+                      <td className="max-w-[180px] break-words text-sm">{tx.playerId}</td>
+                      <td className="text-sm">{tx.amount?.toFixed(2)} kr</td>
+                      <td className="text-sm">
                         {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString("da-DK") : "-"}
                       </td>
-                      <td>
-                        <button className="btn btn-success btn-sm">Godkend</button>
+                      <td className="text-sm">
+                        <button className="btn btn-success btn-sm whitespace-nowrap">Godkend</button>
                       </td>
                     </tr>
                   ))}
@@ -159,22 +159,22 @@ export function AdminDashboard() {
             <p className="text-base-content/70">Ingen spil oprettet endnu.</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="table">
+              <table className="table table-sm w-full whitespace-normal">
                 <thead>
                   <tr>
-                    <th>Uge</th>
-                    <th>År</th>
-                    <th>Plader</th>
-                    <th>Status</th>
+                    <th className="text-xs">Uge</th>
+                    <th className="text-xs">År</th>
+                    <th className="text-xs">Plader</th>
+                    <th className="text-xs">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {games.slice(0, 5).map((game) => (
                     <tr key={game.id}>
-                      <td>{game.weekNumber}</td>
-                      <td>{game.year}</td>
-                      <td>{game.boardCount || 0}</td>
-                      <td>
+                      <td className="text-sm">{game.weekNumber}</td>
+                      <td className="text-sm">{game.year}</td>
+                      <td className="text-sm">{game.boardCount || 0}</td>
+                      <td className="text-sm">
                         {game.status === "Active" ? (
                           <span className="badge badge-success badge-sm">Aktiv</span>
                         ) : (
@@ -196,24 +196,24 @@ export function AdminDashboard() {
           <div className="card-body">
             <h2 className="card-title">Inaktive spillere</h2>
             <div className="overflow-x-auto">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Navn</th>
-                    <th>Email</th>
-                    <th>Handling</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {inactivePlayers.map((player) => (
-                    <tr key={player.id}>
-                      <td>{player.name}</td>
-                      <td>{player.email}</td>
-                      <td>
-                        <button className="btn btn-primary btn-sm">Aktiver</button>
-                      </td>
-                    </tr>
-                  ))}
+              <table className="table table-sm w-full whitespace-normal">
+                    <thead>
+                      <tr>
+                        <th className="text-xs">Navn</th>
+                        <th className="text-xs">Email</th>
+                        <th className="text-xs">Handling</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {inactivePlayers.map((player) => (
+                        <tr key={player.id}>
+                          <td className="text-sm">{player.name}</td>
+                          <td className="text-sm max-w-[200px] break-words">{player.email}</td>
+                          <td className="text-sm">
+                            <button className="btn btn-primary btn-sm whitespace-nowrap">Aktiver</button>
+                          </td>
+                        </tr>
+                      ))}
                 </tbody>
               </table>
             </div>
@@ -223,3 +223,4 @@ export function AdminDashboard() {
     </div>
   );
 }
+

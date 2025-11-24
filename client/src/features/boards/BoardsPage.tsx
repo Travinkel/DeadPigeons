@@ -10,6 +10,13 @@ export function BoardsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const formatGameLabel = (board: BoardResponse) => {
+    if (board.friendlyTitle) return board.friendlyTitle;
+    if (board.weekNumber && board.year) return `Uge ${board.weekNumber}, ${board.year}`;
+    if (board.gameId) return `Spil ${board.gameId.slice(0, 8)}...`;
+    return "Spil";
+  };
+
   useEffect(() => {
     if (!user?.playerId || !token) return;
 
@@ -87,7 +94,7 @@ export function BoardsPage() {
               <div className="card-body">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h2 className="card-title">Spil: {board.gameId?.slice(0, 8)}...</h2>
+                    <h2 className="card-title">{formatGameLabel(board)}</h2>
                     <p className="text-sm text-base-content/70">
                       Oprettet:{" "}
                       {board.createdAt
@@ -108,7 +115,7 @@ export function BoardsPage() {
                     {board.numbers?.map((num) => (
                       <div
                         key={num}
-                        className="w-10 h-10 rounded-full bg-primary text-primary-content flex items-center justify-center font-bold"
+                        className="w-11 h-11 rounded-full bg-primary text-primary-content flex items-center justify-center font-extrabold shadow-sm"
                       >
                         {num}
                       </div>
