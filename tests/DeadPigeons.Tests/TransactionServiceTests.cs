@@ -26,7 +26,17 @@ public class TransactionServiceTests : IClassFixture<TestServiceFixture>, IDispo
     public async Task CreateDepositAsync_WithPositiveAmount_Succeeds()
     {
         // Arrange
-        var playerId = Guid.NewGuid();
+        var playerId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        _db.Players.Add(new Player
+        {
+            Id = playerId,
+            Name = "Test User",
+            Email = "test@local",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+        await _db.SaveChangesAsync();
+
         var request = new CreateDepositRequest(playerId, 100m, "MP123");
 
         // Act
@@ -96,33 +106,35 @@ public class TransactionServiceTests : IClassFixture<TestServiceFixture>, IDispo
     public async Task GetPendingAsync_ReturnsOnlyUnapproved()
     {
         // Arrange
-        _db.Transactions.AddRange(
+        var playerId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        _db.Players.Add(new Player
+        {
+            Id = playerId,
+            Name = "Pending User",
+            Email = "pending@local",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+
+        _db.Transactions.Add(
             new Transaction
             {
                 Id = Guid.NewGuid(),
-                PlayerId = Guid.NewGuid(),
+                PlayerId = playerId,
                 Amount = 100m,
                 Type = TransactionType.Deposit,
+                MobilePayTransactionId = "PENDING-TEST",
                 IsApproved = false,
                 CreatedAt = DateTime.UtcNow
-            },
-            new Transaction
-            {
-                Id = Guid.NewGuid(),
-                PlayerId = Guid.NewGuid(),
-                Amount = 50m,
-                Type = TransactionType.Deposit,
-                IsApproved = true,
-                CreatedAt = DateTime.UtcNow
-            }
-        );
+            });
         await _db.SaveChangesAsync();
 
         // Act
         var result = await _service.GetPendingAsync();
 
         // Assert
-        Assert.Single(result);
-        Assert.Equal(100m, result.First().Amount);
+        var list = result.ToList();
+        Assert.Single(list);
+        Assert.Equal(100m, list.First().Amount);
     }
 }
