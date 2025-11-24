@@ -39,10 +39,41 @@ public class TransactionsController : ControllerBase
         return Ok(transactions);
     }
 
-    [HttpPost("deposit")]
+    [HttpGet("admin")]
     [Authorize(Policy = "RequireAdmin")]
+    public async Task<ActionResult<IEnumerable<TransactionResponse>>> GetAll()
+    {
+        var transactions = await _transactionService.GetAllAsync();
+        return Ok(transactions);
+    }
+
+    [HttpPost("deposit")]
+    [Authorize(Policy = "RequirePlayer")]
     public async Task<ActionResult<TransactionResponse>> CreateDeposit([FromBody] CreateDepositRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = User.IsInRole("Admin");
+
+        if (isAdmin)
+        {
+            return Forbid();
+        }
+
+        if (string.IsNullOrWhiteSpace(userId) || !Guid.TryParse(userId, out var currentUserId))
+        {
+            return Unauthorized(new { message = "Missing or invalid user id in token" });
+        }
+
+        if (currentUserId != request.PlayerId)
+        {
+            return Forbid();
+        }
+
         try
         {
             var transaction = await _transactionService.CreateDepositAsync(request);
@@ -50,7 +81,11 @@ public class TransactionsController : ControllerBase
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Unexpected error creating deposit", detail = ex.Message });
         }
     }
 

@@ -9,13 +9,24 @@ public class BoardService : IBoardService
 {
     private readonly AppDbContext _db;
     private readonly IPlayerService _playerService;
-    private const decimal PricePerNumber = 5m;
+    private readonly ILogger<BoardService> _logger;
 
-    public BoardService(AppDbContext db, IPlayerService playerService)
+    public BoardService(AppDbContext db, IPlayerService playerService, ILogger<BoardService> logger)
     {
         _db = db;
         _playerService = playerService;
+        _logger = logger;
     }
+
+    private static decimal CalculatePrice(int count) =>
+        count switch
+        {
+            5 => 20m,
+            6 => 40m,
+            7 => 80m,
+            8 => 160m,
+            _ => throw new ArgumentException("Board must have 5-8 numbers")
+        };
 
     public async Task<IEnumerable<BoardResponse>> GetByGameIdAsync(Guid gameId)
     {
@@ -95,11 +106,19 @@ public class BoardService : IBoardService
 
         // Validate game is active
         var game = await _db.Games.FindAsync(request.GameId);
-        if (game == null || game.Status != GameStatus.Active)
+        if (game == null)
+        {
+            _logger.LogWarning("Board create failed: game {GameId} not found", request.GameId);
+            throw new ArgumentException("Game not found");
+        }
+        if (game.Status != GameStatus.Active)
+        {
+            _logger.LogWarning("Board create failed: game {GameId} is not active (status {Status})", request.GameId, game.Status);
             throw new ArgumentException("Game is not active");
+        }
 
         // Calculate cost
-        var cost = request.Numbers.Length * PricePerNumber;
+        var cost = CalculatePrice(request.Numbers.Length);
 
         // Check player balance
         var balance = await _playerService.GetBalanceAsync(request.PlayerId);
@@ -110,6 +129,8 @@ public class BoardService : IBoardService
         if (string.IsNullOrWhiteSpace(request.MobilePayTransactionId))
             throw new ArgumentException("MobilePay transaction ID is required");
 
+        var trimmedMobilePayId = request.MobilePayTransactionId.Trim();
+
         // Create purchase transaction
         var transaction = new Transaction
         {
@@ -117,7 +138,7 @@ public class BoardService : IBoardService
             PlayerId = request.PlayerId,
             Amount = -cost, // Negative for purchase
             Type = TransactionType.Purchase,
-            MobilePayTransactionId = request.MobilePayTransactionId,
+            MobilePayTransactionId = trimmedMobilePayId,
             IsApproved = true, // Auto-approved for purchases
             CreatedAt = DateTime.UtcNow,
             ApprovedAt = DateTime.UtcNow

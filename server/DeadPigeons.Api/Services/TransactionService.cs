@@ -16,54 +16,83 @@ public class TransactionService : ITransactionService
 
     public async Task<IEnumerable<TransactionResponse>> GetByPlayerIdAsync(Guid playerId)
     {
-        return await (
-            from t in _db.Transactions
-            where t.PlayerId == playerId
-            orderby t.CreatedAt descending
-            join p in _db.Players on t.PlayerId equals p.Id into gp
-            from p in gp.DefaultIfEmpty()
-            select new TransactionResponse(
-                t.Id,
-                t.PlayerId,
-                t.Amount,
-                t.Type.ToString(),
-                t.MobilePayTransactionId,
-                t.IsApproved,
-                t.CreatedAt,
-                t.ApprovedAt,
-                t.ApprovedById,
-                p != null && !string.IsNullOrEmpty(p.Name) ? p.Name : p != null ? p.Email : null)
-        ).ToListAsync();
+        var results = await _db.Transactions
+            .Where(t => t.PlayerId == playerId)
+            .OrderByDescending(t => t.CreatedAt)
+            .Join(_db.Players, t => t.PlayerId, p => p.Id, (t, p) => new { t, p })
+            .Select(x => new TransactionResponse(
+                x.t.Id,
+                x.t.PlayerId,
+                x.t.Amount,
+                x.t.Type.ToString(),
+                x.t.MobilePayTransactionId,
+                x.t.IsApproved,
+                x.t.CreatedAt,
+                x.t.ApprovedAt,
+                x.t.ApprovedById,
+                !string.IsNullOrEmpty(x.p.Name) ? x.p.Name : x.p.Email))
+            .ToListAsync();
+
+        _logger.LogInformation("GetByPlayerIdAsync returned {Count} transactions for player {PlayerId}", results.Count, playerId);
+        return results;
     }
 
     public async Task<IEnumerable<TransactionResponse>> GetPendingAsync()
     {
-        return await (
-            from t in _db.Transactions
-            where !t.IsApproved
-            orderby t.CreatedAt
-            join p in _db.Players on t.PlayerId equals p.Id into gp
-            from p in gp.DefaultIfEmpty()
-            select new TransactionResponse(
-                t.Id,
-                t.PlayerId,
-                t.Amount,
-                t.Type.ToString(),
-                t.MobilePayTransactionId,
-                t.IsApproved,
-                t.CreatedAt,
-                t.ApprovedAt,
-                t.ApprovedById,
-                p != null && !string.IsNullOrEmpty(p.Name) ? p.Name : p != null ? p.Email : null)
-        ).ToListAsync();
+        var results = await _db.Transactions
+            .Where(t => !t.IsApproved)
+            .OrderBy(t => t.CreatedAt)
+            .Join(_db.Players, t => t.PlayerId, p => p.Id, (t, p) => new { t, p })
+            .Select(x => new TransactionResponse(
+                x.t.Id,
+                x.t.PlayerId,
+                x.t.Amount,
+                x.t.Type.ToString(),
+                x.t.MobilePayTransactionId,
+                x.t.IsApproved,
+                x.t.CreatedAt,
+                x.t.ApprovedAt,
+                x.t.ApprovedById,
+                !string.IsNullOrEmpty(x.p.Name) ? x.p.Name : x.p.Email))
+            .ToListAsync();
+
+        _logger.LogInformation("GetPendingAsync returned {Count} pending transactions", results.Count);
+        return results;
+    }
+
+    public async Task<IEnumerable<TransactionResponse>> GetAllAsync()
+    {
+        var results = await _db.Transactions
+            .OrderByDescending(t => t.CreatedAt)
+            .Join(_db.Players, t => t.PlayerId, p => p.Id, (t, p) => new { t, p })
+            .Select(x => new TransactionResponse(
+                x.t.Id,
+                x.t.PlayerId,
+                x.t.Amount,
+                x.t.Type.ToString(),
+                x.t.MobilePayTransactionId,
+                x.t.IsApproved,
+                x.t.CreatedAt,
+                x.t.ApprovedAt,
+                x.t.ApprovedById,
+                !string.IsNullOrEmpty(x.p.Name) ? x.p.Name : x.p.Email))
+            .ToListAsync();
+
+        _logger.LogInformation("GetAllAsync returned {Count} transactions total", results.Count);
+        return results;
     }
 
     public async Task<TransactionResponse> CreateDepositAsync(CreateDepositRequest request)
     {
         if (request.Amount <= 0)
             throw new ArgumentException("Deposit amount must be positive");
-        if (string.IsNullOrWhiteSpace(request.MobilePayTransactionId))
+        var trimmedMobilePayId = request.MobilePayTransactionId?.Trim();
+        if (string.IsNullOrWhiteSpace(trimmedMobilePayId))
             throw new ArgumentException("MobilePay transaction ID is required");
+
+        var player = await _db.Players.FindAsync(request.PlayerId);
+        if (player == null)
+            throw new ArgumentException("Player not found");
 
         var transaction = new Transaction
         {
@@ -71,7 +100,7 @@ public class TransactionService : ITransactionService
             PlayerId = request.PlayerId,
             Amount = request.Amount,
             Type = TransactionType.Deposit,
-            MobilePayTransactionId = request.MobilePayTransactionId,
+            MobilePayTransactionId = trimmedMobilePayId,
             IsApproved = false,
             CreatedAt = DateTime.UtcNow
         };
@@ -79,7 +108,6 @@ public class TransactionService : ITransactionService
         _db.Transactions.Add(transaction);
         await _db.SaveChangesAsync();
 
-        var player = await _db.Players.FindAsync(transaction.PlayerId);
         return new TransactionResponse(
             transaction.Id,
             transaction.PlayerId,
