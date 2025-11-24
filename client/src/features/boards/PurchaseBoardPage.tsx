@@ -26,6 +26,7 @@ export function PurchaseBoardPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [mobilePayId, setMobilePayId] = useState("");
 
   // Check for prefilled numbers from repeat functionality
   useEffect(() => {
@@ -83,6 +84,7 @@ export function PurchaseBoardPage() {
   const canPurchase =
     selectedNumbers.length >= 5 &&
     selectedNumbers.length <= 8 &&
+    mobilePayId.trim().length > 0 &&
     balance >= price &&
     activeGame &&
     !isPastCutoff();
@@ -103,6 +105,12 @@ export function PurchaseBoardPage() {
   const handleSubmit = async () => {
     if (!user?.playerId || !token || !activeGame?.id) return;
 
+    const trimmedMobilePayId = mobilePayId.trim();
+    if (!trimmedMobilePayId) {
+      setError("MobilePay transaktions-ID er paakraevet.");
+      return;
+    }
+
     setIsSubmitting(true);
     setError(null);
     setSuccess(null);
@@ -114,11 +122,13 @@ export function PurchaseBoardPage() {
         gameId: activeGame.id,
         numbers: selectedNumbers,
         isRepeating,
+        mobilePayTransactionId: trimmedMobilePayId,
       });
 
       setSuccess(`Plade oprettet! Plade ID: ${board.id?.slice(0, 8)}...`);
       setSelectedNumbers([]);
       setIsRepeating(false);
+      setMobilePayId("");
 
       // Refresh balance
       const balanceData = await client.balance(user.playerId);
@@ -352,6 +362,27 @@ export function PurchaseBoardPage() {
         </label>
       </div>
 
+      {/* MobilePay ID */}
+      <div className="form-control">
+        <label className="label">
+          <span className="label-text">MobilePay transaktions-ID</span>
+        </label>
+        <input
+          type="text"
+          className="input input-bordered"
+          placeholder="F.eks. MP-123456789"
+          value={mobilePayId}
+          onChange={(e) => setMobilePayId(e.target.value)}
+          required
+          maxLength={50}
+        />
+        <label className="label">
+          <span className="label-text-alt text-base-content/60">
+            Paakraevet for kob; findes i MobilePay app under betalingshistorik
+          </span>
+        </label>
+      </div>
+
       {/* Purchase Summary */}
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
@@ -379,7 +410,7 @@ export function PurchaseBoardPage() {
       </div>
       {/* Back Link */}
       <button className="btn btn-ghost" onClick={() => navigate("/boards")}>
-        ← Tilbage til plader
+        Tilbage til plader
       </button>
     </div>
   );

@@ -45,6 +45,12 @@ export function DepositRequestPage() {
       return;
     }
 
+    const trimmedMobilePayId = mobilePayId.trim();
+    if (!trimmedMobilePayId) {
+      setError("MobilePay transaktions-ID er paakraevet.");
+      return;
+    }
+
     setIsSubmitting(true);
     setError(null);
     setSuccess(null);
@@ -54,7 +60,7 @@ export function DepositRequestPage() {
       await client.deposit({
         playerId: user.playerId,
         amount: amountNum,
-        mobilePayTransactionId: mobilePayId || undefined,
+        mobilePayTransactionId: trimmedMobilePayId,
       });
 
       setSuccess("Indbetalingsanmodning oprettet! Den afventer godkendelse fra administrator.");
@@ -188,7 +194,7 @@ export function DepositRequestPage() {
             {/* MobilePay ID Input */}
             <div className="form-control">
               <label className="label">
-                <span className="label-text">MobilePay transaktions-ID (valgfrit)</span>
+                <span className="label-text">MobilePay transaktions-ID</span>
               </label>
               <input
                 type="text"
@@ -196,10 +202,12 @@ export function DepositRequestPage() {
                 className="input input-bordered"
                 value={mobilePayId}
                 onChange={(e) => setMobilePayId(e.target.value)}
+                required
+                maxLength={50}
               />
               <label className="label">
                 <span className="label-text-alt text-base-content/60">
-                  Findes i MobilePay app under betalingshistorik
+                  Paakraevet for godkendelse; findes i MobilePay app under betalingshistorik
                 </span>
               </label>
             </div>
