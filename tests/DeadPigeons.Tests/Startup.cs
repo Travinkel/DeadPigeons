@@ -26,6 +26,9 @@ public class Startup
         services.AddDbContext<AppDbContext>(options =>
             options.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()));
 
+        // Logging for services under test
+        services.AddLogging();
+
         // Register application services
         services.AddScoped<IPlayerService, PlayerService>();
         services.AddScoped<IGameService, GameService>();

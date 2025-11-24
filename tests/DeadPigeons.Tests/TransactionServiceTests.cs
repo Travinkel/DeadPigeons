@@ -18,9 +18,6 @@ public class TransactionServiceTests : IClassFixture<TestServiceFixture>, IDispo
         _scope = fixture.CreateScope();
         _db = _scope.ServiceProvider.GetRequiredService<AppDbContext>();
         _service = _scope.ServiceProvider.GetRequiredService<ITransactionService>();
-
-        _db.Database.EnsureDeleted();
-        _db.Database.EnsureCreated();
     }
 
     public void Dispose() => _scope.Dispose();
