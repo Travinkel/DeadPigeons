@@ -21,8 +21,6 @@ public class BoardServiceTests : IClassFixture<TestServiceFixture>, IDisposable
         _boardService = _scope.ServiceProvider.GetRequiredService<IBoardService>();
         _playerService = _scope.ServiceProvider.GetRequiredService<IPlayerService>();
 
-        _db.Database.EnsureDeleted();
-        _db.Database.EnsureCreated();
     }
 
     public void Dispose() => _scope.Dispose();
@@ -133,7 +131,7 @@ public class BoardServiceTests : IClassFixture<TestServiceFixture>, IDisposable
         await _db.SaveChangesAsync();
 
         // No transactions = 0 balance
-        // 5 numbers = 25 DKK cost
+        // 5 numbers = 20 DKK cost
         var numbers = new int[] { 1, 2, 3, 4, 5 };
         var request = new CreateBoardRequest(playerId, game.Id, numbers, false, "MP-BUY-TEST");
 
@@ -181,7 +179,7 @@ public class BoardServiceTests : IClassFixture<TestServiceFixture>, IDisposable
         _db.Games.Add(game);
         await _db.SaveChangesAsync();
 
-        // 5 numbers = 25 DKK
+        // 5 numbers = 20 DKK
         var numbers = new int[] { 1, 2, 3, 4, 5 };
         var request = new CreateBoardRequest(playerId, game.Id, numbers, false, "MP-BUY-TEST");
 
@@ -196,12 +194,12 @@ public class BoardServiceTests : IClassFixture<TestServiceFixture>, IDisposable
         var purchaseTransaction = await _db.Transactions
             .FirstOrDefaultAsync(t => t.Id == result.TransactionId);
         Assert.NotNull(purchaseTransaction);
-        Assert.Equal(-25m, purchaseTransaction.Amount);
+        Assert.Equal(-20m, purchaseTransaction.Amount);
         Assert.Equal(TransactionType.Purchase, purchaseTransaction.Type);
         Assert.True(purchaseTransaction.IsApproved);
 
         // Verify balance deducted
         var newBalance = await _playerService.GetBalanceAsync(playerId);
-        Assert.Equal(75m, newBalance);
+        Assert.Equal(80m, newBalance);
     }
 }

@@ -6,6 +6,7 @@ public interface ITransactionService
 {
     Task<IEnumerable<TransactionResponse>> GetByPlayerIdAsync(Guid playerId);
     Task<IEnumerable<TransactionResponse>> GetPendingAsync();
+    Task<IEnumerable<TransactionResponse>> GetAllAsync();
     Task<TransactionResponse> CreateDepositAsync(CreateDepositRequest request);
     Task<TransactionResponse?> ApproveAsync(Guid id, ApproveTransactionRequest request);
 }

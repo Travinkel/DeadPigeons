@@ -8,25 +8,28 @@ namespace DeadPigeons.IntegrationTests;
 [Collection("IntegrationTests")]
 public class BoardsApiTests
 {
-    private readonly HttpClient _client;
+    private readonly ApiFactory _factory;
+    private readonly HttpClient _adminClient;
 
     public BoardsApiTests(ApiFactory factory)
     {
-        _client = factory.CreateAuthenticatedClient("Admin");
+        _factory = factory;
+        _adminClient = factory.CreateAuthenticatedClient("Admin");
     }
 
     private async Task<PlayerResponse> CreatePlayerWithBalance(decimal amount)
     {
         // Create player
         var playerRequest = new CreatePlayerRequest("Board Test", $"board{Guid.NewGuid()}@example.com", null);
-        var playerResponse = await _client.PostAsJsonAsync("/api/players", playerRequest);
+        var playerResponse = await _adminClient.PostAsJsonAsync("/api/players", playerRequest);
         var player = await playerResponse.Content.ReadFromJsonAsync<PlayerResponse>();
+        var playerClient = _factory.CreateAuthenticatedClient("Player", player!.Id);
 
         // Create and approve deposit
         var depositRequest = new CreateDepositRequest(player!.Id, amount, "MP-SEED-DEP" );
-        var depositResponse = await _client.PostAsJsonAsync("/api/transactions/deposit", depositRequest);
+        var depositResponse = await playerClient.PostAsJsonAsync("/api/transactions/deposit", depositRequest);
         var transaction = await depositResponse.Content.ReadFromJsonAsync<TransactionResponse>();
-        await _client.PostAsJsonAsync($"/api/transactions/{transaction!.Id}/approve", new ApproveTransactionRequest(Guid.NewGuid()));
+        await _adminClient.PostAsJsonAsync($"/api/transactions/{transaction!.Id}/approve", new ApproveTransactionRequest(Guid.NewGuid()));
 
         return player;
     }
@@ -34,13 +37,13 @@ public class BoardsApiTests
     private async Task<GameResponse> CreateActiveGame()
     {
         // Complete any existing active game first (seeder creates one)
-        var activeResponse = await _client.GetAsync("/api/games/active");
+        var activeResponse = await _adminClient.GetAsync("/api/games/active");
         if (activeResponse.IsSuccessStatusCode)
         {
             var activeGame = await activeResponse.Content.ReadFromJsonAsync<GameResponse>();
             if (activeGame != null)
             {
-                await _client.PostAsJsonAsync(
+                await _adminClient.PostAsJsonAsync(
                     $"/api/games/{activeGame.Id}/complete",
                     new CompleteGameRequest(new[] { 1, 2, 3 }));
             }
@@ -52,7 +55,7 @@ public class BoardsApiTests
         var weekNumber = (hash % 52) + 1;
         var year = 2050 + (hash % 50); // 2050-2099
         var request = new CreateGameRequest(weekNumber, year);
-        var response = await _client.PostAsJsonAsync("/api/games", request);
+        var response = await _adminClient.PostAsJsonAsync("/api/games", request);
         response.EnsureSuccessStatusCode();
         return (await response.Content.ReadFromJsonAsync<GameResponse>())!;
     }
@@ -63,12 +66,13 @@ public class BoardsApiTests
         // Arrange
         var player = await CreatePlayerWithBalance(100m);
         var game = await CreateActiveGame();
+        var playerClient = _factory.CreateAuthenticatedClient("Player", player.Id);
 
         var numbers = new int[] { 1, 2, 3, 4, 5 };
         var request = new CreateBoardRequest(player.Id, game.Id, numbers, false, "MP-BUY-API");
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/boards", request);
+        var response = await playerClient.PostAsJsonAsync("/api/boards", request);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -86,17 +90,18 @@ public class BoardsApiTests
         // Arrange
         var player = await CreatePlayerWithBalance(100m);
         var game = await CreateActiveGame();
+        var playerClient = _factory.CreateAuthenticatedClient("Player", player.Id);
 
-        // 5 numbers = 25 DKK
+        // 5 numbers = 20 DKK
         var request = new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4, 5 }, false, "MP-BUY-API");
 
         // Act
-        await _client.PostAsJsonAsync("/api/boards", request);
+        await playerClient.PostAsJsonAsync("/api/boards", request);
 
         // Assert
-        var balanceResponse = await _client.GetAsync($"/api/players/{player.Id}/balance");
+        var balanceResponse = await playerClient.GetAsync($"/api/players/{player.Id}/balance");
         var balance = await balanceResponse.Content.ReadFromJsonAsync<PlayerBalanceResponse>();
-        balance!.Balance.Should().Be(75m); // 100 - 25
+        balance!.Balance.Should().Be(80m); // 100 - 20
     }
 
     [Fact]
@@ -105,12 +110,13 @@ public class BoardsApiTests
         // Arrange
         var player = await CreatePlayerWithBalance(10m); // Only 10 DKK
         var game = await CreateActiveGame();
+        var playerClient = _factory.CreateAuthenticatedClient("Player", player.Id);
 
         // 5 numbers = 25 DKK (more than balance)
         var request = new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4, 5 }, false, "MP-BUY-API");
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/boards", request);
+        var response = await playerClient.PostAsJsonAsync("/api/boards", request);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -122,11 +128,12 @@ public class BoardsApiTests
         // Arrange
         var player = await CreatePlayerWithBalance(100m);
         var game = await CreateActiveGame();
+        var playerClient = _factory.CreateAuthenticatedClient("Player", player.Id);
 
         var request = new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4 }, false, "MP-BUY-API");
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/boards", request);
+        var response = await playerClient.PostAsJsonAsync("/api/boards", request);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -138,11 +145,12 @@ public class BoardsApiTests
         // Arrange
         var player = await CreatePlayerWithBalance(100m);
         var game = await CreateActiveGame();
+        var playerClient = _factory.CreateAuthenticatedClient("Player", player.Id);
 
         var request = new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, false, "MP-BUY-API");
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/boards", request);
+        var response = await playerClient.PostAsJsonAsync("/api/boards", request);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -154,11 +162,12 @@ public class BoardsApiTests
         // Arrange
         var player = await CreatePlayerWithBalance(100m);
         var game = await CreateActiveGame();
+        var playerClient = _factory.CreateAuthenticatedClient("Player", player.Id);
 
-        await _client.PostAsJsonAsync("/api/boards", new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4, 5 }, false, "MP-BUY-API"));
+        await playerClient.PostAsJsonAsync("/api/boards", new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4, 5 }, false, "MP-BUY-API"));
 
         // Act
-        var response = await _client.GetAsync($"/api/boards/game/{game.Id}");
+        var response = await _adminClient.GetAsync($"/api/boards/game/{game.Id}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -173,11 +182,12 @@ public class BoardsApiTests
         // Arrange
         var player = await CreatePlayerWithBalance(100m);
         var game = await CreateActiveGame();
+        var playerClient = _factory.CreateAuthenticatedClient("Player", player.Id);
 
-        await _client.PostAsJsonAsync("/api/boards", new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4, 5 }, false, "MP-BUY-API"));
+        await playerClient.PostAsJsonAsync("/api/boards", new CreateBoardRequest(player.Id, game.Id, new int[] { 1, 2, 3, 4, 5 }, false, "MP-BUY-API"));
 
         // Act
-        var response = await _client.GetAsync($"/api/boards/player/{player.Id}");
+        var response = await playerClient.GetAsync($"/api/boards/player/{player.Id}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);

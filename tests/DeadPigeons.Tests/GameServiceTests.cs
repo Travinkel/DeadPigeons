@@ -19,8 +19,6 @@ public class GameServiceTests : IClassFixture<TestServiceFixture>, IDisposable
         _db = _scope.ServiceProvider.GetRequiredService<AppDbContext>();
         _service = _scope.ServiceProvider.GetRequiredService<IGameService>();
 
-        _db.Database.EnsureDeleted();
-        _db.Database.EnsureCreated();
     }
 
     public void Dispose() => _scope.Dispose();

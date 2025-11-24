@@ -59,6 +59,8 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
         builder.ConfigureServices(services =>
         {
+            services.AddLogging();
+
             // Remove ALL EF Core services to avoid provider conflicts
             var efDescriptors = services
                 .Where(d => d.ServiceType.FullName?.Contains("EntityFramework") == true)

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using DeadPigeons.Api.Dtos;
 using DeadPigeons.Api.Services;
+using DeadPigeons.Api.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,14 +19,16 @@ public class TransactionsController : ControllerBase
         _transactionService = transactionService;
     }
 
+    private string CorrelationId => HttpContext.Items.TryGetValue("X-Correlation-ID", out var id) ? id?.ToString() ?? string.Empty : string.Empty;
+
     [HttpGet("player/{playerId:guid}")]
-    public async Task<ActionResult<IEnumerable<TransactionResponse>>> GetByPlayerId(Guid playerId)
+    public async Task<IActionResult> GetByPlayerId(Guid playerId)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var isAdmin = User.IsInRole("Admin");
 
         if (!isAdmin && userId != playerId.ToString())
-            return Forbid();
+            return StatusCode(403, new ErrorResponse("AUTH_FORBIDDEN", "Cannot view transactions for another user", CorrelationId));
 
         var transactions = await _transactionService.GetByPlayerIdAsync(playerId);
         return Ok(transactions);
@@ -33,16 +36,47 @@ public class TransactionsController : ControllerBase
 
     [HttpGet("pending")]
     [Authorize(Policy = "RequireAdmin")]
-    public async Task<ActionResult<IEnumerable<TransactionResponse>>> GetPending()
+    public async Task<IActionResult> GetPending()
     {
         var transactions = await _transactionService.GetPendingAsync();
         return Ok(transactions);
     }
 
-    [HttpPost("deposit")]
+    [HttpGet("admin")]
     [Authorize(Policy = "RequireAdmin")]
-    public async Task<ActionResult<TransactionResponse>> CreateDeposit([FromBody] CreateDepositRequest request)
+    public async Task<IActionResult> GetAll()
     {
+        var transactions = await _transactionService.GetAllAsync();
+        return Ok(transactions);
+    }
+
+    [HttpPost("deposit")]
+    [Authorize(Policy = "RequirePlayer")]
+    public async Task<IActionResult> CreateDeposit([FromBody] CreateDepositRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new ErrorResponse("VALIDATION_FAILED", "Invalid request body", CorrelationId));
+        }
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = User.IsInRole("Admin");
+
+        if (isAdmin)
+        {
+            return StatusCode(403, new ErrorResponse("AUTH_FORBIDDEN", "Admins cannot create deposits", CorrelationId));
+        }
+
+        if (string.IsNullOrWhiteSpace(userId) || !Guid.TryParse(userId, out var currentUserId))
+        {
+            return Unauthorized(new ErrorResponse("AUTH_UNAUTHORIZED", "Missing or invalid user id in token", CorrelationId));
+        }
+
+        if (currentUserId != request.PlayerId)
+        {
+            return StatusCode(403, new ErrorResponse("AUTH_FORBIDDEN", "Cannot create deposit for another user", CorrelationId));
+        }
+
         try
         {
             var transaction = await _transactionService.CreateDepositAsync(request);
@@ -50,16 +84,23 @@ public class TransactionsController : ControllerBase
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(new ErrorResponse("DEPOSIT_INVALID", ex.Message, CorrelationId));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ErrorResponse("DEPOSIT_ERROR", "Unexpected error creating deposit", CorrelationId));
         }
     }
 
     [HttpPost("{id:guid}/approve")]
     [Authorize(Policy = "RequireAdmin")]
-    public async Task<ActionResult<TransactionResponse>> Approve(Guid id, [FromBody] ApproveTransactionRequest request)
+    public async Task<IActionResult> Approve(Guid id, [FromBody] ApproveTransactionRequest request)
     {
         var transaction = await _transactionService.ApproveAsync(id, request);
-        if (transaction == null) return NotFound();
+        if (transaction == null)
+        {
+            return StatusCode(404, new ErrorResponse("TX_NOT_FOUND", "Transaction not found", CorrelationId));
+        }
         return Ok(transaction);
     }
 }
