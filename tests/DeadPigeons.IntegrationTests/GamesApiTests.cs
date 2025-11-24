@@ -84,7 +84,10 @@ public class GamesApiTests
         var (weekNumber, year) = GenerateUniqueWeekYear();
         var createRequest = new CreateGameRequest(weekNumber, year);
         var createResponse = await _client.PostAsJsonAsync("/api/games", createRequest);
+        createResponse.EnsureSuccessStatusCode();
+
         var createdGame = await createResponse.Content.ReadFromJsonAsync<GameResponse>();
+        createdGame.Should().NotBeNull();
 
         var completeRequest = new CompleteGameRequest(new int[] { 10, 20, 30 });
 

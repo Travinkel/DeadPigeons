@@ -91,16 +91,48 @@ public class GameService : IGameService
             })
             .FirstOrDefaultAsync();
 
-        return game == null ? null : new GameResponse(
-            game.Id,
-            game.WeekNumber,
-            game.Year,
-            game.Status.ToString(),
-            game.WinningNumbers,
-            game.StartedAt,
-            game.CompletedAt,
-            game.CreatedAt,
-            game.BoardCount);
+        // If no active game, promote the next pending game to active (closest by year/week)
+        if (game == null)
+        {
+            var nextPending = await _db.Games
+                .Where(g => g.Status == GameStatus.Pending)
+                .OrderBy(g => g.Year)
+                .ThenBy(g => g.WeekNumber)
+                .FirstOrDefaultAsync();
+
+            if (nextPending != null)
+            {
+                nextPending.Status = GameStatus.Active;
+                nextPending.StartedAt = DateTime.UtcNow;
+                await _db.SaveChangesAsync();
+
+                game = new
+                {
+                    nextPending.Id,
+                    nextPending.WeekNumber,
+                    nextPending.Year,
+                    nextPending.Status,
+                    nextPending.WinningNumbers,
+                    nextPending.StartedAt,
+                    nextPending.CompletedAt,
+                    nextPending.CreatedAt,
+                    BoardCount = nextPending.Boards.Count
+                };
+            }
+        }
+
+        return game == null
+            ? null
+            : new GameResponse(
+                game.Id,
+                game.WeekNumber,
+                game.Year,
+                game.Status.ToString(),
+                game.WinningNumbers,
+                game.StartedAt,
+                game.CompletedAt,
+                game.CreatedAt,
+                game.BoardCount);
     }
 
     public async Task<GameResponse> CreateAsync(CreateGameRequest request)
