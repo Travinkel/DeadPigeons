@@ -18,7 +18,8 @@
 | Sprint 1 | Walking Skeleton + DevOps | Done | v1.0.0, v1.1.0 |
 | Sprint 2 | Data Model + Basic Endpoints | Done | v1.2.0 |
 | Sprint 3 | Auth + Authz + Validation | Done | v1.3.0 |
-| Sprint 4 | Game Logic + React UI + Deploy | Done | v1.4.0 |
+| Sprint 4 | Game Logic + React UI + Deploy | Done | v2.0.0 |
+| Sprint 5 | Exam Prep, CI Hardening, Mobile Polish | In Progress | feature/sprint5-polish-ui |
 
 **MVP Status:** Delivered - November 23, 2024
 
@@ -26,7 +27,7 @@
 
 ## Current Phase: Exam Preparation
 
-**Branch:** `exam-prep`
+**Branch:** `feature/sprint5-polish-ui`
 **Status:** In Progress
 **Target:** December 19, 2024 (Submission Deadline)
 

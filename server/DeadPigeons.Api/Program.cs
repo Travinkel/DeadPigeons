@@ -111,8 +111,9 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Health check endpoint for deployment verification
+// Health check endpoints for deployment verification
 app.MapGet("/api/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
 // Seed database on startup (for development/demo)
 using (var scope = app.Services.CreateScope())

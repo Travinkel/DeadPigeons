@@ -166,3 +166,15 @@ Feature: Mobile layout stability
 
 ## Notes on issue numbering
 - GitHub issues in this repo start at #23 because earlier numbers were consumed by prior issues/PRs; production tracking begins with #23 and onward.
+
+## QA & Validation Scope
+- **Smoke (CI-aligned):** API health, migrations/seed success, auth login/register, board list fetch, deposit list fetch, one board purchase happy path, one deposit approve path.
+- **Integration (Docker):** TestContainers suite green; verify migrations + seed run once and do not overwrite existing admin/player; board purchase rejects <5 or >8 numbers; MobilePay ID required on deposit/purchase.
+- **Playwright (mobile + desktop):** Login, register, board purchase, deposit approval flows at 360-414px and desktop; verify CTAs visible, no overlays or clipping.
+- **Regression on critical endpoints:** /games ordering and finished state, pending deposits approve action updates balance and refreshes UI, friendly board labels (week/year), CORS/HTTPS config untouched.
+- **Docs/ops:** Confirm tokens present for Fly deploy jobs; PR checklist includes screenshots/curl output for UI/API changes; main remains protected with work on `feature/sprint5-polish-ui`.
+
+## Requirements Acceptance Testing (RaT)
+- **Source:** docs/internal/EXAM.txt (official brief) and README.md (current state).
+- **RaT checkpoints:** distributed app (React client + .NET API + Postgres), auth/authz enforced, validation on inputs, NSwag/OpenAPI present, no secrets in git, TestContainers + Xunit.DependencyInjection in place, all service methods tested (happy/unhappy), cloud deploy path documented (Fly), authz matrix and environment/config notes in README.
+- **Execution:** Run after Batch B/C are green; document results and gaps in exam-alignment.md and PR notes.
