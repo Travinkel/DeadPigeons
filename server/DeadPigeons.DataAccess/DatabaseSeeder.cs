@@ -23,12 +23,18 @@ public static class DatabaseSeeder
                 IsActive = true,
                 Role = Role.Admin
             };
+            admin.PasswordHash = hasher.HashPassword(admin, "Admin123!");
             context.Players.Add(admin);
         }
-        admin.PasswordHash = hasher.HashPassword(admin, "Admin123!");
-        admin.IsActive = true;
-        admin.Role = Role.Admin;
-        admin.DeletedAt = null;
+        else
+        {
+            if (string.IsNullOrWhiteSpace(admin.PasswordHash))
+            {
+                admin.PasswordHash = hasher.HashPassword(admin, "Admin123!");
+            }
+            // Preserve admin-chosen password/flags; only revive if soft-deleted.
+            admin.DeletedAt = null;
+        }
 
         // Upsert test player
         var player = await context.Players.IgnoreQueryFilters().FirstOrDefaultAsync(p => p.Email == "player@jerneif.dk");
@@ -43,12 +49,17 @@ public static class DatabaseSeeder
                 IsActive = true,
                 Role = Role.Player
             };
+            player.PasswordHash = hasher.HashPassword(player, "Player123!");
             context.Players.Add(player);
         }
-        player.PasswordHash = hasher.HashPassword(player, "Player123!");
-        player.IsActive = true;
-        player.Role = Role.Player;
-        player.DeletedAt = null;
+        else
+        {
+            if (string.IsNullOrWhiteSpace(player.PasswordHash))
+            {
+                player.PasswordHash = hasher.HashPassword(player, "Player123!");
+            }
+            player.DeletedAt = null;
+        }
 
         // Seed games around the current year to avoid out-of-range failures
         var now = DateTime.UtcNow;
