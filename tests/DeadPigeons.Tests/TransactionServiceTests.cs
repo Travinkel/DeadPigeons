@@ -48,7 +48,7 @@ public class TransactionServiceTests : IClassFixture<TestServiceFixture>, IDispo
     public async Task CreateDepositAsync_WithZeroAmount_ThrowsException()
     {
         // Arrange
-        var request = new CreateDepositRequest(Guid.NewGuid(), 0m, null);
+        var request = new CreateDepositRequest(Guid.NewGuid(), 0m, "MP-ZERO");
 
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() =>
@@ -59,7 +59,7 @@ public class TransactionServiceTests : IClassFixture<TestServiceFixture>, IDispo
     public async Task CreateDepositAsync_WithNegativeAmount_ThrowsException()
     {
         // Arrange
-        var request = new CreateDepositRequest(Guid.NewGuid(), -50m, null);
+        var request = new CreateDepositRequest(Guid.NewGuid(), -50m, "MP-NEG");
 
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() =>

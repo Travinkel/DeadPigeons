@@ -27,9 +27,24 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         .Build();
 
     private string? _connectionString;
+    private bool _containerStarted;
+
+    private void EnsureContainerStarted()
+    {
+        if (_containerStarted)
+        {
+            return;
+        }
+
+        _dbContainer.StartAsync().GetAwaiter().GetResult();
+        _connectionString = _dbContainer.GetConnectionString();
+        _containerStarted = true;
+    }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        EnsureContainerStarted();
+
         builder.ConfigureAppConfiguration((context, config) =>
         {
             config.AddInMemoryCollection(new Dictionary<string, string?>
@@ -51,7 +66,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
                 services.Remove(d);
 
             services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(_connectionString!));
+                options.UseNpgsql(_connectionString ?? throw new InvalidOperationException("Test container connection string not initialized")));
 
             // Remove and re-add JWT authentication with test settings
             // (Program.cs captures config values before ConfigureAppConfiguration runs)
@@ -82,11 +97,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await _dbContainer.StartAsync();
-        _connectionString = _dbContainer.GetConnectionString();
-
-        // Ensure the host is created with the updated connection string
-        CreateClient();
+        EnsureContainerStarted();
 
         // Apply migrations + seed baseline data
         using var scope = Services.CreateScope();
@@ -129,7 +140,10 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     public new async Task DisposeAsync()
     {
-        await _dbContainer.StopAsync();
-        await _dbContainer.DisposeAsync();
+        if (_containerStarted)
+        {
+            await _dbContainer.StopAsync();
+            await _dbContainer.DisposeAsync();
+        }
     }
 }

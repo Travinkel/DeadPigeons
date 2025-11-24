@@ -7,6 +7,7 @@
 - Auth UX hardened: Playwright auth suite now green after aligning heading semantics.
 - Lint/typecheck stability: client scripts clean; husky/commitlint still lightweight for students.
 - QA process clarified: AI↔QA checklist with per-item roles and RaT checkpoints added to sprint epic.
+- Integration startup stabilized: TestContainers host now starts before DbContext registration; HTTPS redirect disabled in tests to avoid 500s on /health.
 
 ## What was hard
 - Local integration runs blocked without Docker; reliance on CI for TestContainers slows feedback.
