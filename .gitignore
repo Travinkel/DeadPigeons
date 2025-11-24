@@ -25,6 +25,9 @@ mono_crash.*
 CLAUDE.md
 .claude/
 
+# Junie AI files
+.junie
+
 # Internal Documentation and Training Data
 /docs/internal
 

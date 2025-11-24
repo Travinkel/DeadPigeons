@@ -19,33 +19,43 @@ public class BoardService : IBoardService
 
     public async Task<IEnumerable<BoardResponse>> GetByGameIdAsync(Guid gameId)
     {
-        return await _db.Boards
-            .Where(b => b.GameId == gameId)
-            .Select(b => new BoardResponse(
+        return await (
+            from b in _db.Boards
+            join g in _db.Games on b.GameId equals g.Id
+            where b.GameId == gameId
+            select new BoardResponse(
                 b.Id,
                 b.PlayerId,
                 b.GameId,
                 b.Numbers,
                 b.IsRepeating,
                 b.CreatedAt,
-                b.TransactionId))
-            .ToListAsync();
+                b.TransactionId,
+                g.WeekNumber,
+                g.Year,
+                $"Uge {g.WeekNumber}, {g.Year}")
+        ).ToListAsync();
     }
 
     public async Task<IEnumerable<BoardResponse>> GetByPlayerIdAsync(Guid playerId)
     {
-        return await _db.Boards
-            .Where(b => b.PlayerId == playerId)
-            .OrderByDescending(b => b.CreatedAt)
-            .Select(b => new BoardResponse(
+        return await (
+            from b in _db.Boards
+            join g in _db.Games on b.GameId equals g.Id
+            where b.PlayerId == playerId
+            orderby b.CreatedAt descending
+            select new BoardResponse(
                 b.Id,
                 b.PlayerId,
                 b.GameId,
                 b.Numbers,
                 b.IsRepeating,
                 b.CreatedAt,
-                b.TransactionId))
-            .ToListAsync();
+                b.TransactionId,
+                g.WeekNumber,
+                g.Year,
+                $"Uge {g.WeekNumber}, {g.Year}")
+        ).ToListAsync();
     }
 
     public async Task<BoardResponse?> GetByIdAsync(Guid id)
@@ -53,6 +63,9 @@ public class BoardService : IBoardService
         var board = await _db.Boards.FindAsync(id);
         if (board == null) return null;
 
+        var g = await _db.Games.FindAsync(board.GameId);
+        var wk = g?.WeekNumber ?? 0;
+        var yr = g?.Year ?? 0;
         return new BoardResponse(
             board.Id,
             board.PlayerId,
@@ -60,7 +73,10 @@ public class BoardService : IBoardService
             board.Numbers,
             board.IsRepeating,
             board.CreatedAt,
-            board.TransactionId);
+            board.TransactionId,
+            wk,
+            yr,
+            $"Uge {wk}, {yr}");
     }
 
     public async Task<BoardResponse> CreateAsync(CreateBoardRequest request)
@@ -90,6 +106,10 @@ public class BoardService : IBoardService
         if (balance < cost)
             throw new InvalidOperationException("Insufficient balance");
 
+        // Require MobilePay transaction id
+        if (string.IsNullOrWhiteSpace(request.MobilePayTransactionId))
+            throw new ArgumentException("MobilePay transaction ID is required");
+
         // Create purchase transaction
         var transaction = new Transaction
         {
@@ -97,6 +117,7 @@ public class BoardService : IBoardService
             PlayerId = request.PlayerId,
             Amount = -cost, // Negative for purchase
             Type = TransactionType.Purchase,
+            MobilePayTransactionId = request.MobilePayTransactionId,
             IsApproved = true, // Auto-approved for purchases
             CreatedAt = DateTime.UtcNow,
             ApprovedAt = DateTime.UtcNow
@@ -125,6 +146,9 @@ public class BoardService : IBoardService
             board.Numbers,
             board.IsRepeating,
             board.CreatedAt,
-            board.TransactionId);
+            board.TransactionId,
+            game.WeekNumber,
+            game.Year,
+            $"Uge {game.WeekNumber}, {game.Year}");
     }
 }

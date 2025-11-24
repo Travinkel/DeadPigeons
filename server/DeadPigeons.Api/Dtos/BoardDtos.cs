@@ -7,7 +7,8 @@ public record CreateBoardRequest(
     [Required] Guid PlayerId,
     [Required] Guid GameId,
     [Required, MinLength(5), MaxLength(8)] int[] Numbers,
-    bool IsRepeating
+    bool IsRepeating,
+    [Required, StringLength(50)] string MobilePayTransactionId
 );
 
 // Response DTOs
@@ -18,7 +19,10 @@ public record BoardResponse(
     int[] Numbers,
     bool IsRepeating,
     DateTime CreatedAt,
-    Guid TransactionId
+    Guid TransactionId,
+    int WeekNumber,
+    int Year,
+    string FriendlyTitle
 );
 
 public record BoardWithPlayerResponse(
