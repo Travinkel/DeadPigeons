@@ -22,6 +22,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var httpsRedirectEnabled = builder.Configuration.GetValue("HttpsRedirection:Enabled", true);
+
 // JWT Authentication
 var jwtSecret = builder.Configuration["Jwt:Secret"]
     ?? throw new InvalidOperationException("JWT Secret not configured");
@@ -91,7 +93,10 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+if (httpsRedirectEnabled)
+{
+    app.UseHttpsRedirection();
+}
 
 // CORS must be before auth
 app.UseCors("AllowClient");
@@ -111,7 +116,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Health check endpoint for deployment verification
+// Health check endpoints for deployment verification
 app.MapGet("/api/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
 // Seed database on startup (for development/demo)

@@ -76,10 +76,10 @@ export function LoginPage() {
               <img src="/logo.png" alt="Jerne IF" className="w-16 h-16" />
             </div>
           </div>
-          <p className="text-center text-sm font-medium text-slate-700 tracking-tight mt-3">
+          <h1 className="text-center text-sm font-semibold text-slate-700 tracking-tight mt-3">
             Dead Pigeons
-          </p>
-          <h1 className="text-center text-3xl font-extrabold text-gray-900 mt-1">Log ind</h1>
+          </h1>
+          <h2 className="text-center text-3xl font-extrabold text-gray-900 mt-1">Log ind</h2>
           <p className="text-center text-gray-500 text-sm mt-1 mb-6">Log ind for at fortsætte</p>
 
           {error && (

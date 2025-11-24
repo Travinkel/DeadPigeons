@@ -16,6 +16,7 @@ public class HealthTests
     public async Task Health_Endpoint_Returns_OK()
     {
         var response = await _client.GetAsync("/health");
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var body = await response.Content.ReadAsStringAsync();
+        Assert.True(response.IsSuccessStatusCode, $"Expected 200, got {(int)response.StatusCode} {response.StatusCode}. Body: {body}");
     }
 }

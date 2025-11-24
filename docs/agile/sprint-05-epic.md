@@ -31,6 +31,74 @@
 - Add branch protection policy and keep `main` clean to GitHub Flow.  
 
 ## Deliverables and Acceptance
+- Branch protection enabled; no direct pushes to `main`.  
+- CI fails if integration/E2E/smoke fail or are skipped.  
+- Fly deploy succeeds with documented token setup (API and client token).  
+- Integration tests pass in CI (TestContainers with migrations and seed).  
+- E2E and smoke tests present and executable (document how and where to run).  
+- exam-alignment.md updated to reflect current compliance.  
+- Design tokens visible in auth UI (text-h1 etc.).  
+- Mobile layout verified at <= 375px for auth pages and primary flows; CTAs and nav stay usable.  
+- API migrates and seeds automatically on startup.  
+- Seeder fixed to avoid overwriting real admin/player credentials on each startup; CI updated to use `fly.toml`.  
+
+## Risks and Mitigations
+
+- **Token misconfiguration:** Add preflight check and docs.  
+- **Flaky integration tests:** Seed deterministic data; fail hard on migration errors.  
+- **Time:** Scope to hardening only; defer new features.  
+- **Mobile regressions:** Add mobile viewport checks to PR checklist and smoke/E2E coverage.  
+- **Bingo UX defects:** Buying a board with invalid numbers still charges and creates a board; board names are cryptic; player display name missing. Track and fix before release.  
+- **Mobile layout break:** Auth/dashboard on phones show a white overlay square; content clipped and clickable outside bounds—requires responsive fixes and smoke coverage.  
+- **Game list ordering bug:** Finished games show descending future years (e.g., week 52 of 2044). Fix ordering/formatting before release to avoid confusing users.  
+- **Payment flow gap:** Board purchase succeeds without collecting MobilePay ID; payments are recorded but flow skips required payer info. Add validation/UX fix before release.  
+- **Dashboard clarity:** Boards display cryptic week codes (e.g., `Uge 77f82341`) and greyed numbers; needs friendly labeling and color updates (e.g., Jerneif red + white) for readability.  
+- **/games typography contrast:** Active-game banner uses thin white text on red and inconsistent sizing; increase weight/size for legibility and visual balance.  
+- **Admin payments:** Pending deposits show GUIDs as player names and “Godkend” does not approve; must fix name display + approval action.  
+- **Finished games correctness:** Admin sees “finished” games in future years; align game generation/ordering with real weeks (see `docs/internal/EXAM.txt` guidance on seeding inactive future weeks).  
+
+## Breakout Tasks (sprint 5)
+- Fix board purchase validation so invalid number counts are blocked before charging; ensure board IDs/names render friendly labels (week/year).  
+- Enforce MobilePay ID capture on deposit/purchase flows; surface validation errors in UI.  
+- Add player display names everywhere (dashboard, admin deposits, board listings).  
+- Make “Godkend” approve pending deposits (update status + balance + UI refresh).  
+- Correct game list ordering/status to avoid future-year “finished” entries; align with seeded calendar weeks.  
+- Retheme dashboard/cards (/games and boards) for legibility: heavier weights on red, consistent heading sizes.  
+- Mobile layout fixes: remove white overlay, ensure auth/dashboard fit 360–414px, buttons and nav stay visible.  
+- Add smoke/E2E coverage for mobile login and board purchase with validation and MobilePay ID required.  
+- UX hardening: apply design tokens (weights/sizes/spacing/colors) across /games, dashboard, boards, and auth for consistent readable hierarchy.  
+
+### UX hardening acceptance + token guide
+- Typography weights: headings on red backgrounds use at least semi-bold (600); body on red uses 500; body on white stays 400–500.  
+- Sizes: H1 28–32px, H2 24–26px, H3 20–22px, body 16px, small labels 14px.  
+- Spacing: vertical rhythm 12–16px on mobile, 16–20px on desktop; card padding 16px mobile, 24px desktop.  
+- Color: Jerneif red background with white text meets contrast; avoid thin weights on red. Input/error text stays high-contrast.  
+- Cards/banners: cap width for readability; single-column on mobile; no clipped nav/CTAs.  
+- Acceptance: mobile (360–414px) and desktop checked for /games banner (“Aktiv”, “Plader”, “Startet”), board lists, dashboard cards, auth forms.  
+
+## User Stories (Gherkin)
+```
+Feature: Board purchase validation
+  As a player
+  I want to be stopped when I pick fewer than 5 or more than 8 numbers
+  So that I am not charged for an invalid board
+
+  Scenario: Reject invalid board size
+    Given I am signed in as player@jerneif.dk
+    And I have a positive balance
+    When I select an invalid count (e.g., 4, 9) and attempt to buy a board
+    Then I see a validation error explaining 5–8 numbers are required
+    And no charge or board is created
+    And the same holds for all disallowed counts (0–4, 9+)
+    And selecting any valid count (5–8) succeeds without duplicate charges
+```
+```
+Feature: MobilePay ID capture
+  As a player
+  I want to submit my MobilePay ID when depositing or paying
+  So that admins can reconcile payments
+
+=======
 
 - Branch protection enabled; no direct pushes to `main`.  
 - CI fails if integration/E2E/smoke fail or are skipped.  
@@ -99,7 +167,7 @@ Feature: MobilePay ID capture
   I want to submit my MobilePay ID when depositing or paying
   So that admins can reconcile payments
 
-  Scenario: Require MobilePay ID on deposit
+Scenario: Require MobilePay ID on deposit
     Given I am on the deposit screen
     When I submit an amount without MobilePay ID
     Then I see a field error requiring MobilePay ID
