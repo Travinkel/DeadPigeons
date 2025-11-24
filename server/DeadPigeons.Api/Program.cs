@@ -22,6 +22,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var httpsRedirectEnabled = builder.Configuration.GetValue("HttpsRedirection:Enabled", true);
+
 // JWT Authentication
 var jwtSecret = builder.Configuration["Jwt:Secret"]
     ?? throw new InvalidOperationException("JWT Secret not configured");
@@ -91,7 +93,10 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+if (httpsRedirectEnabled)
+{
+    app.UseHttpsRedirection();
+}
 
 // CORS must be before auth
 app.UseCors("AllowClient");
