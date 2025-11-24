@@ -17,6 +17,13 @@ export function PlayerDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const formatGameLabel = (board: BoardResponse) => {
+    if (board.friendlyTitle) return board.friendlyTitle;
+    if (board.weekNumber && board.year) return `Uge ${board.weekNumber}, ${board.year}`;
+    if (board.gameId) return `Spil ${board.gameId.slice(0, 8)}...`;
+    return "Spil";
+  };
+
   useEffect(() => {
     if (!user?.playerId || !token) return;
 
@@ -125,7 +132,7 @@ export function PlayerDashboard() {
                 <tbody>
                   {boards.slice(0, 5).map((board) => (
                     <tr key={board.id}>
-                      <td>Uge {board.gameId?.slice(0, 8)}</td>
+                      <td>{formatGameLabel(board)}</td>
                       <td>
                         <div className="flex gap-1 flex-wrap">
                           {board.numbers?.map((num) => (

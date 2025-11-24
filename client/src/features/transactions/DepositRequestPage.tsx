@@ -93,7 +93,7 @@ export function DepositRequestPage() {
     <div className="space-y-6">
       <div className="flex flex-col items-start gap-2 xs:flex-row xs:items-center xs:justify-between">
         <h1 className="text-3xl font-bold">Anmod om indbetaling</h1>
-        <div className="badge badge-lg badge-primary self-start xs:self-auto">
+        <div className="self-start xs:self-auto px-3 py-2 rounded-full bg-[#d60000] text-white font-extrabold text-sm tracking-tight shadow-sm">
           Saldo: {balance.toFixed(2)} kr
         </div>
       </div>
