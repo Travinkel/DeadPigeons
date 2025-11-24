@@ -91,9 +91,11 @@ export function DepositRequestPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col items-start gap-2 xs:flex-row xs:items-center xs:justify-between">
         <h1 className="text-3xl font-bold">Anmod om indbetaling</h1>
-        <div className="badge badge-lg badge-primary">Saldo: {balance.toFixed(2)} kr</div>
+        <div className="badge badge-lg badge-primary self-start xs:self-auto">
+          Saldo: {balance.toFixed(2)} kr
+        </div>
       </div>
 
       {/* Instructions */}
