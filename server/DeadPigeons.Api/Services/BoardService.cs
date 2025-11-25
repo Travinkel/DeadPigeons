@@ -53,7 +53,7 @@ public class BoardService : IBoardService
         return await (
             from b in _db.Boards
             join g in _db.Games on b.GameId equals g.Id
-            where b.PlayerId == playerId
+            where b.PlayerId == playerId && g.Status == GameStatus.Active
             orderby b.CreatedAt descending
             select new BoardResponse(
                 b.Id,

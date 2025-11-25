@@ -80,7 +80,7 @@ public class TransactionsController : ControllerBase
         try
         {
             var transaction = await _transactionService.CreateDepositAsync(request);
-            return CreatedAtAction(nameof(GetByPlayerId), new { playerId = transaction.PlayerId }, transaction);
+            return Ok(transaction);
         }
         catch (ArgumentException ex)
         {
