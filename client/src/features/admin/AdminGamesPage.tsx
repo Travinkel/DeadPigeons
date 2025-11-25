@@ -4,6 +4,21 @@ import { useAuth } from "../auth/useAuth";
 import { createApiClient } from "../../api/apiClient";
 import { type GameResponse } from "../../api/generated/api-client";
 
+// Helper: Group games by year for section rendering
+function groupGamesByYear(games: GameResponse[]): { year: number; games: GameResponse[] }[] {
+  const grouped = new Map<number, GameResponse[]>();
+
+  games.forEach((game) => {
+    const year = game.year || 0;
+    if (!grouped.has(year)) grouped.set(year, []);
+    grouped.get(year)!.push(game);
+  });
+
+  return Array.from(grouped.entries())
+    .sort(([yearA], [yearB]) => yearB - yearA) // Descending (newest first)
+    .map(([year, games]) => ({ year, games }));
+}
+
 export function AdminGamesPage() {
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -37,6 +52,16 @@ export function AdminGamesPage() {
 
     fetchData();
   }, [token]);
+
+  // Auto-scroll to selected year section when filter changes
+  useEffect(() => {
+    if (selectedYear !== null) {
+      const yearSection = document.getElementById(`year-${selectedYear}`);
+      if (yearSection) {
+        yearSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, [selectedYear]);
 
   if (isLoading) {
     return (
@@ -76,9 +101,9 @@ export function AdminGamesPage() {
   const nextGame = upcomingGames.length > 0 ? upcomingGames[upcomingGames.length - 1] : null;
 
   // Extract unique years from sorted games for filtering
-  const uniqueYears: (number | undefined)[] = Array.from(
-    new Set(sortedGames.map((g) => g.year).filter(Boolean))
-  ).sort((a, b) => (b || 0) - (a || 0));
+  const uniqueYears: number[] = Array.from(
+    new Set(sortedGames.map((g) => g.year).filter((y): y is number => y !== undefined))
+  ).sort((a, b) => b - a);
 
   // Filter displayed games by selected year or show all
   const displayedGames =
@@ -86,24 +111,30 @@ export function AdminGamesPage() {
 
   return (
     <div className="space-y-6">
+      {/* Title + Subtitle */}
       <div className="space-y-2">
-        <h1 className="text-h1 text-base-content">Spil (Admin)</h1>
-        <p className="text-base text-base-content/70">
+        <h1 className="text-h1 font-bold text-secondary leading-jumbo tracking-tight">
+          Spil (Admin)
+        </h1>
+        <p className="text-base leading-body text-base-content/70">
           Oversigt over alle spil, afsluttede og kommende. Administrer aktive spil og udfyld
           vindertal.
         </p>
       </div>
 
+      {/* Active Game Card */}
       {activeGame && (
-        <div className="card bg-primary text-primary-content rounded-box shadow-lg border border-primary/40">
-          <div className="card-body p-6 md:p-7 space-y-3">
+        <div className="card bg-primary text-primary-content rounded-2xl shadow-sm border border-primary/20 px-6 py-4">
+          <div className="space-y-3">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
               <div>
-                <p className="text-sm text-primary-content/80">Aktivt spil</p>
-                <h2 className="text-h2 font-semibold">
+                <p className="text-sm leading-body text-primary-content/80">Aktivt spil</p>
+                <h2 className="text-h2 leading-display font-semibold tracking-tight">
                   Uge {activeGame.weekNumber}, {activeGame.year}
                 </h2>
-                <p className="text-lg font-semibold">Plader: {activeGame.boardCount || 0}</p>
+                <p className="text-lg leading-body font-semibold">
+                  Plader: {activeGame.boardCount || 0}
+                </p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Link
@@ -118,120 +149,150 @@ export function AdminGamesPage() {
         </div>
       )}
 
+      {/* Next Game Card */}
       {nextGame && (
-        <div className="card bg-base-100 rounded-box shadow-md border border-base-300">
-          <div className="card-body p-5 md:p-6 space-y-2">
-            <p className="text-sm text-base-content/70">Næste spil (klar til aktivering)</p>
-            <h2 className="text-h2 font-semibold">
+        <div className="card bg-base-100 rounded-2xl shadow-sm border border-base-300 px-6 py-4">
+          <div className="space-y-2">
+            <p className="text-sm leading-body text-base-content/70">
+              Næste spil (klar til aktivering)
+            </p>
+            <h2 className="text-h2 leading-display font-semibold tracking-tight">
               Uge {nextGame.weekNumber}, {nextGame.year}
             </h2>
-            <p className="text-sm text-base-content/70">
+            <p className="text-sm leading-body text-base-content/70">
               Spillet aktiveres automatisk når det aktuelle spil afsluttes.
             </p>
           </div>
         </div>
       )}
 
-      <div className="card bg-base-100 rounded-box shadow-md border border-base-300">
-        <div className="card-body p-5 md:p-6 space-y-4">
+      {/* Games Table Container */}
+      <div className="rounded-2xl shadow-sm border border-base-300 bg-base-100 px-6 py-4">
+        <div className="space-y-4">
+          {/* Header: Title + Year Filter */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <h2 className="text-h2 font-semibold">Afsluttede og aktive spil</h2>
+            <h2 className="text-h2 leading-display font-semibold tracking-tight">
+              Afsluttede og aktive spil
+            </h2>
+
+            {/* Year Filter Dropdown */}
             {uniqueYears.length > 1 && (
-              <div className="flex flex-wrap gap-2">
-                <button
-                  className={`btn btn-sm ${selectedYear === null ? "btn-primary" : "btn-ghost"} h-10 px-3 transition-all`}
-                  onClick={() => setSelectedYear(null)}
+              <div className="flex items-center gap-3">
+                <label
+                  htmlFor="year-filter"
+                  className="text-sm leading-body font-semibold text-base-content"
                 >
-                  Alle år
-                </button>
-                {uniqueYears.map((year) => (
-                  <button
-                    key={year}
-                    className={`btn btn-sm ${selectedYear === year ? "btn-primary" : "btn-ghost"} h-10 px-3 transition-all`}
-                    onClick={() => setSelectedYear(year || null)}
-                    title={`Filtrér efter år ${year}`}
-                  >
-                    {year}
-                  </button>
-                ))}
+                  År:
+                </label>
+                <select
+                  id="year-filter"
+                  value={selectedYear === null ? "all" : selectedYear}
+                  onChange={(e) =>
+                    setSelectedYear(e.target.value === "all" ? null : parseInt(e.target.value))
+                  }
+                  className="select select-bordered select-sm h-10 max-w-xs text-base leading-body"
+                >
+                  <option value="all">Alle år</option>
+                  {uniqueYears.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
               </div>
             )}
           </div>
+
+          {/* Empty States */}
           {sortedGames.length === 0 ? (
-            <p className="text-base-content/70 text-sm">Ingen spil oprettet endnu.</p>
+            <p className="text-base leading-body text-base-content/70">
+              Ingen spil oprettet endnu.
+            </p>
           ) : displayedGames.length === 0 ? (
-            <p className="text-base-content/70 text-sm">Ingen spil for det valgte år.</p>
+            <p className="text-base leading-body text-base-content/70">
+              Ingen spil for det valgte år.
+            </p>
           ) : (
-            <div className="relative">
-              <div className="overflow-x-auto">
-                <table className="table min-w-[760px]">
-                  <thead className="text-sm font-semibold text-base-content">
-                    <tr className="border-b border-base-300">
-                      <th className="py-2.5 px-3 text-left">Uge</th>
-                      <th className="py-2.5 px-3 text-left">År</th>
-                      <th className="py-2.5 px-3 text-right">Plader</th>
-                      <th className="py-2.5 px-3 text-left">Vindende numre</th>
-                      <th className="py-2.5 px-3 text-left">Status</th>
-                      <th className="py-2.5 px-3 text-right">Handling</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-sm">
-                    {displayedGames.map((game, index) => {
-                      const isActiveRow = activeGame && activeGame.id === game.id;
-                      const rowClasses = [
-                        index % 2 === 0 ? "bg-base-100" : "bg-base-200/60",
-                        isActiveRow ? "bg-success/10 hover:bg-success/20" : "hover:bg-base-300",
-                        "transition-colors duration-150",
-                        "cursor-pointer",
-                        isActiveRow ? "border-l-4 border-success font-semibold" : "",
-                      ]
-                        .filter(Boolean)
-                        .join(" ");
-                      return (
-                        <tr
-                          key={game.id}
-                          className={rowClasses}
-                          onClick={() => game.id && navigate(`/admin/games/${game.id}`)}
-                        >
-                          <td className="py-2.5 px-3 font-semibold">{game.weekNumber}</td>
-                          <td className="py-2.5 px-3">{game.year}</td>
-                          <td className="py-2.5 px-3 text-right">{game.boardCount || 0}</td>
-                          <td className="py-2.5 px-3">
-                            {game.winningNumbers && game.winningNumbers.length > 0 ? (
-                              <div className="flex gap-2 flex-wrap">
-                                {game.winningNumbers.map((num) => (
-                                  <span key={num} className="badge badge-primary badge-sm">
-                                    {num}
-                                  </span>
-                                ))}
-                              </div>
-                            ) : (
-                              <span className="text-base-content/60">-</span>
-                            )}
-                          </td>
-                          <td className="py-2.5 px-3">
-                            {game.status === "Active" ? (
-                              <span className="badge badge-success badge-sm">Aktiv</span>
-                            ) : (
-                              <span className="badge badge-warning badge-sm">Afsluttet</span>
-                            )}
-                          </td>
-                          <td className="py-2.5 px-3 text-right">
-                            <Link
-                              to={`/admin/games/${game.id}`}
-                              className="btn btn-sm btn-ghost h-10 px-4"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              Detaljer
-                            </Link>
-                          </td>
+            /* Year-Grouped Tables */
+            <div className="space-y-6">
+              {groupGamesByYear(displayedGames).map(({ year, games: yearGames }) => (
+                <div key={year} id={`year-${year}`}>
+                  {/* Year Header */}
+                  <div className="px-6 py-3 bg-base-200 rounded-t-lg border-b border-base-300">
+                    <h3 className="text-lg leading-display font-semibold text-base-content tracking-tight">
+                      {year}
+                    </h3>
+                  </div>
+
+                  {/* Year's Games Table */}
+                  <div className="overflow-x-auto border border-base-300 border-t-0 rounded-b-lg">
+                    <table className="table w-full">
+                      <thead className="text-base leading-body font-semibold text-base-content">
+                        <tr className="border-b border-base-300">
+                          <th className="py-3 px-4 text-left">Uge</th>
+                          <th className="py-3 px-4 text-left">År</th>
+                          <th className="py-3 px-4 text-right">Plader</th>
+                          <th className="py-3 px-4 text-left">Vindende numre</th>
+                          <th className="py-3 px-4 text-left">Status</th>
+                          <th className="py-3 px-4 text-right">Handling</th>
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-              <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-base-100 to-transparent md:hidden" />
+                      </thead>
+                      <tbody className="text-base leading-body">
+                        {yearGames.map((game) => {
+                          const isActive = activeGame?.id === game.id;
+                          return (
+                            <tr
+                              key={game.id}
+                              className={`
+                                ${
+                                  isActive
+                                    ? "bg-primary/10 border-l-4 border-primary font-semibold text-primary"
+                                    : "hover:bg-base-200"
+                                }
+                                transition-colors duration-150 cursor-pointer
+                              `}
+                              onClick={() => game.id && navigate(`/admin/games/${game.id}`)}
+                            >
+                              <td className="py-3 px-4">{game.weekNumber}</td>
+                              <td className="py-3 px-4">{game.year}</td>
+                              <td className="py-3 px-4 text-right">{game.boardCount || 0}</td>
+                              <td className="py-3 px-4">
+                                {game.winningNumbers && game.winningNumbers.length > 0 ? (
+                                  <div className="flex gap-1 flex-wrap">
+                                    {game.winningNumbers.map((num) => (
+                                      <span key={num} className="badge badge-success badge-sm">
+                                        {num}
+                                      </span>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <span className="text-base-content/60">-</span>
+                                )}
+                              </td>
+                              <td className="py-3 px-4">
+                                {game.status === "Active" ? (
+                                  <span className="badge badge-success">Aktiv</span>
+                                ) : (
+                                  <span className="badge badge-outline">Afsluttet</span>
+                                )}
+                              </td>
+                              <td className="py-3 px-4 text-right">
+                                <Link
+                                  to={`/admin/games/${game.id}`}
+                                  className="btn btn-sm btn-ghost"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  Detaljer
+                                </Link>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
