@@ -8,10 +8,6 @@ import {
 } from "../../api/generated/api-client";
 import { useAuth } from "../auth/useAuth";
 
-type ErrorResponse = {
-  message?: string;
-};
-
 export function GameDetailPage() {
   const { gameId } = useParams();
   const { token } = useAuth();

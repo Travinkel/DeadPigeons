@@ -195,8 +195,8 @@ public class GameService : IGameService
         if (request.WinningNumbers.Distinct().Count() != 3)
             throw new ArgumentException("Winning numbers must be unique");
 
-        if (request.WinningNumbers.Any(n => n < 1 || n > 90))
-            throw new ArgumentException("Winning numbers must be between 1 and 90");
+        if (request.WinningNumbers.Any(n => n < 1 || n > 16))
+            throw new ArgumentException("Winning numbers must be between 1 and 16");
 
         // Update game
         game.Status = GameStatus.Completed;
@@ -217,6 +217,52 @@ public class GameService : IGameService
                 b.IsRepeating,
                 b.CreatedAt))
             .ToList();
+
+        // Replicate repeating boards to the next game
+        var repeatingBoards = game.Boards.Where(b => b.IsRepeating).ToList();
+        if (repeatingBoards.Any())
+        {
+            // Find the next pending game
+            var nextGame = await _db.Games
+                .Where(g => g.Status == GameStatus.Pending)
+                .OrderBy(g => g.Year)
+                .ThenBy(g => g.WeekNumber)
+                .FirstOrDefaultAsync();
+
+            if (nextGame != null)
+            {
+                foreach (var board in repeatingBoards)
+                {
+                    var newTransaction = new Transaction
+                    {
+                        Id = Guid.NewGuid(),
+                        PlayerId = board.PlayerId,
+                        Amount = 0m, // Auto-renewal, no charge
+                        Type = TransactionType.Purchase,
+                        MobilePayTransactionId = $"AUTO-REPEAT-{board.Id}",
+                        IsApproved = true,
+                        CreatedAt = DateTime.UtcNow,
+                        ApprovedAt = DateTime.UtcNow
+                    };
+
+                    var newBoard = new Board
+                    {
+                        Id = Guid.NewGuid(),
+                        PlayerId = board.PlayerId,
+                        GameId = nextGame.Id,
+                        Numbers = board.Numbers,
+                        IsRepeating = true,
+                        CreatedAt = DateTime.UtcNow,
+                        TransactionId = newTransaction.Id
+                    };
+
+                    _db.Transactions.Add(newTransaction);
+                    _db.Boards.Add(newBoard);
+                }
+
+                await _db.SaveChangesAsync();
+            }
+        }
 
         return new GameResultResponse(
             game.Id,

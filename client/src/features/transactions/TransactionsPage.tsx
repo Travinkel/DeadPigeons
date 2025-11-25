@@ -101,12 +101,8 @@ export function TransactionsPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Mine transaktioner</h1>
-        <Link
-          to="/transactions/deposit"
-          className="btn text-white"
-          style={{ backgroundColor: "#d50000" }}
-        >
+        <h1 className="text-h1 text-base-content">Mine transaktioner</h1>
+        <Link to="/transactions/deposit" className="btn btn-primary h-11 px-5 shadow-md text-base">
           Anmod indbetaling
         </Link>
       </div>

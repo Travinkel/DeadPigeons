@@ -370,9 +370,9 @@ export function PurchaseBoardPage() {
       {/* Number Grid */}
       <div className="card bg-base-100 shadow-md rounded-box">
         <div className="card-body">
-          <h2 className="card-title">Vælg numre (1-90)</h2>
-          <div className="grid grid-cols-9 sm:grid-cols-10 gap-2">
-            {Array.from({ length: 90 }, (_, i) => i + 1).map((num) => {
+          <h2 className="card-title">Vælg numre (1-16)</h2>
+          <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
+            {Array.from({ length: 16 }, (_, i) => i + 1).map((num) => {
               const isSelected = selectedNumbers.includes(num);
               return (
                 <button

@@ -104,14 +104,14 @@ public class GameServiceTests : IClassFixture<TestServiceFixture>, IDisposable
         _db.Games.Add(game);
         await _db.SaveChangesAsync();
 
-        var request = new CompleteGameRequest(new int[] { 10, 20, 30 });
+        var request = new CompleteGameRequest(new int[] { 5, 10, 15 });
 
         // Act
         var result = await _service.CompleteAsync(game.Id, request);
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(new int[] { 10, 20, 30 }, result.WinningNumbers);
+        Assert.Equal(new int[] { 5, 10, 15 }, result.WinningNumbers);
 
         // Verify game status updated
         var updatedGame = await _db.Games.FindAsync(game.Id);
@@ -135,7 +135,7 @@ public class GameServiceTests : IClassFixture<TestServiceFixture>, IDisposable
         _db.Games.Add(game);
         await _db.SaveChangesAsync();
 
-        var request = new CompleteGameRequest(new int[] { 10, 20, 30 });
+        var request = new CompleteGameRequest(new int[] { 5, 10, 15 });
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() =>
@@ -185,7 +185,7 @@ public class GameServiceTests : IClassFixture<TestServiceFixture>, IDisposable
         _db.Games.Add(game);
         await _db.SaveChangesAsync();
 
-        var request = new CompleteGameRequest(new int[] { 10, 10, 30 });
+        var request = new CompleteGameRequest(new int[] { 5, 5, 15 });
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
@@ -219,24 +219,24 @@ public class GameServiceTests : IClassFixture<TestServiceFixture>, IDisposable
         };
         _db.Games.Add(game);
 
-        // Winning board (contains all 3: 10, 20, 30)
+        // Winning board (contains all 3: 5, 10, 15)
         var winningBoard = new Board
         {
             Id = Guid.NewGuid(),
             PlayerId = playerId,
             GameId = game.Id,
-            Numbers = new int[] { 10, 20, 30, 40, 50 },
+            Numbers = new int[] { 5, 10, 15, 1, 2 },
             CreatedAt = DateTime.UtcNow,
             TransactionId = Guid.NewGuid()
         };
 
-        // Losing board (missing 30)
+        // Losing board (missing 15)
         var losingBoard = new Board
         {
             Id = Guid.NewGuid(),
             PlayerId = playerId,
             GameId = game.Id,
-            Numbers = new int[] { 10, 20, 40, 50, 60 },
+            Numbers = new int[] { 5, 10, 1, 2, 3 },
             CreatedAt = DateTime.UtcNow,
             TransactionId = Guid.NewGuid()
         };
@@ -244,7 +244,7 @@ public class GameServiceTests : IClassFixture<TestServiceFixture>, IDisposable
         _db.Boards.AddRange(winningBoard, losingBoard);
         await _db.SaveChangesAsync();
 
-        var request = new CompleteGameRequest(new int[] { 10, 20, 30 });
+        var request = new CompleteGameRequest(new int[] { 5, 10, 15 });
 
         // Act
         var result = await _service.CompleteAsync(game.Id, request);

@@ -60,16 +60,15 @@ export function AdminGamesPage() {
     if (yearDiff !== 0) return yearDiff;
     return (b.weekNumber || 0) - (a.weekNumber || 0);
   });
-  const completedGames = sortedGames.filter((g) => g.completedAt || g.status === "Completed");
   const upcomingGames = sortedGames.filter((g) => g.status !== "Active" && !g.completedAt);
   // Get the earliest upcoming game: since sortedGames is desc (newest→oldest),
   // upcomingGames[upcomingGames.length - 1] is the earliest/next upcoming game
   const nextGame = upcomingGames.length > 0 ? upcomingGames[upcomingGames.length - 1] : null;
 
   // Extract unique years from sorted games for filtering
-  const uniqueYears = Array.from(new Set(sortedGames.map((g) => g.year).filter(Boolean))).sort(
-    (a, b) => (b || 0) - (a || 0)
-  );
+  const uniqueYears: (number | undefined)[] = Array.from(
+    new Set(sortedGames.map((g) => g.year).filter(Boolean))
+  ).sort((a, b) => (b || 0) - (a || 0));
 
   // Filter displayed games by selected year or show all
   const displayedGames =
@@ -139,7 +138,7 @@ export function AdminGamesPage() {
                   <button
                     key={year}
                     className={`btn btn-sm ${selectedYear === year ? "btn-primary" : "btn-ghost"} h-10 px-3 transition-all`}
-                    onClick={() => setSelectedYear(year)}
+                    onClick={() => setSelectedYear(year || null)}
                     title={`Filtrér efter år ${year}`}
                   >
                     {year}

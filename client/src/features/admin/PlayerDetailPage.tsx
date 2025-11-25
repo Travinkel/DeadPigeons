@@ -5,12 +5,23 @@ import {
   type PlayerResponse,
   type PlayerBalanceResponse,
   type BoardResponse,
-  type TransactionResponse,
   type GameResponse,
 } from "../../api/generated/api-client";
 import { useAuth } from "../auth/useAuth";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+type Transaction = {
+  id?: string;
+  playerId?: string;
+  amount?: number;
+  type?: string;
+  status?: string;
+  isApproved?: boolean;
+  approvedAt?: string;
+  mobilePayTransactionId?: string;
+  createdAt?: string;
+};
 
 type ErrorResponse = {
   message?: string;
@@ -22,7 +33,7 @@ export function PlayerDetailPage() {
   const [player, setPlayer] = useState<PlayerResponse | null>(null);
   const [balance, setBalance] = useState<PlayerBalanceResponse | null>(null);
   const [boards, setBoards] = useState<BoardResponse[]>([]);
-  const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [games, setGames] = useState<GameResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,7 +65,7 @@ export function PlayerDetailPage() {
             .catch(() => undefined);
           throw new Error(err?.message || "Kunne ikke hente transaktioner");
         }
-        const transactionsData: TransactionResponse[] = await transactionsResp.json();
+        const transactionsData: Transaction[] = await transactionsResp.json();
 
         boardsData.sort((a, b) => {
           const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0;

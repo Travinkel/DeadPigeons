@@ -106,11 +106,24 @@ public class BoardService : IBoardService
             throw new ArgumentException("Numbers must be unique");
         }
 
-        // Validate number range (1-90)
-        if (request.Numbers.Any(n => n < 1 || n > 90))
+        // Validate number range (1-16)
+        if (request.Numbers.Any(n => n < 1 || n > 16))
         {
             _logger.LogWarning("BOARD_RANGE_INVALID correlation={CorrelationId}", request.MobilePayTransactionId);
-            throw new ArgumentException("Numbers must be between 1 and 90");
+            throw new ArgumentException("Numbers must be between 1 and 16");
+        }
+
+        // Validate player is active
+        var player = await _db.Players.FindAsync(request.PlayerId);
+        if (player == null)
+        {
+            _logger.LogWarning("Board create failed: player {PlayerId} not found", request.PlayerId);
+            throw new ArgumentException("Player not found");
+        }
+        if (!player.IsActive)
+        {
+            _logger.LogWarning("Board create failed: player {PlayerId} is not active", request.PlayerId);
+            throw new InvalidOperationException("Player is not active");
         }
 
         // Validate game is active
@@ -124,6 +137,16 @@ public class BoardService : IBoardService
         {
             _logger.LogWarning("Board create failed: game {GameId} is not active (status {Status})", request.GameId, game.Status);
             throw new ArgumentException("Game is not active");
+        }
+
+        // Validate Saturday 5 PM cutoff (Danish time)
+        var dkTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
+        var dkNow = TimeZoneInfo.ConvertTime(DateTime.UtcNow, dkTimeZone);
+
+        if (dkNow.DayOfWeek == DayOfWeek.Saturday && dkNow.Hour >= 17)
+        {
+            _logger.LogWarning("Board create failed: cutoff time passed on Saturday {Hour}:00 DK", dkNow.Hour);
+            throw new InvalidOperationException("Board purchase cutoff: Saturday 5 PM");
         }
 
         // Calculate cost

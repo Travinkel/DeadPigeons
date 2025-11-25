@@ -17,6 +17,9 @@ import { DepositRequestPage } from "../features/transactions/DepositRequestPage"
 import { PlayerDetailPage } from "../features/admin/PlayerDetailPage";
 import { GameDetailPage } from "../features/admin/GameDetailPage";
 import { AdminTransactionsPage } from "../features/admin/AdminTransactionsPage";
+import { AdminPlayersPage } from "../features/admin/AdminPlayersPage";
+import { AdminGamesPage } from "../features/admin/AdminGamesPage";
+import { AdminCreatePlayerPage } from "../features/admin/AdminCreatePlayerPage";
 
 // Root redirect based on auth state
 function RootRedirect() {
@@ -111,6 +114,14 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: "admin/players",
+        element: (
+          <RequireAdmin>
+            <AdminPlayersPage />
+          </RequireAdmin>
+        ),
+      },
+      {
         path: "admin/players/:playerId",
         element: (
           <RequireAdmin>
@@ -119,7 +130,31 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: "admin/players/new",
+        element: (
+          <RequireAdmin>
+            <AdminCreatePlayerPage />
+          </RequireAdmin>
+        ),
+      },
+      {
+        path: "admin/games",
+        element: (
+          <RequireAdmin>
+            <AdminGamesPage />
+          </RequireAdmin>
+        ),
+      },
+      {
         path: "admin/games/:gameId",
+        element: (
+          <RequireAdmin>
+            <GameDetailPage />
+          </RequireAdmin>
+        ),
+      },
+      {
+        path: "admin/games/:id",
         element: (
           <RequireAdmin>
             <GameDetailPage />

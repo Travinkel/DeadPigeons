@@ -11,7 +11,6 @@ export function AdminCreatePlayerPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [isActive, setIsActive] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +28,6 @@ export function AdminCreatePlayerPage() {
         name: name.trim(),
         email: email.trim(),
         phone: phone.trim(),
-        isActive,
       });
       navigate("/admin/players");
     } catch (err) {
@@ -90,17 +88,6 @@ export function AdminCreatePlayerPage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
               />
-            </div>
-            <div className="form-control flex-row items-center gap-3">
-              <label className="label cursor-pointer gap-3">
-                <input
-                  type="checkbox"
-                  className="checkbox checkbox-sm"
-                  checked={isActive}
-                  onChange={(e) => setIsActive(e.target.checked)}
-                />
-                <span className="label-text">Opret som aktiv</span>
-              </label>
             </div>
           </div>
           <div className="flex justify-end gap-3">

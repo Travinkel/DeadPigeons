@@ -135,11 +135,11 @@ export function PlayerDashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold mb-6">Velkommen, {player?.name}</h1>
+      <h1 className="text-h1 text-base-content mb-6">Velkommen, {player?.name}</h1>
 
       {/* Balance Card */}
-      <div className="card shadow-md rounded-2xl" style={{ backgroundColor: "#d50000" }}>
-        <div className="card-body text-white">
+      <div className="card shadow-md rounded-2xl bg-primary text-primary-content">
+        <div className="card-body">
           <h2 className="card-title">Din saldo</h2>
           <p className="text-4xl font-extrabold drop-shadow-sm">
             {balance?.balance?.toFixed(2)} kr

@@ -9,8 +9,6 @@ type PlayerRow = PlayerResponse & {
   transactionCount?: number;
 };
 
-type ErrorResponse = { message?: string };
-
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export function AdminPlayersPage() {
