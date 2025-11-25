@@ -91,7 +91,7 @@ export function GamesPage() {
     <div className="space-y-6">
       {/* Page Title + Subtitle */}
       <div className="space-y-1">
-        <h1 className="text-h1 text-error">Spiloversigt</h1>
+        <h1 className="text-h1 text-base-content">Spiloversigt</h1>
         <p className="text-base text-base-content/70">
           Oversigt over alle aktive og afsluttede spil samt vindende plader
         </p>
@@ -167,7 +167,7 @@ export function GamesPage() {
 
       <div className="card bg-base-100 shadow-sm rounded-box border border-base-300">
         <div className="card-body p-5 md:p-6 gap-3">
-          <h2 className="text-h3 text-error">Seneste 12 spil</h2>
+          <h2 className="text-h3 text-base-content">Seneste 12 spil</h2>
           {sortedGames.length === 0 ? (
             <p className="text-base-content/70 text-sm">Ingen spil oprettet endnu.</p>
           ) : (

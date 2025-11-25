@@ -80,9 +80,7 @@ export function AdminCreatePlayerPage() {
           </Link>{" "}
           / Ny spiller
         </p>
-        <h1 className="text-h1" style={{ color: "#111111" }}>
-          Opret ny spiller
-        </h1>
+        <h1 className="text-h1 text-base-content">Opret ny spiller</h1>
         <p className="text-base text-base-content/70">
           Registrer en ny spiller i systemet. Alle felter er obligatoriske medmindre andet angives.
         </p>

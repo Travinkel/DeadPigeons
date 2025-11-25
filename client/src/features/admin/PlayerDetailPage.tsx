@@ -185,7 +185,7 @@ export function PlayerDetailPage() {
             </Link>{" "}
             / Spillere / {player.name}
           </p>
-          <h1 className="text-h1 flex items-center gap-2" style={{ color: "#111111" }}>
+          <h1 className="text-h1 text-base-content flex items-center gap-2">
             {player.name}
             {player.isActive ? (
               <span className="badge badge-success">Aktiv</span>

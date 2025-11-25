@@ -141,7 +141,7 @@ export function AdminTransactionsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="space-y-2">
-          <h1 className="text-h1 text-secondary">Admin transaktioner</h1>
+          <h1 className="text-h1 text-base-content">Admin transaktioner</h1>
           <p className="text-base text-base-content/70">
             Godkend indbetalinger og se historik for alle transaktioner.
           </p>
