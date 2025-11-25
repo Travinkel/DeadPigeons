@@ -3,7 +3,6 @@ primary_region = "arn"
 
 [build]
   dockerfile = "Dockerfile"
-  context = ".."
 
 [http_service]
   internal_port = 80
