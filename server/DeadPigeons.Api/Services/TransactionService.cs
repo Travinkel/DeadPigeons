@@ -159,14 +159,14 @@ public class TransactionService : ITransactionService
             transaction.DeletedById);
     }
 
-    public async Task<TransactionResponse?> ApproveAsync(Guid id, ApproveTransactionRequest request)
+    public async Task<TransactionResponse?> ApproveAsync(Guid id, Guid approvedById)
     {
         var transaction = await _db.Transactions.FindAsync(id);
         if (transaction == null) return null;
 
         transaction.IsApproved = true;
         transaction.ApprovedAt = DateTime.UtcNow;
-        transaction.ApprovedById = request.ApprovedById;
+        transaction.ApprovedById = approvedById;
 
         await _db.SaveChangesAsync();
 

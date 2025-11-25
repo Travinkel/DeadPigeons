@@ -105,14 +105,27 @@ public class TransactionsController : ControllerBase
 
     [HttpPost("{id:guid}/approve")]
     [Authorize(Policy = "RequireAdmin")]
-    public async Task<IActionResult> Approve(Guid id, [FromBody] ApproveTransactionRequest request)
+    public async Task<IActionResult> Approve(Guid id)
     {
-        var transaction = await _transactionService.ApproveAsync(id, request);
-        if (transaction == null)
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId) || !Guid.TryParse(userId, out var approvedById))
         {
-            return StatusCode(404, new ErrorResponse("TX_NOT_FOUND", "Transaction not found", CorrelationId));
+            return Unauthorized(new ErrorResponse("AUTH_UNAUTHORIZED", "Missing or invalid user id in token", CorrelationId));
         }
-        return Ok(transaction);
+
+        try
+        {
+            var transaction = await _transactionService.ApproveAsync(id, approvedById);
+            if (transaction == null)
+            {
+                return StatusCode(404, new ErrorResponse("TX_NOT_FOUND", "Transaction not found", CorrelationId));
+            }
+            return Ok(transaction);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new ErrorResponse("TX_INVALID_STATE", ex.Message, CorrelationId));
+        }
     }
 
     [HttpPost("{id:guid}/reject")]
