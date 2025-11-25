@@ -47,8 +47,10 @@ export function LoginPage() {
           role: response.role as "Admin" | "Player",
         });
 
-        const from = (location.state as { from?: Location })?.from?.pathname || "/dashboard";
-        navigate(from, { replace: true });
+        const target =
+          (location.state as { from?: Location })?.from?.pathname ||
+          (response.role === "Admin" ? "/admin" : "/dashboard");
+        navigate(target, { replace: true });
       } else {
         setError("Ugyldig svar fra server");
       }

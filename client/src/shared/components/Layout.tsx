@@ -10,15 +10,8 @@ export function Layout() {
     navigate("/login");
   };
 
-  const navLinks = (
+  const playerLinks = (
     <>
-      {user?.role === "Admin" && (
-        <li>
-          <Link to="/admin" className="font-semibold">
-            Admin
-          </Link>
-        </li>
-      )}
       <li>
         <Link to="/dashboard" className="font-semibold">
           Dashboard
@@ -37,6 +30,21 @@ export function Layout() {
       <li>
         <Link to="/transactions" className="font-semibold">
           Transaktioner
+        </Link>
+      </li>
+    </>
+  );
+
+  const adminLinks = (
+    <>
+      <li>
+        <Link to="/admin" className="font-semibold">
+          Admin
+        </Link>
+      </li>
+      <li>
+        <Link to="/games" className="font-semibold">
+          Spil
         </Link>
       </li>
     </>
@@ -69,7 +77,7 @@ export function Layout() {
                 className="menu menu-sm dropdown-content mt-3 z-[5] p-2 shadow rounded-box w-56 right-0 border bg-base-100 text-base-content"
                 style={{ borderColor: "#d50000" }}
               >
-                {navLinks}
+                {user.role === "Admin" ? adminLinks : playerLinks}
                 <li className="mt-1">
                   <button onClick={handleLogout} className="font-semibold">
                     Log ud
@@ -93,7 +101,9 @@ export function Layout() {
         {isAuthenticated && user && (
           <div className="flex-none flex items-center gap-3">
             <div className="navbar-center hidden lg:flex">
-              <ul className="menu menu-horizontal px-1 flex-wrap gap-1">{navLinks}</ul>
+              <ul className="menu menu-horizontal px-1 flex-wrap gap-1">
+                {user.role === "Admin" ? adminLinks : playerLinks}
+              </ul>
             </div>
             <div className="hidden lg:flex items-center gap-4">
               <span className="max-w-[220px] truncate text-sm font-semibold tracking-normal">
