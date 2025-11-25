@@ -140,16 +140,16 @@ export function AdminTransactionsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h1 className="text-3xl font-bold">Admin transaktioner</h1>
+        <h1 className="text-h1 text-base-content">Admin transaktioner</h1>
         <div className="join">
           <button
-            className={`btn btn-sm join-item ${view === "pending" ? "btn-primary" : ""}`}
+            className={`btn ${view === "pending" ? "btn-primary" : "btn-ghost"} h-11 px-5 shadow-md join-item`}
             onClick={() => setView("pending")}
           >
             Afventer godkendelse
           </button>
           <button
-            className={`btn btn-sm join-item ${view === "all" ? "btn-primary" : ""}`}
+            className={`btn ${view === "all" ? "btn-primary" : "btn-ghost"} h-11 px-5 shadow-md join-item`}
             onClick={() => setView("all")}
           >
             Alle transaktioner
@@ -158,38 +158,46 @@ export function AdminTransactionsPage() {
       </div>
 
       {view === "pending" ? (
-        <div className="card bg-base-100 shadow-md rounded-2xl">
-          <div className="card-body">
-            <h2 className="card-title">Afventende indbetalinger</h2>
+        <div className="card bg-base-100 shadow-md rounded-box border border-base-300">
+          <div className="card-body p-5 md:p-6 gap-4">
+            <h2 className="text-h2 font-semibold">Afventende indbetalinger</h2>
             {pendingTransactions.length === 0 ? (
-              <p className="text-base-content/70">Ingen afventende indbetalinger.</p>
+              <p className="text-base-content/70 text-sm">Ingen afventende indbetalinger.</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="table min-w-[720px]">
-                  <thead>
-                    <tr>
-                      <th>Spiller</th>
-                      <th>Beløb</th>
-                      <th>Dato</th>
-                      <th>MobilePay</th>
-                      <th></th>
+                  <thead className="text-sm font-semibold text-base-content">
+                    <tr className="border-b border-base-300">
+                      <th className="py-2.5 px-3 text-left">Spiller</th>
+                      <th className="py-2.5 px-3 text-right">Beløb</th>
+                      <th className="py-2.5 px-3 text-left">Dato</th>
+                      <th className="py-2.5 px-3 text-left">MobilePay</th>
+                      <th className="py-2.5 px-3 text-right"></th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="text-sm">
                     {pendingTransactions.map((tx) => (
-                      <tr key={tx.id}>
-                        <td>{tx.playerNameOrEmail || tx.playerId}</td>
-                        <td>{tx.amount?.toFixed(2)} kr</td>
-                        <td>
+                      <tr
+                        key={tx.id}
+                        className="odd:bg-base-100 even:bg-base-200/60 hover:bg-base-200 transition-colors duration-150"
+                      >
+                        <td className="py-2.5 px-3">{tx.playerNameOrEmail || tx.playerId}</td>
+                        <td
+                          className={`py-2.5 px-3 text-right font-semibold ${
+                            tx.amount && tx.amount > 0 ? "text-success" : "text-error"
+                          }`}
+                        >
+                          {tx.amount?.toFixed(2)} kr
+                        </td>
+                        <td className="py-2.5 px-3">
                           {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString("da-DK") : "-"}
                         </td>
-                        <td className="text-xs text-base-content/70">
+                        <td className="py-2.5 px-3 text-xs text-base-content/70">
                           {tx.mobilePayTransactionId || "-"}
                         </td>
-                        <td>
+                        <td className="py-2.5 px-3 text-right">
                           <button
-                            className="btn btn-sm text-white"
-                            style={{ backgroundColor: "#d50000" }}
+                            className="btn btn-sm btn-primary h-10 px-5 shadow-md"
                             onClick={() => handleApprove(tx.id)}
                             disabled={isApproving}
                           >
@@ -209,48 +217,57 @@ export function AdminTransactionsPage() {
           </div>
         </div>
       ) : (
-        <div className="card bg-base-100 shadow-md rounded-2xl">
-          <div className="card-body space-y-3">
+        <div className="card bg-base-100 shadow-md rounded-box border border-base-300">
+          <div className="card-body p-5 md:p-6 gap-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <h2 className="card-title">Alle transaktioner</h2>
+              <h2 className="text-h2 font-semibold">Alle transaktioner</h2>
               <input
                 type="text"
-                className="input input-bordered input-sm w-full sm:w-72"
+                className="input input-bordered input-sm h-10 w-full sm:w-72"
                 placeholder="Filtrer efter spiller eller MobilePay"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
               />
             </div>
             {filteredAll.length === 0 ? (
-              <p className="text-base-content/70">Ingen transaktioner matcher filteret.</p>
+              <p className="text-base-content/70 text-sm">Ingen transaktioner matcher filteret.</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="table min-w-[760px]">
-                  <thead>
-                    <tr>
-                      <th>Spiller</th>
-                      <th>Beløb</th>
-                      <th>Status</th>
-                      <th>MobilePay</th>
-                      <th>Dato</th>
+                  <thead className="text-sm font-semibold text-base-content">
+                    <tr className="border-b border-base-300">
+                      <th className="py-2.5 px-3 text-left">Spiller</th>
+                      <th className="py-2.5 px-3 text-right">Beløb</th>
+                      <th className="py-2.5 px-3 text-left">Status</th>
+                      <th className="py-2.5 px-3 text-left">MobilePay</th>
+                      <th className="py-2.5 px-3 text-left">Dato</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="text-sm">
                     {filteredAll.map((tx) => (
-                      <tr key={tx.id ?? `${tx.playerId}-${tx.createdAt}`}>
-                        <td className="font-semibold">{tx.playerNameOrEmail || tx.playerId}</td>
-                        <td className={tx.amount && tx.amount > 0 ? "text-success" : "text-error"}>
+                      <tr
+                        key={tx.id ?? `${tx.playerId}-${tx.createdAt}`}
+                        className="odd:bg-base-100 even:bg-base-200/60 hover:bg-base-200 transition-colors duration-150"
+                      >
+                        <td className="py-2.5 px-3 font-semibold">
+                          {tx.playerNameOrEmail || tx.playerId}
+                        </td>
+                        <td
+                          className={`py-2.5 px-3 text-right font-semibold ${
+                            tx.amount && tx.amount > 0 ? "text-success" : "text-error"
+                          }`}
+                        >
                           {tx.amount?.toFixed(2)} kr
                         </td>
-                        <td>
+                        <td className="py-2.5 px-3">
                           {tx.isApproved ? (
                             <span className="badge badge-success badge-sm">Godkendt</span>
                           ) : (
                             <span className="badge badge-warning badge-sm">Afventer</span>
                           )}
                         </td>
-                        <td className="text-xs">{tx.mobilePayTransactionId || "-"}</td>
-                        <td>
+                        <td className="py-2.5 px-3 text-xs">{tx.mobilePayTransactionId || "-"}</td>
+                        <td className="py-2.5 px-3">
                           {tx.createdAt ? new Date(tx.createdAt).toLocaleString("da-DK") : "-"}
                         </td>
                       </tr>
