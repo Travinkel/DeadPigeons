@@ -115,9 +115,9 @@ export function AdminPlayersPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-        <div className="space-y-1">
+        <div className="space-y-2">
           <h1 className="text-h1 text-base-content">Spilleradministration</h1>
-          <p className="text-sm text-base-content/70">
+          <p className="text-base text-base-content/70">
             Administrer spillere, aktivering, plader og transaktioner.
           </p>
         </div>

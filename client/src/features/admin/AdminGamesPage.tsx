@@ -10,6 +10,7 @@ export function AdminGamesPage() {
   const [games, setGames] = useState<GameResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
   useEffect(() => {
     if (!token) return;
@@ -63,6 +64,15 @@ export function AdminGamesPage() {
   const upcomingGames = sortedGames.filter((g) => g.status !== "Active" && !g.completedAt);
   const nextGame = upcomingGames[0]; // first upcoming game (immediately after active)
 
+  // Extract unique years from sorted games for filtering
+  const uniqueYears = Array.from(new Set(sortedGames.map((g) => g.year).filter(Boolean))).sort(
+    (a, b) => (b || 0) - (a || 0)
+  );
+
+  // Filter displayed games by selected year or show all
+  const displayedGames =
+    selectedYear !== null ? sortedGames.filter((g) => g.year === selectedYear) : sortedGames;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
@@ -109,9 +119,32 @@ export function AdminGamesPage() {
 
       <div className="card bg-base-100 rounded-box shadow-md border border-base-300">
         <div className="card-body p-5 md:p-6 space-y-3">
-          <h2 className="text-h2 font-semibold">Afsluttede og aktive spil</h2>
+          <div className="space-y-3">
+            <h2 className="text-h2 font-semibold">Afsluttede og aktive spil</h2>
+            {uniqueYears.length > 1 && (
+              <div className="flex flex-wrap gap-2">
+                <button
+                  className={`btn btn-sm ${selectedYear === null ? "btn-primary" : "btn-ghost"} h-10 px-4`}
+                  onClick={() => setSelectedYear(null)}
+                >
+                  Alle år
+                </button>
+                {uniqueYears.map((year) => (
+                  <button
+                    key={year}
+                    className={`btn btn-sm ${selectedYear === year ? "btn-primary" : "btn-ghost"} h-10 px-4`}
+                    onClick={() => setSelectedYear(year)}
+                  >
+                    {year}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           {sortedGames.length === 0 ? (
             <p className="text-base-content/70 text-sm">Ingen spil oprettet endnu.</p>
+          ) : displayedGames.length === 0 ? (
+            <p className="text-base-content/70 text-sm">Ingen spil for det valgte år.</p>
           ) : (
             <div className="relative">
               <div className="overflow-x-auto">
@@ -127,7 +160,7 @@ export function AdminGamesPage() {
                     </tr>
                   </thead>
                   <tbody className="text-sm">
-                    {sortedGames.map((game, index) => {
+                    {displayedGames.map((game, index) => {
                       const isActiveRow = activeGame && activeGame.id === game.id;
                       const rowClasses = [
                         index % 2 === 0 ? "bg-base-100" : "bg-base-200/60",
