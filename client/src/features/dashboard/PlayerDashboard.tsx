@@ -80,7 +80,7 @@ export function PlayerDashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-[28px] font-bold mb-6">Velkommen, {player?.name}</h1>
+      <h1 className="text-2xl font-bold mb-6">Velkommen, {player?.name}</h1>
 
       {/* Balance Card */}
       <div className="card bg-primary text-primary-content shadow-xl">
