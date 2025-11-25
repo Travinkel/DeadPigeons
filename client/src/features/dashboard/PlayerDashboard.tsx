@@ -1,28 +1,43 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth/useAuth";
 import { createApiClient } from "../../api/apiClient";
-import {
-  type PlayerResponse,
-  type PlayerBalanceResponse,
-  type BoardResponse,
-  type TransactionResponse,
-} from "../../api/generated/api-client";
+import { type PlayerResponse, type PlayerBalanceResponse } from "../../api/generated/api-client";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+type BoardSummary = {
+  id?: string;
+  gameId?: string;
+  numbers?: number[];
+  isRepeating?: boolean;
+  friendlyTitle?: string;
+  weekNumber?: number;
+  year?: number;
+};
+
+type TransactionSummary = {
+  id?: string;
+  playerId?: string;
+  amount?: number;
+  type?: string;
+  mobilePayTransactionId?: string | null;
+  isApproved?: boolean;
+  createdAt?: string;
+  approvedAt?: string | null;
+};
+
+type ErrorResponse = {
+  message?: string;
+};
 
 export function PlayerDashboard() {
   const { user, token } = useAuth();
   const [player, setPlayer] = useState<PlayerResponse | null>(null);
   const [balance, setBalance] = useState<PlayerBalanceResponse | null>(null);
-  const [boards, setBoards] = useState<BoardResponse[]>([]);
-  const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
+  const [boards, setBoards] = useState<BoardSummary[]>([]);
+  const [transactions, setTransactions] = useState<TransactionSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const formatGameLabel = (board: BoardResponse) => {
-    if (board.friendlyTitle) return board.friendlyTitle;
-    if (board.weekNumber && board.year) return `Uge ${board.weekNumber}, ${board.year}`;
-    if (board.gameId) return `Spil ${board.gameId.slice(0, 8)}...`;
-    return "Spil";
-  };
 
   useEffect(() => {
     if (!user?.playerId || !token) return;
@@ -33,13 +48,46 @@ export function PlayerDashboard() {
 
       try {
         const client = createApiClient(token);
-
-        const [playerData, balanceData, boardsData, transactionsData] = await Promise.all([
+        const [playerData, balanceData] = await Promise.all([
           client.playersGET(user.playerId),
           client.balance(user.playerId),
-          client.player(user.playerId),
-          client.player2(user.playerId),
         ]);
+
+        const [boardsResp, transactionsResp] = await Promise.all([
+          fetch(`${API_URL}/api/Boards/player/${user.playerId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+            },
+          }),
+          fetch(`${API_URL}/api/Transactions/player/${user.playerId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+            },
+          }),
+        ]);
+
+        if (!boardsResp.ok) {
+          const err: ErrorResponse | undefined = await boardsResp.json().catch(() => undefined);
+          throw new Error(err?.message || "Failed to fetch boards");
+        }
+
+        if (!transactionsResp.ok) {
+          const err: ErrorResponse | undefined = await transactionsResp
+            .json()
+            .catch(() => undefined);
+          throw new Error(err?.message || "Failed to fetch transactions");
+        }
+
+        const boardsData: BoardSummary[] = await boardsResp.json();
+        const transactionsData: TransactionSummary[] = await transactionsResp.json();
+
+        transactionsData.sort((a, b) => {
+          const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const bDate = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return bDate - aDate;
+        });
 
         setPlayer(playerData);
         setBalance(balanceData);
@@ -87,116 +135,100 @@ export function PlayerDashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-[28px] font-bold mb-6">Velkommen, {player?.name}</h1>
+      <h1 className="text-h1 text-base-content mb-6">Velkommen, {player?.name}</h1>
 
       {/* Balance Card */}
-      <div className="card bg-primary text-primary-content shadow-xl">
+      <div className="card shadow-md rounded-2xl bg-primary text-primary-content">
         <div className="card-body">
           <h2 className="card-title">Din saldo</h2>
-          <p className="text-4xl font-bold">{balance?.balance?.toFixed(2)} kr</p>
+          <p className="text-4xl font-extrabold drop-shadow-sm">
+            {balance?.balance?.toFixed(2)} kr
+          </p>
         </div>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="stat bg-base-100 rounded-box shadow">
+        <div className="stat bg-base-100 rounded-2xl shadow-md">
           <div className="stat-title">Aktive plader</div>
           <div className="stat-value text-primary">{boards.length}</div>
         </div>
-        <div className="stat bg-base-100 rounded-box shadow">
+        <div className="stat bg-base-100 rounded-2xl shadow-md">
           <div className="stat-title">Email</div>
-          <div className="stat-value text-sm">{player?.email}</div>
+          <div className="stat-value text-sm break-all">{player?.email}</div>
         </div>
-        <div className="stat bg-base-100 rounded-box shadow">
+        <div className="stat bg-base-100 rounded-2xl shadow-md">
           <div className="stat-title">Telefon</div>
           <div className="stat-value text-sm">{player?.phone || "-"}</div>
         </div>
       </div>
 
       {/* Recent Boards */}
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100 shadow-md rounded-2xl">
         <div className="card-body">
           <h2 className="card-title">Dine plader</h2>
           {boards.length === 0 ? (
             <p className="text-base-content/70">Du har ingen plader endnu.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Spil</th>
-                    <th>Numre</th>
-                    <th>Automatisk</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {boards.slice(0, 5).map((board) => (
-                    <tr key={board.id}>
-                      <td>{formatGameLabel(board)}</td>
-                      <td>
-                        <div className="flex gap-1 flex-wrap">
-                          {board.numbers?.map((num) => (
-                            <span key={num} className="badge badge-sm">
-                              {num}
-                            </span>
-                          ))}
-                        </div>
-                      </td>
-                      <td>
-                        {board.isRepeating ? (
-                          <span className="badge badge-success badge-sm">Ja</span>
-                        ) : (
-                          <span className="badge badge-ghost badge-sm">Nej</span>
-                        )}
-                      </td>
+            <div className="relative">
+              <div className="overflow-x-auto">
+                <table className="table min-w-[620px]">
+                  <thead>
+                    <tr>
+                      <th>Spil</th>
+                      <th>Numre</th>
+                      <th>Automatisk</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {boards.slice(0, 5).map((board) => (
+                      <tr key={board.id ?? `${board.gameId}-${board.numbers?.join("-")}`}>
+                        <td>
+                          {board.friendlyTitle
+                            ? board.friendlyTitle
+                            : board.weekNumber && board.year
+                              ? `Uge ${board.weekNumber}, ${board.year}`
+                              : board.gameId
+                                ? `Spil ${board.gameId.slice(0, 8)}`
+                                : "Spil"}
+                        </td>
+                        <td>
+                          <div className="flex gap-1 flex-wrap">
+                            {board.numbers?.map((num) => (
+                              <span key={num} className="badge badge-sm">
+                                {num}
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                        <td>
+                          {board.isRepeating ? (
+                            <span className="badge badge-success badge-sm">Ja</span>
+                          ) : (
+                            <span className="badge badge-ghost badge-sm">Nej</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-base-100 to-transparent md:hidden" />
             </div>
           )}
         </div>
       </div>
 
       {/* Recent Transactions */}
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100 shadow-md rounded-2xl">
         <div className="card-body">
           <h2 className="card-title">Seneste transaktioner</h2>
           {transactions.length === 0 ? (
             <p className="text-base-content/70">Ingen transaktioner endnu.</p>
           ) : (
-            <div className="space-y-3 md:space-y-0 md:overflow-x-auto">
-              {/* Card layout on mobile */}
-              <div className="grid gap-3 md:hidden">
-                {transactions.map((tx) => (
-                  <div key={tx.id} className="rounded-box border border-base-300 bg-base-100 p-3 shadow-sm">
-                    <div className="flex justify-between items-start gap-2">
-                      <div className="text-sm text-base-content/70">
-                        {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString("da-DK") : "-"}
-                      </div>
-                      <span
-                        className={`badge badge-sm ${tx.approvedAt ? "badge-success" : "badge-warning"}`}
-                      >
-                        {tx.approvedAt ? "Godkendt" : "Afventer"}
-                      </span>
-                    </div>
-                    <div className="mt-1 flex justify-between items-center">
-                      <div className="text-sm font-semibold">{tx.type}</div>
-                      <div
-                        className={`text-sm font-bold ${
-                          tx.amount && tx.amount > 0 ? "text-success" : "text-error"
-                        }`}
-                      >
-                        {tx.amount?.toFixed(2)} kr
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Table layout on md+ */}
-              <div className="hidden md:block">
-                <table className="table table-sm">
+            <div className="relative">
+              <div className="overflow-x-auto">
+                <table className="table min-w-[620px]">
                   <thead>
                     <tr>
                       <th>Dato</th>
@@ -208,13 +240,15 @@ export function PlayerDashboard() {
                   <tbody>
                     {transactions.map((tx) => (
                       <tr key={tx.id}>
-                        <td>{tx.createdAt ? new Date(tx.createdAt).toLocaleDateString("da-DK") : "-"}</td>
+                        <td>
+                          {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString("da-DK") : "-"}
+                        </td>
                         <td>{tx.type}</td>
                         <td className={tx.amount && tx.amount > 0 ? "text-success" : "text-error"}>
                           {tx.amount?.toFixed(2)} kr
                         </td>
                         <td>
-                          {tx.approvedAt ? (
+                          {tx.isApproved || tx.approvedAt ? (
                             <span className="badge badge-success badge-sm">Godkendt</span>
                           ) : (
                             <span className="badge badge-warning badge-sm">Afventer</span>
@@ -225,6 +259,7 @@ export function PlayerDashboard() {
                   </tbody>
                 </table>
               </div>
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-base-100 to-transparent md:hidden" />
             </div>
           )}
         </div>

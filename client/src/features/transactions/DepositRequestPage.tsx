@@ -41,13 +41,13 @@ export function DepositRequestPage() {
 
     const amountNum = parseFloat(amount);
     if (isNaN(amountNum) || amountNum <= 0) {
-      setError("Indtast et gyldigt belob.");
+      setError("Indtast et gyldigt beløb.");
       return;
     }
 
     const trimmedMobilePayId = mobilePayId.trim();
     if (!trimmedMobilePayId) {
-      setError("MobilePay transaktions-ID er paakraevet.");
+      setError("MobilePay transaktions-ID er påkrævet.");
       return;
     }
 
@@ -72,7 +72,7 @@ export function DepositRequestPage() {
         navigate("/transactions");
       }, 2000);
     } catch (err) {
-      setError("Kunne ikke oprette indbetalingsanmodning. Prov igen senere.");
+      setError("Kunne ikke oprette indbetalingsanmodning. Prøv igen senere.");
       console.error("Deposit request error:", err);
     } finally {
       setIsSubmitting(false);
@@ -89,23 +89,40 @@ export function DepositRequestPage() {
     );
   }
 
+  if (user?.role === "Admin") {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-3xl font-bold">Indbetalinger</h1>
+        <div className="card bg-base-100 shadow-md rounded-2xl">
+          <div className="card-body space-y-2">
+            <h2 className="card-title text-lg">Info</h2>
+            <p className="text-base-content/80">
+              Som administrator kan du kun godkende indbetalinger – ikke oprette dem. Brug fanen
+              &quot;Transaktioner&quot; til at se og godkende indbetalinger.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col items-start gap-2 xs:flex-row xs:items-center xs:justify-between">
-        <h1 className="text-3xl font-bold">Anmod om indbetaling</h1>
-        <div className="self-start xs:self-auto px-3 py-2 rounded-full bg-[#d60000] text-white font-extrabold text-sm tracking-tight shadow-sm">
+        <h1 className="text-h1 text-base-content">Opret indbetaling</h1>
+        <div className="self-start xs:self-auto px-3 py-2 rounded-full badge badge-lg bg-primary text-primary-content font-extrabold text-sm tracking-tight shadow-sm">
           Saldo: {balance.toFixed(2)} kr
         </div>
       </div>
 
       {/* Instructions */}
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100 shadow-md rounded-2xl">
         <div className="card-body">
-          <h2 className="card-title">Saadan gor du</h2>
+          <h2 className="card-title">Sådan gør du</h2>
           <ol className="list-decimal list-inside space-y-2 text-base-content/80">
-            <li>Overfør det onskede belob via MobilePay til klubbens konto</li>
+            <li>Overfør det ønskede beløb via MobilePay til klubbens konto</li>
             <li>Noter transaktions-ID fra MobilePay</li>
-            <li>Udfyld formularen nedenfor med belob og transaktions-ID</li>
+            <li>Udfyld formularen nedenfor med beløb og transaktions-ID</li>
             <li>Administrator godkender din indbetaling</li>
           </ol>
         </div>
@@ -151,7 +168,7 @@ export function DepositRequestPage() {
       )}
 
       {/* Deposit Form */}
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100 shadow-md rounded-2xl">
         <div className="card-body">
           <h2 className="card-title">Indbetalingsanmodning</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -183,7 +200,7 @@ export function DepositRequestPage() {
               </label>
               <input
                 type="number"
-                placeholder="Indtast belob"
+                placeholder="Indtast beløb"
                 className="input input-bordered"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
@@ -209,7 +226,8 @@ export function DepositRequestPage() {
               />
               <label className="label">
                 <span className="label-text-alt text-base-content/60">
-                  Paakraevet for godkendelse; findes i MobilePay app under betalingshistorik
+                  MobilePay-ID bruges til bogforing (valgfrit, men anbefalet for hurtigere
+                  godkendelse)
                 </span>
               </label>
             </div>
@@ -217,7 +235,7 @@ export function DepositRequestPage() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="btn btn-primary w-full"
+              className="btn btn-primary w-full h-11 px-5 shadow-md"
               disabled={isSubmitting || !amount}
             >
               {isSubmitting ? (

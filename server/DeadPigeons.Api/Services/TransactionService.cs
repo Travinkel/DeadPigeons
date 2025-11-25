@@ -16,10 +16,34 @@ public class TransactionService : ITransactionService
         _logger = logger;
     }
 
+    public async Task<TransactionResponse?> GetByIdAsync(Guid id)
+    {
+        var result = await _db.Transactions
+            .Where(t => t.Id == id)
+            .Join(_db.Players, t => t.PlayerId, p => p.Id, (t, p) => new { t, p })
+            .Select(x => new TransactionResponse(
+                x.t.Id,
+                x.t.PlayerId,
+                x.t.Amount,
+                x.t.Type.ToString(),
+                x.t.MobilePayTransactionId,
+                x.t.IsApproved,
+                x.t.CreatedAt,
+                x.t.ApprovedAt,
+                x.t.ApprovedById,
+                !string.IsNullOrEmpty(x.p.Name) ? x.p.Name : x.p.Email,
+                x.t.IsDeleted,
+                x.t.DeletedAt,
+                x.t.DeletedById))
+            .FirstOrDefaultAsync();
+
+        return result;
+    }
+
     public async Task<IEnumerable<TransactionResponse>> GetByPlayerIdAsync(Guid playerId)
     {
         var results = await _db.Transactions
-            .Where(t => t.PlayerId == playerId)
+            .Where(t => t.PlayerId == playerId && !t.IsDeleted)
             .OrderByDescending(t => t.CreatedAt)
             .Join(_db.Players, t => t.PlayerId, p => p.Id, (t, p) => new { t, p })
             .Select(x => new TransactionResponse(
@@ -32,7 +56,10 @@ public class TransactionService : ITransactionService
                 x.t.CreatedAt,
                 x.t.ApprovedAt,
                 x.t.ApprovedById,
-                !string.IsNullOrEmpty(x.p.Name) ? x.p.Name : x.p.Email))
+                !string.IsNullOrEmpty(x.p.Name) ? x.p.Name : x.p.Email,
+                x.t.IsDeleted,
+                x.t.DeletedAt,
+                x.t.DeletedById))
             .ToListAsync();
 
         _logger.LogInformation("GetByPlayerIdAsync returned {Count} transactions for player {PlayerId}", results.Count, playerId);
@@ -42,7 +69,7 @@ public class TransactionService : ITransactionService
     public async Task<IEnumerable<TransactionResponse>> GetPendingAsync()
     {
         var results = await _db.Transactions
-            .Where(t => !t.IsApproved)
+            .Where(t => !t.IsApproved && !t.IsDeleted)
             .OrderBy(t => t.CreatedAt)
             .Join(_db.Players, t => t.PlayerId, p => p.Id, (t, p) => new { t, p })
             .Select(x => new TransactionResponse(
@@ -55,7 +82,10 @@ public class TransactionService : ITransactionService
                 x.t.CreatedAt,
                 x.t.ApprovedAt,
                 x.t.ApprovedById,
-                !string.IsNullOrEmpty(x.p.Name) ? x.p.Name : x.p.Email))
+                !string.IsNullOrEmpty(x.p.Name) ? x.p.Name : x.p.Email,
+                x.t.IsDeleted,
+                x.t.DeletedAt,
+                x.t.DeletedById))
             .ToListAsync();
 
         _logger.LogInformation("GetPendingAsync returned {Count} pending transactions", results.Count);
@@ -77,7 +107,10 @@ public class TransactionService : ITransactionService
                 x.t.CreatedAt,
                 x.t.ApprovedAt,
                 x.t.ApprovedById,
-                !string.IsNullOrEmpty(x.p.Name) ? x.p.Name : x.p.Email))
+                !string.IsNullOrEmpty(x.p.Name) ? x.p.Name : x.p.Email,
+                x.t.IsDeleted,
+                x.t.DeletedAt,
+                x.t.DeletedById))
             .ToListAsync();
 
         _logger.LogInformation("GetAllAsync returned {Count} transactions total", results.Count);
@@ -120,17 +153,20 @@ public class TransactionService : ITransactionService
             transaction.CreatedAt,
             transaction.ApprovedAt,
             transaction.ApprovedById,
-            player?.Name != null && player.Name != "" ? player.Name : player?.Email);
+            player?.Name != null && player.Name != "" ? player.Name : player?.Email,
+            transaction.IsDeleted,
+            transaction.DeletedAt,
+            transaction.DeletedById);
     }
 
-    public async Task<TransactionResponse?> ApproveAsync(Guid id, ApproveTransactionRequest request)
+    public async Task<TransactionResponse?> ApproveAsync(Guid id, Guid approvedById)
     {
         var transaction = await _db.Transactions.FindAsync(id);
         if (transaction == null) return null;
 
         transaction.IsApproved = true;
         transaction.ApprovedAt = DateTime.UtcNow;
-        transaction.ApprovedById = request.ApprovedById;
+        transaction.ApprovedById = approvedById;
 
         await _db.SaveChangesAsync();
 
@@ -145,6 +181,40 @@ public class TransactionService : ITransactionService
             transaction.CreatedAt,
             transaction.ApprovedAt,
             transaction.ApprovedById,
-            player2?.Name != null && player2.Name != "" ? player2.Name : player2?.Email);
+            player2?.Name != null && player2.Name != "" ? player2.Name : player2?.Email,
+            transaction.IsDeleted,
+            transaction.DeletedAt,
+            transaction.DeletedById);
+    }
+
+    public async Task<TransactionResponse?> RejectAsync(Guid id, Guid rejectedById)
+    {
+        var transaction = await _db.Transactions.FindAsync(id);
+        if (transaction == null) return null;
+
+        if (transaction.IsApproved || transaction.IsDeleted)
+            throw new InvalidOperationException("Can only reject pending transactions");
+
+        transaction.IsDeleted = true;
+        transaction.DeletedAt = DateTime.UtcNow;
+        transaction.DeletedById = rejectedById;
+
+        await _db.SaveChangesAsync();
+
+        var player = await _db.Players.FindAsync(transaction.PlayerId);
+        return new TransactionResponse(
+            transaction.Id,
+            transaction.PlayerId,
+            transaction.Amount,
+            transaction.Type.ToString(),
+            transaction.MobilePayTransactionId,
+            transaction.IsApproved,
+            transaction.CreatedAt,
+            transaction.ApprovedAt,
+            transaction.ApprovedById,
+            player?.Name != null && player.Name != "" ? player.Name : player?.Email,
+            transaction.IsDeleted,
+            transaction.DeletedAt,
+            transaction.DeletedById);
     }
 }

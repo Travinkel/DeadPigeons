@@ -47,8 +47,10 @@ export function LoginPage() {
           role: response.role as "Admin" | "Player",
         });
 
-        const from = (location.state as { from?: Location })?.from?.pathname || "/dashboard";
-        navigate(from, { replace: true });
+        const target =
+          (location.state as { from?: Location })?.from?.pathname ||
+          (response.role === "Admin" ? "/admin" : "/dashboard");
+        navigate(target, { replace: true });
       } else {
         setError("Ugyldig svar fra server");
       }
@@ -76,7 +78,10 @@ export function LoginPage() {
               <img src="/logo.png" alt="Jerne IF" className="w-16 h-16" />
             </div>
           </div>
-          <h1 className="text-center text-sm font-semibold text-slate-700 tracking-tight mt-3">
+          <h1
+            className="text-center text-[28px] font-bold text-gray-900 tracking-tight mt-1"
+            aria-label="Dead Pigeons"
+          >
             Dead Pigeons
           </h1>
           <h2 className="text-center text-3xl font-extrabold text-gray-900 mt-1">Log ind</h2>

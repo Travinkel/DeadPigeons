@@ -1,6 +1,9 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
+import { useAuth } from "../features/auth/useAuth";
 import { Layout } from "../shared/components/Layout";
 import { RequireAuth } from "../shared/components/RequireAuth";
+import { RequireAdmin } from "../shared/components/RequireAdmin";
+import { RequirePlayer } from "../shared/components/RequirePlayer";
 import { LoginPage } from "../features/auth/LoginPage";
 import { RegisterPage } from "../features/auth/RegisterPage";
 import { PlayerDashboard } from "../features/dashboard/PlayerDashboard";
@@ -11,10 +14,18 @@ import { GamesPage } from "../features/games/GamesPage";
 import { CompleteGamePage } from "../features/games/CompleteGamePage";
 import { TransactionsPage } from "../features/transactions/TransactionsPage";
 import { DepositRequestPage } from "../features/transactions/DepositRequestPage";
+import { PlayerDetailPage } from "../features/admin/PlayerDetailPage";
+import { GameDetailPage } from "../features/admin/GameDetailPage";
+import { AdminTransactionsPage } from "../features/admin/AdminTransactionsPage";
+import { AdminPlayersPage } from "../features/admin/AdminPlayersPage";
+import { AdminGamesPage } from "../features/admin/AdminGamesPage";
+import { AdminCreatePlayerPage } from "../features/admin/AdminCreatePlayerPage";
 
 // Root redirect based on auth state
 function RootRedirect() {
-  return <Navigate to="/dashboard" replace />;
+  const { user } = useAuth();
+  const target = user?.role === "Admin" ? "/admin" : "/dashboard";
+  return <Navigate to={target} replace />;
 }
 
 export const router = createBrowserRouter([
@@ -40,43 +51,123 @@ export const router = createBrowserRouter([
       },
       {
         path: "dashboard",
-        element: <PlayerDashboard />,
-      },
-      {
-        path: "admin",
         element: (
-          <RequireAuth allowedRoles={["Admin"]}>
-            <AdminDashboard />
-          </RequireAuth>
+          <RequirePlayer>
+            <PlayerDashboard />
+          </RequirePlayer>
         ),
       },
       {
         path: "boards",
-        element: <BoardsPage />,
+        element: (
+          <RequirePlayer>
+            <BoardsPage />
+          </RequirePlayer>
+        ),
       },
       {
         path: "boards/purchase",
-        element: <PurchaseBoardPage />,
+        element: (
+          <RequirePlayer>
+            <PurchaseBoardPage />
+          </RequirePlayer>
+        ),
       },
       {
         path: "games",
-        element: <GamesPage />,
-      },
-      {
-        path: "games/:gameId/complete",
         element: (
-          <RequireAuth allowedRoles={["Admin"]}>
-            <CompleteGamePage />
+          <RequireAuth>
+            <GamesPage />
           </RequireAuth>
         ),
       },
       {
+        path: "games/:gameId/complete",
+        element: (
+          <RequireAdmin>
+            <CompleteGamePage />
+          </RequireAdmin>
+        ),
+      },
+      {
         path: "transactions",
-        element: <TransactionsPage />,
+        element: (
+          <RequirePlayer>
+            <TransactionsPage />
+          </RequirePlayer>
+        ),
       },
       {
         path: "transactions/deposit",
-        element: <DepositRequestPage />,
+        element: (
+          <RequirePlayer>
+            <DepositRequestPage />
+          </RequirePlayer>
+        ),
+      },
+      {
+        path: "admin",
+        element: (
+          <RequireAdmin>
+            <AdminDashboard />
+          </RequireAdmin>
+        ),
+      },
+      {
+        path: "admin/players",
+        element: (
+          <RequireAdmin>
+            <AdminPlayersPage />
+          </RequireAdmin>
+        ),
+      },
+      {
+        path: "admin/players/:playerId",
+        element: (
+          <RequireAdmin>
+            <PlayerDetailPage />
+          </RequireAdmin>
+        ),
+      },
+      {
+        path: "admin/players/new",
+        element: (
+          <RequireAdmin>
+            <AdminCreatePlayerPage />
+          </RequireAdmin>
+        ),
+      },
+      {
+        path: "admin/games",
+        element: (
+          <RequireAdmin>
+            <AdminGamesPage />
+          </RequireAdmin>
+        ),
+      },
+      {
+        path: "admin/games/:gameId",
+        element: (
+          <RequireAdmin>
+            <GameDetailPage />
+          </RequireAdmin>
+        ),
+      },
+      {
+        path: "admin/games/:id",
+        element: (
+          <RequireAdmin>
+            <GameDetailPage />
+          </RequireAdmin>
+        ),
+      },
+      {
+        path: "admin/transactions",
+        element: (
+          <RequireAdmin>
+            <AdminTransactionsPage />
+          </RequireAdmin>
+        ),
       },
     ],
   },

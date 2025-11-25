@@ -25,6 +25,10 @@ public class BoardsApiTests
         var player = await playerResponse.Content.ReadFromJsonAsync<PlayerResponse>();
         var playerClient = _factory.CreateAuthenticatedClient("Player", player!.Id);
 
+        // Activate player
+        var updateRequest = new UpdatePlayerRequest(player.Name, player.Email, player.Phone, true);
+        await _adminClient.PutAsJsonAsync($"/api/players/{player.Id}", updateRequest);
+
         // Create and approve deposit
         var depositRequest = new CreateDepositRequest(player!.Id, amount, "MP-SEED-DEP" );
         var depositResponse = await playerClient.PostAsJsonAsync("/api/transactions/deposit", depositRequest);

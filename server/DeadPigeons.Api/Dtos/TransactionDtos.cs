@@ -24,5 +24,8 @@ public record TransactionResponse(
     DateTime CreatedAt,
     DateTime? ApprovedAt,
     Guid? ApprovedById,
-    string? PlayerNameOrEmail
+    string? PlayerNameOrEmail,
+    bool IsDeleted,
+    DateTime? DeletedAt,
+    Guid? DeletedById
 );

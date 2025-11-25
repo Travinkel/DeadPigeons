@@ -1,12 +1,31 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
-import { createApiClient } from "../../api/apiClient";
-import { type TransactionResponse } from "../../api/generated/api-client";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+type PlayerTransaction = {
+  id?: string;
+  playerId?: string;
+  amount?: number;
+  type?: string;
+  mobilePayTransactionId?: string | null;
+  isApproved?: boolean;
+  createdAt?: string;
+  approvedAt?: string | null;
+  isDeleted?: boolean;
+  deletedAt?: string | null;
+};
+
+type ErrorResponse = {
+  code?: string;
+  message?: string;
+  correlationId?: string;
+};
 
 export function TransactionsPage() {
   const { user, token } = useAuth();
-  const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
+  const [transactions, setTransactions] = useState<PlayerTransaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,17 +37,25 @@ export function TransactionsPage() {
       setError(null);
 
       try {
-        const client = createApiClient(token);
-        const transactionsData = await client.player2(user.playerId);
-        // Sort by date descending (newest first)
-        transactionsData.sort((a, b) => {
+        const resp = await fetch(`${API_URL}/api/Transactions/player/${user.playerId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        });
+        if (!resp.ok) {
+          const err: ErrorResponse | undefined = await resp.json().catch(() => undefined);
+          throw new Error(err?.message || "Failed to fetch transactions");
+        }
+        const data: PlayerTransaction[] = await resp.json();
+        data.sort((a, b) => {
           const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
           const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
           return dateB - dateA;
         });
-        setTransactions(transactionsData);
+        setTransactions(data);
       } catch (err) {
-        setError("Kunne ikke hente transaktioner. Prov igen senere.");
+        setError("Kunne ikke hente transaktioner. Prøv igen senere.");
         console.error("Transactions fetch error:", err);
       } finally {
         setIsLoading(false);
@@ -71,28 +98,30 @@ export function TransactionsPage() {
     .filter((tx) => tx.type === "Deposit" && tx.isApproved)
     .reduce((sum, tx) => sum + (tx.amount || 0), 0);
 
-  const pendingDeposits = transactions.filter((tx) => tx.type === "Deposit" && !tx.isApproved);
+  const pendingDeposits = transactions.filter(
+    (tx) => tx.type === "Deposit" && !tx.isApproved && !tx.isDeleted
+  );
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Mine transaktioner</h1>
-        <Link to="/transactions/deposit" className="btn btn-primary">
+        <h1 className="text-h1 text-base-content">Mine transaktioner</h1>
+        <Link to="/transactions/deposit" className="btn btn-primary h-11 px-5 shadow-md text-base">
           Anmod indbetaling
         </Link>
       </div>
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="stat bg-base-100 rounded-box shadow">
+        <div className="stat bg-base-100 rounded-2xl shadow-md">
           <div className="stat-title">Transaktioner i alt</div>
           <div className="stat-value text-primary">{transactions.length}</div>
         </div>
-        <div className="stat bg-base-100 rounded-box shadow">
+        <div className="stat bg-base-100 rounded-2xl shadow-md">
           <div className="stat-title">Godkendte indbetalinger</div>
           <div className="stat-value text-success">{totalDeposits.toFixed(2)} kr</div>
         </div>
-        <div className="stat bg-base-100 rounded-box shadow">
+        <div className="stat bg-base-100 rounded-2xl shadow-md">
           <div className="stat-title">Afventer godkendelse</div>
           <div className="stat-value text-warning">{pendingDeposits.length}</div>
         </div>
@@ -119,68 +148,114 @@ export function TransactionsPage() {
       )}
 
       {/* Transactions List */}
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100 shadow-md rounded-2xl">
         <div className="card-body">
           <h2 className="card-title">Transaktionshistorik</h2>
           {transactions.length === 0 ? (
             <p className="text-base-content/70">Ingen transaktioner endnu.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Dato</th>
-                    <th>Type</th>
-                    <th>Belob</th>
-                    <th>MobilePay ID</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.map((tx) => (
-                    <tr key={tx.id}>
-                      <td>
-                        {tx.createdAt
-                          ? new Date(tx.createdAt).toLocaleDateString("da-DK", {
-                              day: "2-digit",
-                              month: "2-digit",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
-                          : "-"}
-                      </td>
-                      <td>
-                        {tx.type === "Deposit" ? (
-                          <span className="badge badge-info badge-sm">Indbetaling</span>
-                        ) : tx.type === "BoardPurchase" ? (
-                          <span className="badge badge-secondary badge-sm">Plade</span>
-                        ) : (
-                          <span className="badge badge-ghost badge-sm">{tx.type}</span>
-                        )}
-                      </td>
-                      <td
-                        className={
-                          tx.amount && tx.amount > 0 ? "text-success font-semibold" : "text-error"
-                        }
-                      >
-                        {tx.amount && tx.amount > 0 ? "+" : ""}
-                        {tx.amount?.toFixed(2)} kr
-                      </td>
-                      <td className="text-sm text-base-content/70">
-                        {tx.mobilePayTransactionId || "-"}
-                      </td>
-                      <td>
-                        {tx.isApproved ? (
-                          <span className="badge badge-success badge-sm">Godkendt</span>
-                        ) : (
-                          <span className="badge badge-warning badge-sm">Afventer</span>
-                        )}
-                      </td>
+            <div className="relative">
+              <div className="overflow-x-auto">
+                <table className="table min-w-[720px]">
+                  <thead>
+                    <tr>
+                      <th>Dato</th>
+                      <th>Type</th>
+                      <th>Beløb</th>
+                      <th>MobilePay ID</th>
+                      <th>Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {transactions.map((tx) => (
+                      <tr key={tx.id}>
+                        <td>
+                          {tx.createdAt
+                            ? new Date(tx.createdAt).toLocaleDateString("da-DK", {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
+                            : "-"}
+                        </td>
+                        <td>
+                          {tx.type === "Deposit" ? (
+                            <span className="badge badge-info badge-sm">Indbetaling</span>
+                          ) : tx.type === "BoardPurchase" ? (
+                            <span className="badge badge-secondary badge-sm">Plade</span>
+                          ) : (
+                            <span className="badge badge-ghost badge-sm">{tx.type}</span>
+                          )}
+                        </td>
+                        <td
+                          className={
+                            tx.amount && tx.amount > 0 ? "text-success font-semibold" : "text-error"
+                          }
+                        >
+                          {tx.amount && tx.amount > 0 ? "+" : ""}
+                          {tx.amount?.toFixed(2)} kr
+                        </td>
+                        <td className="text-sm text-base-content/70 whitespace-pre-wrap break-words">
+                          {tx.mobilePayTransactionId || "-"}
+                        </td>
+                        <td>
+                          <div className="flex flex-col gap-1">
+                            {tx.isApproved ? (
+                              <>
+                                <span className="badge badge-success badge-sm">Godkendt</span>
+                                {tx.approvedAt && (
+                                  <span className="text-xs text-base-content/70">
+                                    {new Date(tx.approvedAt).toLocaleDateString("da-DK", {
+                                      day: "2-digit",
+                                      month: "2-digit",
+                                      year: "numeric",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </span>
+                                )}
+                              </>
+                            ) : tx.isDeleted ? (
+                              <>
+                                <span className="badge badge-error badge-sm">Afvist</span>
+                                {tx.deletedAt && (
+                                  <span className="text-xs text-base-content/70">
+                                    {new Date(tx.deletedAt).toLocaleDateString("da-DK", {
+                                      day: "2-digit",
+                                      month: "2-digit",
+                                      year: "numeric",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </span>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <span className="badge badge-warning badge-sm">Afventer</span>
+                                {tx.createdAt && (
+                                  <span className="text-xs text-base-content/70">
+                                    Anmodet{" "}
+                                    {new Date(tx.createdAt).toLocaleDateString("da-DK", {
+                                      day: "2-digit",
+                                      month: "2-digit",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </span>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-base-100 to-transparent md:hidden" />
             </div>
           )}
         </div>

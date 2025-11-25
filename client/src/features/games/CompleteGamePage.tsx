@@ -248,8 +248,8 @@ export function CompleteGamePage() {
           )}
 
           {/* Number Grid */}
-          <div className="grid grid-cols-9 sm:grid-cols-10 gap-2 mt-4">
-            {Array.from({ length: 90 }, (_, i) => i + 1).map((num) => {
+          <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 mt-4">
+            {Array.from({ length: 16 }, (_, i) => i + 1).map((num) => {
               const isSelected = winningNumbers.includes(num);
               return (
                 <button

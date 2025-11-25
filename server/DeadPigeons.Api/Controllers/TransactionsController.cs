@@ -21,6 +21,17 @@ public class TransactionsController : ControllerBase
 
     private string CorrelationId => HttpContext.Items.TryGetValue("X-Correlation-ID", out var id) ? id?.ToString() ?? string.Empty : string.Empty;
 
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetTransactionById(Guid id)
+    {
+        var transaction = await _transactionService.GetByIdAsync(id);
+        if (transaction == null)
+        {
+            return StatusCode(404, new ErrorResponse("TX_NOT_FOUND", "Transaction not found", CorrelationId));
+        }
+        return Ok(transaction);
+    }
+
     [HttpGet("player/{playerId:guid}")]
     public async Task<IActionResult> GetByPlayerId(Guid playerId)
     {
@@ -80,7 +91,7 @@ public class TransactionsController : ControllerBase
         try
         {
             var transaction = await _transactionService.CreateDepositAsync(request);
-            return CreatedAtAction(nameof(GetByPlayerId), new { playerId = transaction.PlayerId }, transaction);
+            return CreatedAtAction(nameof(GetTransactionById), new { id = transaction.Id }, transaction);
         }
         catch (ArgumentException ex)
         {
@@ -94,13 +105,51 @@ public class TransactionsController : ControllerBase
 
     [HttpPost("{id:guid}/approve")]
     [Authorize(Policy = "RequireAdmin")]
-    public async Task<IActionResult> Approve(Guid id, [FromBody] ApproveTransactionRequest request)
+    public async Task<IActionResult> Approve(Guid id)
     {
-        var transaction = await _transactionService.ApproveAsync(id, request);
-        if (transaction == null)
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId) || !Guid.TryParse(userId, out var approvedById))
         {
-            return StatusCode(404, new ErrorResponse("TX_NOT_FOUND", "Transaction not found", CorrelationId));
+            return Unauthorized(new ErrorResponse("AUTH_UNAUTHORIZED", "Missing or invalid user id in token", CorrelationId));
         }
-        return Ok(transaction);
+
+        try
+        {
+            var transaction = await _transactionService.ApproveAsync(id, approvedById);
+            if (transaction == null)
+            {
+                return StatusCode(404, new ErrorResponse("TX_NOT_FOUND", "Transaction not found", CorrelationId));
+            }
+            return Ok(transaction);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new ErrorResponse("TX_INVALID_STATE", ex.Message, CorrelationId));
+        }
+    }
+
+    [HttpPost("{id:guid}/reject")]
+    [Authorize(Policy = "RequireAdmin")]
+    public async Task<IActionResult> Reject(Guid id)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId) || !Guid.TryParse(userId, out var rejectedById))
+        {
+            return Unauthorized(new ErrorResponse("AUTH_UNAUTHORIZED", "Missing or invalid user id in token", CorrelationId));
+        }
+
+        try
+        {
+            var transaction = await _transactionService.RejectAsync(id, rejectedById);
+            if (transaction == null)
+            {
+                return StatusCode(404, new ErrorResponse("TX_NOT_FOUND", "Transaction not found", CorrelationId));
+            }
+            return Ok(transaction);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new ErrorResponse("TX_INVALID_STATE", ex.Message, CorrelationId));
+        }
     }
 }

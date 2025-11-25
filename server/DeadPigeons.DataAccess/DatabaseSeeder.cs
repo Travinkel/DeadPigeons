@@ -65,7 +65,7 @@ public static class DatabaseSeeder
         var now = DateTime.UtcNow;
         var currentYear = now.Year;
         var startYear = currentYear - 1;
-        var endYear = currentYear + 5;
+        var endYear = currentYear + 20;
 
         if (!await context.Games.AnyAsync())
         {

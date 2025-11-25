@@ -62,26 +62,38 @@ public class BoardServiceTests : IClassFixture<TestServiceFixture>, IDisposable
         // Act & Assert
         var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
             _boardService.CreateAsync(request));
-        Assert.Contains("between 1 and 90", ex.Message);
+        Assert.Contains("between 1 and 16", ex.Message);
     }
 
     [Fact]
     public async Task CreateAsync_NumberTooHigh_ThrowsException()
     {
         // Arrange
-        var numbers = new int[] { 1, 2, 3, 4, 91 }; // 91 is invalid
+        var numbers = new int[] { 1, 2, 3, 4, 17 }; // 17 is invalid (max is 16)
         var request = new CreateBoardRequest(Guid.NewGuid(), Guid.NewGuid(), numbers, false, "MP-BUY-TEST");
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
             _boardService.CreateAsync(request));
-        Assert.Contains("between 1 and 90", ex.Message);
+        Assert.Contains("between 1 and 16", ex.Message);
     }
 
     [Fact]
     public async Task CreateAsync_GameNotActive_ThrowsException()
     {
         // Arrange
+        var playerId = Guid.NewGuid();
+        var player = new Player
+        {
+            Id = playerId,
+            Name = "Test",
+            Email = "test@example.com",
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        _db.Players.Add(player);
+
         var game = new Game
         {
             Id = Guid.NewGuid(),
@@ -95,7 +107,7 @@ public class BoardServiceTests : IClassFixture<TestServiceFixture>, IDisposable
         await _db.SaveChangesAsync();
 
         var numbers = new int[] { 1, 2, 3, 4, 5 };
-        var request = new CreateBoardRequest(Guid.NewGuid(), game.Id, numbers, false, "MP-BUY-TEST");
+        var request = new CreateBoardRequest(playerId, game.Id, numbers, false, "MP-BUY-TEST");
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
@@ -113,6 +125,7 @@ public class BoardServiceTests : IClassFixture<TestServiceFixture>, IDisposable
             Id = playerId,
             Name = "Test",
             Email = "test@example.com",
+            IsActive = true,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -151,6 +164,7 @@ public class BoardServiceTests : IClassFixture<TestServiceFixture>, IDisposable
             Id = playerId,
             Name = "Test",
             Email = "test@example.com",
+            IsActive = true,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };

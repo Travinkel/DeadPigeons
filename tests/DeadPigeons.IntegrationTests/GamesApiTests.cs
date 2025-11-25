@@ -89,7 +89,7 @@ public class GamesApiTests
         var createdGame = await createResponse.Content.ReadFromJsonAsync<GameResponse>();
         createdGame.Should().NotBeNull();
 
-        var completeRequest = new CompleteGameRequest(new int[] { 10, 20, 30 });
+        var completeRequest = new CompleteGameRequest(new int[] { 10, 11, 12 });
 
         // Act
         var response = await _client.PostAsJsonAsync($"/api/games/{createdGame!.Id}/complete", completeRequest);
@@ -98,7 +98,7 @@ public class GamesApiTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<GameResultResponse>();
         result.Should().NotBeNull();
-        result!.WinningNumbers.Should().BeEquivalentTo(new int[] { 10, 20, 30 });
+        result!.WinningNumbers.Should().BeEquivalentTo(new int[] { 10, 11, 12 });
         result.TotalBoards.Should().Be(0);
         result.WinningBoards.Should().Be(0);
     }

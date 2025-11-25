@@ -4,6 +4,7 @@ export interface User {
   playerId: string;
   email: string;
   role: "Admin" | "Player";
+  isActive?: boolean;
 }
 
 export interface AuthContextType {

@@ -90,10 +90,9 @@ public class TransactionServiceTests : IClassFixture<TestServiceFixture>, IDispo
         await _db.SaveChangesAsync();
 
         var adminId = Guid.NewGuid();
-        var request = new ApproveTransactionRequest(adminId);
 
         // Act
-        var result = await _service.ApproveAsync(transaction.Id, request);
+        var result = await _service.ApproveAsync(transaction.Id, adminId);
 
         // Assert
         Assert.NotNull(result);

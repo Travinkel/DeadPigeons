@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import { createApiClient } from "../../api/apiClient";
 import { type GameResponse } from "../../api/generated/api-client";
 
 export function GamesPage() {
   const { user, token } = useAuth();
+  const navigate = useNavigate();
   const isAdmin = user?.role === "Admin";
   const [games, setGames] = useState<GameResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,7 +22,6 @@ export function GamesPage() {
       try {
         const client = createApiClient(token);
         const gamesData = await client.gamesAll();
-        // Sort by year and week number descending (newest first)
         gamesData.sort((a, b) => {
           const yearDiff = (b.year || 0) - (a.year || 0);
           if (yearDiff !== 0) return yearDiff;
@@ -29,7 +29,7 @@ export function GamesPage() {
         });
         setGames(gamesData);
       } catch (err) {
-        setError("Kunne ikke hente spil. Prov igen senere.");
+        setError("Kunne ikke hente spil. Prøv igen senere.");
         console.error("Games fetch error:", err);
       } finally {
         setIsLoading(false);
@@ -42,7 +42,7 @@ export function GamesPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[200px]">
-        <span className="loading loading-spinner loading-sm text-primary"></span>
+        <span className="loading loading-spinner loading-sm text-error"></span>
       </div>
     );
   }
@@ -69,54 +69,83 @@ export function GamesPage() {
   }
 
   const activeGame = games.find((g) => g.status === "Active");
-  const completedGames = games.filter((g) => g.status !== "Active");
+  const filteredGames = games.filter((g) => g.status === "Active" || g.completedAt);
+  const sortedGames = filteredGames
+    .slice()
+    .sort((a, b) => {
+      const yearDiff = (b.year || 0) - (a.year || 0);
+      if (yearDiff !== 0) return yearDiff;
+      return (b.weekNumber || 0) - (a.weekNumber || 0);
+    })
+    .slice(0, 12);
+
+  const winnerCountForGame = (game: GameResponse) => {
+    if (!game.completedAt || !game.winningNumbers || game.winningNumbers.length === 0) return null;
+    const boards = (game as unknown as { boards?: { numbers?: number[] }[] }).boards;
+    if (!boards || boards.length === 0) return 0;
+    return boards.filter((board) => game.winningNumbers?.every((n) => board.numbers?.includes(n)))
+      .length;
+  };
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Spil</h1>
+      {/* Page Title + Subtitle */}
+      <div className="space-y-1">
+        <h1 className="text-h1 text-base-content">Spiloversigt</h1>
+        <p className="text-base text-base-content/70">
+          Oversigt over alle aktive og afsluttede spil samt vindende plader
+        </p>
+      </div>
 
-      {/* Active Game */}
+      {/* Active Game Card */}
       {activeGame && (
-        <div className="card bg-primary text-primary-content shadow-xl">
-          <div className="card-body">
-            <div className="flex justify-between items-start">
-              <div>
-                <h2 className="card-title">Aktivt spil</h2>
-                <p className="text-2xl font-bold mt-2">
+        <div className="card bg-error text-white shadow-xl rounded-box border border-error/40">
+          <div className="card-body p-6 md:p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <p className="text-sm text-white/80">Aktivt spil</p>
+                <p className="text-h2 font-semibold">
                   Uge {activeGame.weekNumber}, {activeGame.year}
                 </p>
-              </div>
-              <div className="flex flex-col gap-2 items-end">
-                <span className="badge badge-secondary">Aktiv</span>
-                {isAdmin && (
-                  <Link
-                    to={`/games/${activeGame.id}/complete`}
-                    className="btn btn-sm btn-secondary"
-                  >
-                    Afslut spil
-                  </Link>
-                )}
-              </div>
-            </div>
-            <div className="stats stats-vertical lg:stats-horizontal bg-primary-focus mt-4">
-              <div className="stat">
-                <div className="stat-title text-primary-content/70">Plader</div>
-                <div className="stat-value">{activeGame.boardCount || 0}</div>
-              </div>
-              <div className="stat">
-                <div className="stat-title text-primary-content/70">Startet</div>
-                <div className="stat-value text-sm">
-                  {activeGame.startedAt
-                    ? new Date(activeGame.startedAt).toLocaleDateString("da-DK")
-                    : "-"}
+                <div className="grid gap-2">
+                  <div>
+                    <p className="text-sm text-white/80">Plader</p>
+                    <p className="text-lg font-semibold">{activeGame.boardCount || 0}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-white/80">Startet</p>
+                    <p className="text-lg font-semibold">
+                      {activeGame.startedAt
+                        ? new Date(activeGame.startedAt).toLocaleDateString("da-DK")
+                        : "-"}
+                    </p>
+                  </div>
                 </div>
+              </div>
+              <div className="flex flex-col items-start md:items-end justify-center gap-3">
+                <span className="badge badge-success badge-lg font-semibold">Aktiv</span>
+                {isAdmin && (
+                  <div className="flex flex-wrap justify-end gap-3">
+                    <Link
+                      to={`/games/${activeGame.id}/complete`}
+                      className="btn btn-primary h-11 px-5 shadow-md bg-white text-error border-white hover:bg-base-100"
+                    >
+                      Afslut spil
+                    </Link>
+                    <Link
+                      to={`/admin/games/${activeGame.id}`}
+                      className="btn btn-ghost h-11 px-5 bg-white/90 text-error shadow-sm hover:bg-white"
+                    >
+                      Vis plader
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* No Active Game */}
       {!activeGame && (
         <div className="alert alert-info">
           <svg
@@ -136,52 +165,111 @@ export function GamesPage() {
         </div>
       )}
 
-      {/* Completed Games */}
-      <div className="card bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h2 className="card-title">Afsluttede spil</h2>
-          {completedGames.length === 0 ? (
-            <p className="text-base-content/70">Ingen afsluttede spil endnu.</p>
+      <div className="card bg-base-100 shadow-sm rounded-box border border-base-300">
+        <div className="card-body p-5 md:p-6 gap-3">
+          <h2 className="text-h3 text-base-content">Seneste 12 spil</h2>
+          {sortedGames.length === 0 ? (
+            <p className="text-base-content/70 text-sm">Ingen spil oprettet endnu.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Uge</th>
-                    <th>Ar</th>
-                    <th>Plader</th>
-                    <th>Vindende numre</th>
-                    <th>Afsluttet</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {completedGames.map((game) => (
-                    <tr key={game.id}>
-                      <td className="font-semibold">{game.weekNumber}</td>
-                      <td>{game.year}</td>
-                      <td>{game.boardCount || 0}</td>
-                      <td>
-                        {game.winningNumbers && game.winningNumbers.length > 0 ? (
-                          <div className="flex gap-1 flex-wrap">
-                            {game.winningNumbers.map((num) => (
-                              <span key={num} className="badge badge-primary badge-sm">
-                                {num}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="text-base-content/50">-</span>
-                        )}
-                      </td>
-                      <td>
-                        {game.completedAt
-                          ? new Date(game.completedAt).toLocaleDateString("da-DK")
-                          : "-"}
-                      </td>
+            <div className="relative">
+              <div className="overflow-x-auto">
+                <table className="table min-w-[720px]">
+                  <thead className="text-xs font-semibold leading-caption text-base-content/80">
+                    <tr className="border-b border-base-300">
+                      <th className="py-3 px-3 text-left">Uge</th>
+                      <th className="py-3 px-3 text-left">År</th>
+                      <th className="py-3 px-3 text-right">Plader</th>
+                      <th className="py-3 px-3 text-left">Vindende numre</th>
+                      <th className="py-3 px-3 text-left">Status</th>
+                      <th className="py-3 px-3 text-right">Vinderplader</th>
+                      {isAdmin && <th className="py-3 px-3 text-right">Handling</th>}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="text-sm leading-body">
+                    {sortedGames.map((game, index) => {
+                      const isActiveRow = activeGame && activeGame.id === game.id;
+                      const winnerCount = winnerCountForGame(game);
+                      const hasWinners = winnerCount !== null && winnerCount > 0;
+
+                      const rowClasses = [
+                        "transition-colors duration-150",
+                        index % 2 === 0 ? "bg-base-100" : "bg-base-200/60",
+                        "hover:bg-error/5",
+                        isAdmin && game.id ? "cursor-pointer" : "",
+                        isActiveRow
+                          ? "border-l-4 border-error bg-error/5 font-semibold"
+                          : hasWinners && game.completedAt
+                            ? "border-l-2 border-success/50 bg-success/5"
+                            : "",
+                      ]
+                        .filter(Boolean)
+                        .join(" ");
+
+                      return (
+                        <tr
+                          key={game.id}
+                          className={rowClasses}
+                          onClick={() => {
+                            if (isAdmin && game.id) {
+                              navigate(`/admin/games/${game.id}`);
+                            }
+                          }}
+                        >
+                          <td className="py-3 px-3 font-semibold">{game.weekNumber}</td>
+                          <td className="py-3 px-3">{game.year}</td>
+                          <td className="py-3 px-3 text-right">{game.boardCount || 0}</td>
+                          <td className="py-3 px-3">
+                            {game.winningNumbers && game.winningNumbers.length > 0 ? (
+                              <div className="flex gap-2 flex-wrap">
+                                {game.winningNumbers.map((num) => (
+                                  <span
+                                    key={num}
+                                    className="badge badge-error badge-sm font-semibold"
+                                  >
+                                    {num}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="text-base-content/60">-</span>
+                            )}
+                          </td>
+                          <td className="py-3 px-3">
+                            {game.status === "Active" ? (
+                              <span className="badge badge-success badge-sm">Aktiv</span>
+                            ) : (
+                              <span className="badge badge-ghost badge-sm">Afsluttet</span>
+                            )}
+                          </td>
+                          <td className="py-3 px-3 text-right font-semibold">
+                            {!game.completedAt ? (
+                              "-"
+                            ) : winnerCount === null ? (
+                              "-"
+                            ) : (
+                              <span className={hasWinners ? "text-success" : ""}>
+                                {winnerCount}
+                              </span>
+                            )}
+                          </td>
+                          {isAdmin && (
+                            <td className="py-3 px-3 text-right">
+                              <Link
+                                to={`/admin/games/${game.id}`}
+                                className="btn btn-sm btn-ghost h-10 px-4 hover:bg-error/10"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                Detaljer
+                              </Link>
+                            </td>
+                          )}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-base-100 to-transparent md:hidden" />
             </div>
           )}
         </div>
