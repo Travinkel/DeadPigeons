@@ -80,7 +80,11 @@ export function Layout() {
           )}
           <Link to="/" className="flex items-center gap-3">
             <img src="/logo.png" alt="Jerne IF" className="w-10 h-10 flex-shrink-0" />
-            <span className="text-lg sm:text-xl font-bold tracking-wide whitespace-nowrap drop-shadow-sm">
+            <span
+              role="heading"
+              aria-level={1}
+              className="text-lg sm:text-xl font-bold tracking-wide whitespace-nowrap drop-shadow-sm"
+            >
               Dead Pigeons
             </span>
           </Link>
