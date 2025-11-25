@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import { createApiClient } from "../../api/apiClient";
-import { type GameResponse } from "../../api/generated/api-client";
+import { type GameResponse, type PlayerResponse } from "../../api/generated/api-client";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -24,6 +24,7 @@ export function PurchaseBoardPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  const [player, setPlayer] = useState<PlayerResponse | null>(null);
   const [activeGame, setActiveGame] = useState<GameResponse | null>(null);
   const [balance, setBalance] = useState<number>(0);
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
@@ -56,10 +57,17 @@ export function PurchaseBoardPage() {
 
       try {
         const client = createApiClient(token);
-        const [gameData, balanceData] = await Promise.all([
+        const [playerData, gameData, balanceData] = await Promise.all([
+          fetch(`${API_URL}/api/Players/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }).then((res) => {
+            if (!res.ok) throw new Error("Failed to fetch player");
+            return res.json() as Promise<PlayerResponse>;
+          }),
           client.active(),
           client.balance(user.playerId),
         ]);
+        setPlayer(playerData);
         setActiveGame(gameData);
         setBalance(balanceData.balance || 0);
       } catch (err) {
@@ -86,7 +94,7 @@ export function PurchaseBoardPage() {
     setIsRepeating(false);
   };
 
-  const isInactivePlayer = user && !user.isActive;
+  const isInactivePlayer = player && player.isActive === false;
   const price = calculatePrice(selectedNumbers.length);
   const canPurchase =
     !isInactivePlayer &&

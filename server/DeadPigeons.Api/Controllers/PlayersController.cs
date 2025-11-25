@@ -18,6 +18,17 @@ public class PlayersController : ControllerBase
         _playerService = playerService;
     }
 
+    [HttpGet("me")]
+    public async Task<ActionResult<PlayerResponse>> GetCurrentPlayer()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null) return Unauthorized();
+
+        var player = await _playerService.GetByIdAsync(Guid.Parse(userId));
+        if (player == null) return NotFound();
+        return Ok(player);
+    }
+
     [HttpGet]
     [Authorize(Policy = "RequireAdmin")]
     public async Task<ActionResult<IEnumerable<PlayerResponse>>> GetAll()
