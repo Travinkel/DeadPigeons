@@ -75,8 +75,12 @@ export function AdminGamesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <h1 className="text-h1 text-base-content">Spil (Admin)</h1>
+      <div className="space-y-2">
+        <h1 className="text-h1 text-primary">Spil (Admin)</h1>
+        <p className="text-base text-base-content/70">
+          Oversigt over alle spil, afsluttede og kommende. Administrer aktive spil og udfyld
+          vindertal.
+        </p>
       </div>
 
       {activeGame && (
@@ -118,13 +122,13 @@ export function AdminGamesPage() {
       )}
 
       <div className="card bg-base-100 rounded-box shadow-md border border-base-300">
-        <div className="card-body p-5 md:p-6 space-y-3">
-          <div className="space-y-3">
+        <div className="card-body p-5 md:p-6 space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <h2 className="text-h2 font-semibold">Afsluttede og aktive spil</h2>
             {uniqueYears.length > 1 && (
               <div className="flex flex-wrap gap-2">
                 <button
-                  className={`btn btn-sm ${selectedYear === null ? "btn-primary" : "btn-ghost"} h-10 px-4`}
+                  className={`btn btn-sm ${selectedYear === null ? "btn-primary" : "btn-ghost"} h-10 px-3 transition-all`}
                   onClick={() => setSelectedYear(null)}
                 >
                   Alle år
@@ -132,8 +136,9 @@ export function AdminGamesPage() {
                 {uniqueYears.map((year) => (
                   <button
                     key={year}
-                    className={`btn btn-sm ${selectedYear === year ? "btn-primary" : "btn-ghost"} h-10 px-4`}
+                    className={`btn btn-sm ${selectedYear === year ? "btn-primary" : "btn-ghost"} h-10 px-3 transition-all`}
                     onClick={() => setSelectedYear(year)}
+                    title={`Filtrér efter år ${year}`}
                   >
                     {year}
                   </button>
@@ -164,12 +169,10 @@ export function AdminGamesPage() {
                       const isActiveRow = activeGame && activeGame.id === game.id;
                       const rowClasses = [
                         index % 2 === 0 ? "bg-base-100" : "bg-base-200/60",
-                        "hover:bg-primary/10",
+                        isActiveRow ? "bg-success/10 hover:bg-success/20" : "hover:bg-base-300",
                         "transition-colors duration-150",
                         "cursor-pointer",
-                        isActiveRow
-                          ? "border-l-4 border-primary bg-primary/10 text-primary font-semibold"
-                          : "",
+                        isActiveRow ? "border-l-4 border-success font-semibold" : "",
                       ]
                         .filter(Boolean)
                         .join(" ");

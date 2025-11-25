@@ -139,8 +139,13 @@ export function AdminTransactionsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h1 className="text-h1 text-base-content">Admin transaktioner</h1>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="space-y-2">
+          <h1 className="text-h1 text-primary">Admin transaktioner</h1>
+          <p className="text-base text-base-content/70">
+            Godkend indbetalinger og se historik for alle transaktioner.
+          </p>
+        </div>
         <div className="join">
           <button
             className={`btn ${view === "pending" ? "btn-primary" : "btn-ghost"} h-11 px-5 shadow-md join-item`}

@@ -94,15 +94,15 @@ export function GameDetailPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div className="space-y-1">
           <p className="text-sm text-base-content/70">
-            <Link to="/games" className="link link-hover">
+            <Link to="/admin/games" className="link link-hover">
               Spil
             </Link>{" "}
             / {game.weekNumber ? `Uge ${game.weekNumber}` : "Spil"} {game.year}
           </p>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
+          <h1 className="text-h1 text-base-content flex items-center gap-2">
             Spil uge {game.weekNumber}, {game.year}
             {game.status === "Active" ? (
               <span className="badge badge-success">Aktiv</span>
@@ -114,15 +114,20 @@ export function GameDetailPage() {
             Vindertal:{" "}
             {winningNumbers.length > 0 ? winningNumbers.join(", ") : "Ikke angivet endnu."}
           </p>
+          {game.status === "Active" && (
+            <Link to={`/games/${game.id}/complete`} className="btn btn-primary h-11 px-5 shadow-md">
+              Indtast vindertal
+            </Link>
+          )}
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <div className="card bg-base-100 shadow-md rounded-xl">
+          <div className="card bg-base-100 shadow-md rounded-box border border-base-300">
             <div className="card-body py-3 px-4">
               <p className="text-sm text-base-content/70">Solgte plader</p>
               <p className="text-xl font-bold">{totalBoards}</p>
             </div>
           </div>
-          <div className="card bg-base-100 shadow-md rounded-xl">
+          <div className="card bg-base-100 shadow-md rounded-box border border-base-300">
             <div className="card-body py-3 px-4">
               <p className="text-sm text-base-content/70">Vinderplader</p>
               <p className="text-xl font-bold text-success">{winningBoards}</p>
@@ -131,30 +136,35 @@ export function GameDetailPage() {
         </div>
       </div>
 
-      <div className="card bg-base-100 shadow-md rounded-2xl">
-        <div className="card-body">
-          <h2 className="card-title">Plader i spillet</h2>
+      <div className="card bg-base-100 shadow-md rounded-box border border-base-300">
+        <div className="card-body p-5 md:p-6 space-y-3">
+          <h2 className="text-h2 font-semibold">Plader i spillet</h2>
           {boardsWithFlags.length === 0 ? (
             <p className="text-base-content/70">Ingen plader fundet.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="table min-w-[760px]">
-                <thead>
-                  <tr>
-                    <th>Spiller</th>
-                    <th>Numre</th>
-                    <th>Vinder?</th>
-                    <th>Oprettet</th>
+                <thead className="text-sm font-semibold text-base-content">
+                  <tr className="border-b border-base-300">
+                    <th className="py-2.5 px-3 text-left">Spiller</th>
+                    <th className="py-2.5 px-3 text-left">Numre</th>
+                    <th className="py-2.5 px-3 text-left">Vinder?</th>
+                    <th className="py-2.5 px-3 text-left">Oprettet</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="text-sm">
                   {boardsWithFlags.map((board) => (
-                    <tr key={board.id}>
-                      <td className="font-semibold">
+                    <tr
+                      key={board.id}
+                      className={`${
+                        board.isWinner ? "bg-primary/10" : ""
+                      } hover:bg-base-200 transition-colors duration-150`}
+                    >
+                      <td className="py-2.5 px-3 font-semibold">
                         {board.playerId ? (playerMap.get(board.playerId) ?? board.playerId) : "-"}
                       </td>
-                      <td>
-                        <div className="flex gap-1 flex-wrap">
+                      <td className="py-2.5 px-3">
+                        <div className="flex gap-1.5 flex-wrap">
                           {board.numbers?.map((num) => (
                             <span key={num} className="badge badge-sm">
                               {num}
@@ -162,14 +172,14 @@ export function GameDetailPage() {
                           ))}
                         </div>
                       </td>
-                      <td>
+                      <td className="py-2.5 px-3">
                         {board.isWinner ? (
                           <span className="badge badge-success badge-sm">Vinder</span>
                         ) : (
                           <span className="badge badge-ghost badge-sm">-</span>
                         )}
                       </td>
-                      <td>
+                      <td className="py-2.5 px-3">
                         {board.createdAt
                           ? new Date(board.createdAt).toLocaleDateString("da-DK")
                           : "-"}

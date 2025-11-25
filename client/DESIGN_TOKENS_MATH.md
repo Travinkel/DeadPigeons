@@ -182,14 +182,24 @@ When you see an ad-hoc value, map it to the nearest token using these heuristics
 
 ### Typography hierarchy
 
-| Usage             | Token            |
-| ----------------- | ---------------- |
-| Hero / page title | `t5` (`text-h1`) |
-| Section header    | `t4` (`text-h2`) |
-| Card/module title | `t3` (`text-h3`) |
-| Form/data label   | `t2`             |
-| Body copy         | `t1`             |
-| Meta/captions     | `t0`             |
+| Usage               | Token                                            |
+| ------------------- | ------------------------------------------------ |
+| Hero / page title   | `t5` (`text-h1`) + optional `text-primary`       |
+| Page subtitle       | `text-base text-base-content/70` (body + muted)  |
+| Section header      | `t4` (`text-h2`)                                 |
+| Section description | `text-sm text-base-content/70` (caption + muted) |
+| Card/module title   | `t3` (`text-h3`)                                 |
+| Form/data label     | `t2`                                             |
+| Body copy           | `t1` (`text-base`)                               |
+| Meta/captions       | `t0` (`text-sm`)                                 |
+
+**Subtitle/Description pattern:**
+
+- Always pair titles with optional subtitles for better hierarchy
+- Page-level subtitle: `text-base text-base-content/70` (full body size, muted)
+- Section-level subtitle: `text-sm text-base-content/70` (smaller, muted)
+- Wrap title + subtitle in container with `space-y-2` (better breathing room)
+- Title color: can use `text-primary` (#d40000) for brand emphasis on page titles
 
 ### Spacing rhythm matrix
 
