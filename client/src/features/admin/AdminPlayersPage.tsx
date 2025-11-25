@@ -12,7 +12,7 @@ type PlayerRow = PlayerResponse & {
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export function AdminPlayersPage() {
-  const { token } = useAuth();
+  const { token, user: authUser } = useAuth();
   const navigate = useNavigate();
   const [players, setPlayers] = useState<PlayerRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -61,6 +61,10 @@ export function AdminPlayersPage() {
 
   const toggleActive = async (player: PlayerResponse) => {
     if (!token || !player.id) return;
+    if (player.email === authUser?.email) {
+      setError("Du kan ikke deaktivere din egen bruger.");
+      return;
+    }
     setIsSaving(player.id);
     try {
       const client = createApiClient(token);
@@ -114,7 +118,9 @@ export function AdminPlayersPage() {
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
         <div className="space-y-2">
-          <h1 className="text-h1 text-secondary">Spilleradministration</h1>
+          <h1 className="text-h1" style={{ color: "#111111" }}>
+            Spilleradministration
+          </h1>
           <p className="text-base text-base-content/70">
             Administrer spillere, aktivering, plader og transaktioner.
           </p>
@@ -180,7 +186,12 @@ export function AdminPlayersPage() {
                           <button
                             className={`btn btn-sm ${player.isActive ? "btn-ghost" : "btn-primary"} h-10 px-4 shadow-md`}
                             onClick={() => toggleActive(player)}
-                            disabled={isSaving === player.id}
+                            disabled={isSaving === player.id || player.email === authUser?.email}
+                            title={
+                              player.email === authUser?.email
+                                ? "Admins kan ikke deaktivere sig selv"
+                                : ""
+                            }
                           >
                             {player.isActive ? "Deaktiver" : "Aktiver"}
                           </button>

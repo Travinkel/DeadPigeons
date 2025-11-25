@@ -37,6 +37,11 @@ export function PlayerDetailPage() {
   const [games, setGames] = useState<GameResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!token || !playerId) return;
@@ -80,6 +85,8 @@ export function PlayerDetailPage() {
         });
 
         setPlayer(playerData);
+        setEditName(playerData.name || "");
+        setEditPhone(playerData.phone || "");
         setBalance(balanceData);
         setBoards(boardsData);
         setTransactions(sortedTransactions);
@@ -94,6 +101,36 @@ export function PlayerDetailPage() {
 
     void load();
   }, [token, playerId]);
+
+  const handleSaveEdit = async () => {
+    if (!token || !player || !player.id) return;
+    if (!editName.trim()) {
+      setError("Navn er påkrævet.");
+      return;
+    }
+
+    setIsSaving(true);
+    setError(null);
+    setSuccessMessage(null);
+    try {
+      const client = createApiClient(token);
+      await client.playersPUT(player.id, {
+        name: editName.trim(),
+        email: player.email,
+        phone: editPhone.trim(),
+        isActive: player.isActive,
+      });
+      setPlayer({ ...player, name: editName, phone: editPhone });
+      setIsEditing(false);
+      setSuccessMessage("Spiller opdateret succesfuldt.");
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (err) {
+      console.error("Player update error:", err);
+      setError("Kunne ikke opdatere spiller. Prøv igen senere.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const gameMap = useMemo(() => {
     const map = new Map<string, GameResponse>();
@@ -134,6 +171,12 @@ export function PlayerDetailPage() {
 
   return (
     <div className="space-y-6">
+      {successMessage && (
+        <div className="alert alert-success">
+          <span>{successMessage}</span>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <p className="text-sm text-base-content/70">
@@ -142,7 +185,7 @@ export function PlayerDetailPage() {
             </Link>{" "}
             / Spillere / {player.name}
           </p>
-          <h1 className="text-h1 text-base-content flex items-center gap-2">
+          <h1 className="text-h1 flex items-center gap-2" style={{ color: "#111111" }}>
             {player.name}
             {player.isActive ? (
               <span className="badge badge-success">Aktiv</span>
@@ -152,13 +195,81 @@ export function PlayerDetailPage() {
           </h1>
           <p className="text-base-content/70">{player.email}</p>
         </div>
-        <div className="card bg-primary text-primary-content shadow-md">
-          <div className="card-body py-3 px-4">
-            <p className="text-sm">Saldo</p>
-            <p className="text-2xl font-bold">{balanceValue.toFixed(2)} kr</p>
+        <div className="flex flex-col gap-3">
+          <div className="card bg-primary text-primary-content shadow-md">
+            <div className="card-body py-3 px-4">
+              <p className="text-sm">Saldo</p>
+              <p className="text-2xl font-bold">{balanceValue.toFixed(2)} kr</p>
+            </div>
           </div>
+          {!isEditing && (
+            <button className="btn btn-sm btn-ghost h-10 px-4" onClick={() => setIsEditing(true)}>
+              Rediger detaljer
+            </button>
+          )}
         </div>
       </div>
+
+      {isEditing && (
+        <div className="card bg-base-100 rounded-box border border-base-300 shadow-md">
+          <div className="card-body p-5 md:p-6 space-y-4">
+            <h2 className="text-h2 font-semibold">Rediger spiller</h2>
+            {error && (
+              <div className="alert alert-error">
+                <span>{error}</span>
+              </div>
+            )}
+            <div className="space-y-3">
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-semibold">Navn</span>
+                </label>
+                <input
+                  type="text"
+                  className="input input-bordered h-11"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  placeholder="Spillerens navn"
+                  disabled={isSaving}
+                />
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-semibold">Telefon</span>
+                </label>
+                <input
+                  type="tel"
+                  className="input input-bordered h-11"
+                  value={editPhone}
+                  onChange={(e) => setEditPhone(e.target.value)}
+                  placeholder="+45 12 34 56 78"
+                  disabled={isSaving}
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-3">
+              <button
+                className="btn btn-ghost h-11 px-5"
+                onClick={() => setIsEditing(false)}
+                disabled={isSaving}
+              >
+                Annuller
+              </button>
+              <button
+                className="btn btn-primary h-11 px-5 shadow-md"
+                onClick={handleSaveEdit}
+                disabled={isSaving}
+              >
+                {isSaving ? (
+                  <span className="loading loading-spinner loading-sm"></span>
+                ) : (
+                  "Gem ændringer"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="card bg-base-100 shadow-md rounded-box border border-base-300">
         <div className="card-body p-5 md:p-6 space-y-3">

@@ -9,6 +9,9 @@ export default {
         h3: ["1.56rem", { lineHeight: "1.3", fontWeight: "600" }],
         h4: ["1.25rem", { lineHeight: "1.35", fontWeight: "500" }],
       },
+      colors: {
+        heading: "#111111", // Near-black for optimal contrast
+      },
     },
   },
 };

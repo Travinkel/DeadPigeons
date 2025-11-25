@@ -165,7 +165,7 @@ export function GamesPage() {
         </div>
       )}
 
-      <div className="card bg-base-100 shadow-md rounded-box border border-base-300">
+      <div className="card bg-base-100 shadow-sm rounded-box border border-base-300">
         <div className="card-body p-5 md:p-6 gap-3">
           <h2 className="text-h3 text-error">Seneste 12 spil</h2>
           {sortedGames.length === 0 ? (
@@ -174,7 +174,7 @@ export function GamesPage() {
             <div className="relative">
               <div className="overflow-x-auto">
                 <table className="table min-w-[720px]">
-                  <thead className="text-sm font-semibold text-base-content">
+                  <thead className="text-xs font-semibold leading-caption text-base-content/80">
                     <tr className="border-b border-base-300">
                       <th className="py-3 px-3 text-left">Uge</th>
                       <th className="py-3 px-3 text-left">År</th>
@@ -185,7 +185,7 @@ export function GamesPage() {
                       {isAdmin && <th className="py-3 px-3 text-right">Handling</th>}
                     </tr>
                   </thead>
-                  <tbody className="text-sm">
+                  <tbody className="text-sm leading-body">
                     {sortedGames.map((game, index) => {
                       const isActiveRow = activeGame && activeGame.id === game.id;
                       const winnerCount = winnerCountForGame(game);

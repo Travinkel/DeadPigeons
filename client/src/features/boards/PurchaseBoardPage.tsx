@@ -368,26 +368,31 @@ export function PurchaseBoardPage() {
       </div>
 
       {/* Number Grid */}
-      <div className="card bg-base-100 shadow-md rounded-box">
-        <div className="card-body">
-          <h2 className="card-title">Vælg numre (1-16)</h2>
+      <div className="card bg-base-100 shadow-md rounded-box border border-base-300">
+        <div className="card-body p-5 md:p-6 space-y-3">
+          <h2 className="text-h2 font-semibold">Vælg numre (1-16)</h2>
+          <p className="text-sm text-base-content/70">
+            Vælg mellem 5 og 8 numre. Du kan vælge automatisk gentag for næste spil.
+          </p>
           <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
             {Array.from({ length: 16 }, (_, i) => i + 1).map((num) => {
               const isSelected = selectedNumbers.includes(num);
+              const isDisabled = !isSelected && selectedNumbers.length >= 8;
               return (
                 <button
                   key={num}
                   onClick={() => toggleNumber(num)}
-                  disabled={!isSelected && selectedNumbers.length >= 8}
+                  disabled={isDisabled}
                   className={`
-                    w-8 h-8 sm:w-10 sm:h-10 rounded-full text-sm font-semibold
-                    transition-colors duration-150
+                    h-12 rounded-lg font-semibold text-base
+                    transition-all duration-200 ease-out
                     ${
                       isSelected
-                        ? "bg-primary text-primary-content"
-                        : "bg-base-200 hover:bg-base-300"
+                        ? "bg-primary text-primary-content shadow-lg scale-100"
+                        : "bg-base-200 text-base-content hover:bg-base-300 scale-95 hover:scale-100"
                     }
-                    ${!isSelected && selectedNumbers.length >= 8 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+                    ${isDisabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}
+                    active:scale-90
                   `}
                 >
                   {num}

@@ -60,7 +60,17 @@ export function AdminGamesPage() {
     if (yearDiff !== 0) return yearDiff;
     return (b.weekNumber || 0) - (a.weekNumber || 0);
   });
-  const upcomingGames = sortedGames.filter((g) => g.status !== "Active" && !g.completedAt);
+
+  // Filter upcoming games: must be pending/not completed AND year >= active game year
+  const upcomingGames = sortedGames.filter((g) => {
+    // Skip active and completed games
+    if (g.status === "Active" || g.completedAt) return false;
+    // If no active game exists, show all pending
+    if (!activeGame) return true;
+    // Only show games in same year or later years
+    return (g.year || 0) >= (activeGame.year || 0);
+  });
+
   // Get the earliest upcoming game: since sortedGames is desc (newest→oldest),
   // upcomingGames[upcomingGames.length - 1] is the earliest/next upcoming game
   const nextGame = upcomingGames.length > 0 ? upcomingGames[upcomingGames.length - 1] : null;
@@ -77,7 +87,9 @@ export function AdminGamesPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-h1 text-secondary">Spil (Admin)</h1>
+        <h1 className="text-h1" style={{ color: "#111111" }}>
+          Spil (Admin)
+        </h1>
         <p className="text-base text-base-content/70">
           Oversigt over alle spil, afsluttede og kommende. Administrer aktive spil og udfyld
           vindertal.

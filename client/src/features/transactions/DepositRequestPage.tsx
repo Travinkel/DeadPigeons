@@ -109,7 +109,7 @@ export function DepositRequestPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col items-start gap-2 xs:flex-row xs:items-center xs:justify-between">
-        <h1 className="text-h1 text-base-content">Anmod om indbetaling</h1>
+        <h1 className="text-h1 text-base-content">Opret indbetaling</h1>
         <div className="self-start xs:self-auto px-3 py-2 rounded-full badge badge-lg bg-primary text-primary-content font-extrabold text-sm tracking-tight shadow-sm">
           Saldo: {balance.toFixed(2)} kr
         </div>
@@ -226,7 +226,8 @@ export function DepositRequestPage() {
               />
               <label className="label">
                 <span className="label-text-alt text-base-content/60">
-                  Paakraevet for godkendelse; findes i MobilePay app under betalingshistorik
+                  MobilePay-ID bruges til bogforing (valgfrit, men anbefalet for hurtigere
+                  godkendelse)
                 </span>
               </label>
             </div>
