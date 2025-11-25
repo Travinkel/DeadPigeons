@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../auth/useAuth";
 import { Link } from "react-router-dom";
+import { useAuth } from "../auth/useAuth";
 import { createApiClient } from "../../api/apiClient";
 import { type GameResponse, type PlayerResponse } from "../../api/generated/api-client";
 
@@ -26,10 +26,16 @@ export function AdminDashboard() {
   const [pendingTransactions, setPendingTransactions] = useState<AdminTransaction[]>([]);
   const [games, setGames] = useState<GameResponse[]>([]);
   const [players, setPlayers] = useState<PlayerResponse[]>([]);
-  const [newPlayer, setNewPlayer] = useState<{ name: string; email: string; phone: string }>({
+  const [newPlayer, setNewPlayer] = useState<{
+    name: string;
+    email: string;
+    phone: string;
+    isActive: boolean;
+  }>({
     name: "",
     email: "",
     phone: "",
+    isActive: false,
   });
   const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
   const [editingPlayer, setEditingPlayer] = useState<{
@@ -131,8 +137,9 @@ export function AdminDashboard() {
         name: newPlayer.name.trim(),
         email: newPlayer.email.trim(),
         phone: newPlayer.phone.trim(),
+        isActive: newPlayer.isActive,
       });
-      setNewPlayer({ name: "", email: "", phone: "" });
+      setNewPlayer({ name: "", email: "", phone: "", isActive: false });
       await loadData();
     } catch (err) {
       setError("Kunne ikke oprette spiller. Prøv igen.");
@@ -394,6 +401,17 @@ export function AdminDashboard() {
                 value={newPlayer.phone}
                 onChange={(e) => setNewPlayer((prev) => ({ ...prev, phone: e.target.value }))}
               />
+              <label className="label cursor-pointer justify-start gap-2 sm:col-span-3 lg:col-span-1">
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-sm"
+                  checked={newPlayer.isActive}
+                  onChange={(e) =>
+                    setNewPlayer((prev) => ({ ...prev, isActive: e.target.checked }))
+                  }
+                />
+                <span className="label-text text-sm">Aktiv spiller (som standard inaktiv)</span>
+              </label>
               <button
                 className="btn btn-primary col-span-1 sm:col-span-3 lg:col-span-1"
                 onClick={handleCreatePlayer}
@@ -406,6 +424,9 @@ export function AdminDashboard() {
                 )}
               </button>
             </div>
+            <p className="text-xs text-base-content/70">
+              Nye spillere er inaktive, indtil du aktiverer dem. Kun aktive spillere må købe plader.
+            </p>
           </div>
 
           <div className="relative">
@@ -418,6 +439,7 @@ export function AdminDashboard() {
                     <th>Telefon</th>
                     <th>Status</th>
                     <th className="text-right">Handlinger</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -522,6 +544,11 @@ export function AdminDashboard() {
                           )}
                         </div>
                       </td>
+                      <td>
+                        <Link to={`/admin/players/${player.id}`} className="btn btn-sm btn-ghost">
+                          Detaljer
+                        </Link>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -571,11 +598,16 @@ export function AdminDashboard() {
                           )}
                         </td>
                         <td className="text-right">
-                          {game.status === "Active" ? null : (
-                            <Link to={`/games/${game.id}/complete`} className="btn btn-sm">
-                              Afslut / vindertal
+                          <div className="flex justify-end gap-2">
+                            {game.status === "Active" ? null : (
+                              <Link to={`/games/${game.id}/complete`} className="btn btn-sm">
+                                Afslut / vindertal
+                              </Link>
+                            )}
+                            <Link to={`/admin/games/${game.id}`} className="btn btn-sm btn-ghost">
+                              Detaljer
                             </Link>
-                          )}
+                          </div>
                         </td>
                       </tr>
                     ))}

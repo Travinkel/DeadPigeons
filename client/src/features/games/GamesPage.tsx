@@ -123,6 +123,14 @@ export function GamesPage() {
                     Afslut spil
                   </Link>
                 )}
+                {isAdmin && (
+                  <Link
+                    to={`/admin/games/${activeGame.id}`}
+                    className="rounded-lg px-4 py-2 text-sm font-medium bg-white text-red-700 hover:bg-gray-100 self-end shadow-sm"
+                  >
+                    Vis plader
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -166,6 +174,7 @@ export function GamesPage() {
                       <th>Plader</th>
                       <th>Vindende numre</th>
                       <th>Afsluttet</th>
+                      {isAdmin && <th className="text-right">Handling</th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -200,6 +209,13 @@ export function GamesPage() {
                               ? new Date(game.completedAt).toLocaleDateString("da-DK")
                               : "-"}
                           </td>
+                          {isAdmin && (
+                            <td className="text-right">
+                              <Link to={`/admin/games/${game.id}`} className="btn btn-xs btn-ghost">
+                                Detaljer
+                              </Link>
+                            </td>
+                          )}
                         </tr>
                       );
                     })}

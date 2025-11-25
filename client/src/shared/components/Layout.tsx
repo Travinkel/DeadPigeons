@@ -43,8 +43,18 @@ export function Layout() {
         </Link>
       </li>
       <li>
+        <Link to="/admin/transactions" className="font-semibold">
+          Transaktioner
+        </Link>
+      </li>
+      <li>
         <Link to="/games" className="font-semibold">
           Spil
+        </Link>
+      </li>
+      <li>
+        <Link to="/admin" className="font-semibold">
+          Spillere
         </Link>
       </li>
     </>
