@@ -80,7 +80,7 @@ public class TransactionsController : ControllerBase
         try
         {
             var transaction = await _transactionService.CreateDepositAsync(request);
-            return Ok(transaction);
+            return StatusCode(201, transaction);
         }
         catch (ArgumentException ex)
         {
