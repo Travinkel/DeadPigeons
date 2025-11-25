@@ -45,7 +45,7 @@ export function AdminCreatePlayerPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-h1 text-primary">Opret spiller</h1>
+        <h1 className="text-h1 text-secondary">Opret spiller</h1>
         <p className="text-base text-base-content/70">Registrer en ny spiller i systemet.</p>
       </div>
 

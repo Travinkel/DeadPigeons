@@ -184,7 +184,7 @@ When you see an ad-hoc value, map it to the nearest token using these heuristics
 
 | Usage               | Token                                            |
 | ------------------- | ------------------------------------------------ |
-| Hero / page title   | `t5` (`text-h1`) + optional `text-primary`       |
+| Hero / page title   | `t5` (`text-h1`) + `text-secondary` (dark red)   |
 | Page subtitle       | `text-base text-base-content/70` (body + muted)  |
 | Section header      | `t4` (`text-h2`)                                 |
 | Section description | `text-sm text-base-content/70` (caption + muted) |
@@ -199,7 +199,9 @@ When you see an ad-hoc value, map it to the nearest token using these heuristics
 - Page-level subtitle: `text-base text-base-content/70` (full body size, muted)
 - Section-level subtitle: `text-sm text-base-content/70` (smaller, muted)
 - Wrap title + subtitle in container with `space-y-2` (better breathing room)
-- Title color: can use `text-primary` (#d40000) for brand emphasis on page titles
+- **Title color:** use `text-secondary` (#a80000, P-1 dark red shade) for all page/hero titles for visual coherence
+  - P0 bright (#d40000) reserves for buttons, alerts, active states
+  - P-1 shade (#a80000) for typography to avoid aggressive red on large text sizes
 
 ### Spacing rhythm matrix
 

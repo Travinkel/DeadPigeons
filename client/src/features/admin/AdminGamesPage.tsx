@@ -76,7 +76,7 @@ export function AdminGamesPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-h1 text-primary">Spil (Admin)</h1>
+        <h1 className="text-h1 text-secondary">Spil (Admin)</h1>
         <p className="text-base text-base-content/70">
           Oversigt over alle spil, afsluttede og kommende. Administrer aktive spil og udfyld
           vindertal.
