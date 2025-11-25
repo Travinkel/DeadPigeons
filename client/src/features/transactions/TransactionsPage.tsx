@@ -13,6 +13,8 @@ type PlayerTransaction = {
   isApproved?: boolean;
   createdAt?: string;
   approvedAt?: string | null;
+  isDeleted?: boolean;
+  deletedAt?: string | null;
 };
 
 type ErrorResponse = {
@@ -96,7 +98,9 @@ export function TransactionsPage() {
     .filter((tx) => tx.type === "Deposit" && tx.isApproved)
     .reduce((sum, tx) => sum + (tx.amount || 0), 0);
 
-  const pendingDeposits = transactions.filter((tx) => tx.type === "Deposit" && !tx.isApproved);
+  const pendingDeposits = transactions.filter(
+    (tx) => tx.type === "Deposit" && !tx.isApproved && !tx.isDeleted
+  );
 
   return (
     <div className="space-y-6">
@@ -197,11 +201,54 @@ export function TransactionsPage() {
                           {tx.mobilePayTransactionId || "-"}
                         </td>
                         <td>
-                          {tx.isApproved ? (
-                            <span className="badge badge-success badge-sm">Godkendt</span>
-                          ) : (
-                            <span className="badge badge-warning badge-sm">Afventer</span>
-                          )}
+                          <div className="flex flex-col gap-1">
+                            {tx.isApproved ? (
+                              <>
+                                <span className="badge badge-success badge-sm">Godkendt</span>
+                                {tx.approvedAt && (
+                                  <span className="text-xs text-base-content/70">
+                                    {new Date(tx.approvedAt).toLocaleDateString("da-DK", {
+                                      day: "2-digit",
+                                      month: "2-digit",
+                                      year: "numeric",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </span>
+                                )}
+                              </>
+                            ) : tx.isDeleted ? (
+                              <>
+                                <span className="badge badge-error badge-sm">Afvist</span>
+                                {tx.deletedAt && (
+                                  <span className="text-xs text-base-content/70">
+                                    {new Date(tx.deletedAt).toLocaleDateString("da-DK", {
+                                      day: "2-digit",
+                                      month: "2-digit",
+                                      year: "numeric",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </span>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <span className="badge badge-warning badge-sm">Afventer</span>
+                                {tx.createdAt && (
+                                  <span className="text-xs text-base-content/70">
+                                    Anmodet{" "}
+                                    {new Date(tx.createdAt).toLocaleDateString("da-DK", {
+                                      day: "2-digit",
+                                      month: "2-digit",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </span>
+                                )}
+                              </>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}

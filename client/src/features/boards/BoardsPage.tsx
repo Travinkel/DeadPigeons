@@ -156,16 +156,25 @@ export function BoardsPage() {
             >
               <div className="card-body">
                 <div className="flex justify-between items-start gap-3">
-                  <div className="min-w-0">
-                    <h2 className="card-title">
-                      {board.friendlyTitle
-                        ? board.friendlyTitle
-                        : board.weekNumber && board.year
-                          ? `Uge ${board.weekNumber}, ${board.year}`
-                          : board.gameId
-                            ? `Spil: ${board.gameId.slice(0, 8)}…`
-                            : "Spil"}
-                    </h2>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <h2 className="card-title">
+                        {board.friendlyTitle
+                          ? board.friendlyTitle
+                          : board.weekNumber && board.year
+                            ? `Uge ${board.weekNumber}, ${board.year}`
+                            : board.gameId
+                              ? `Spil: ${board.gameId.slice(0, 8)}…`
+                              : "Spil"}
+                      </h2>
+                      {board.isRepeating ? (
+                        <span className="badge badge-success badge-sm px-2 py-1">Automatisk</span>
+                      ) : (
+                        <span className="badge badge-neutral badge-outline badge-sm px-2 py-1">
+                          Enkelt
+                        </span>
+                      )}
+                    </div>
                     <p className="text-sm text-base-content/70">
                       Oprettet:{" "}
                       {board.createdAt
@@ -173,11 +182,6 @@ export function BoardsPage() {
                         : "-"}
                     </p>
                   </div>
-                  {board.isRepeating ? (
-                    <span className="badge badge-success">Automatisk</span>
-                  ) : (
-                    <span className="badge badge-ghost">Enkelt</span>
-                  )}
                 </div>
 
                 <div className="mt-4">

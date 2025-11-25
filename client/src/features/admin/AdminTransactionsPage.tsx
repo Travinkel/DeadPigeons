@@ -11,7 +11,10 @@ type AdminTransaction = {
   mobilePayTransactionId?: string | null;
   isApproved?: boolean;
   createdAt?: string;
+  approvedAt?: string | null;
   type?: string;
+  isDeleted?: boolean;
+  deletedAt?: string | null;
 };
 
 type ErrorResponse = {
@@ -25,6 +28,7 @@ export function AdminTransactionsPage() {
   const [filter, setFilter] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isApproving, setIsApproving] = useState(false);
+  const [isRejecting, setIsRejecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<"pending" | "all">("pending");
 
@@ -108,6 +112,35 @@ export function AdminTransactionsPage() {
       console.error("Approve transaction error:", err);
     } finally {
       setIsApproving(false);
+    }
+  };
+
+  const handleReject = async (id?: string) => {
+    if (!id || !token) return;
+
+    const confirmed = window.confirm(
+      "Afviser denne indbetalingsanmodning? Spillerens saldo ændres ikke."
+    );
+    if (!confirmed) return;
+
+    setIsRejecting(true);
+    try {
+      const resp = await fetch(`${API_URL}/api/Transactions/${id}/reject`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!resp.ok) {
+        const err: ErrorResponse | undefined = await resp.json().catch(() => undefined);
+        throw new Error(err?.message || "Kunne ikke afvise");
+      }
+      await loadData();
+    } catch (err) {
+      setError("Afvisning fejlede. Prøv igen.");
+      console.error("Reject transaction error:", err);
+    } finally {
+      setIsRejecting(false);
     }
   };
 
@@ -201,17 +234,30 @@ export function AdminTransactionsPage() {
                           {tx.mobilePayTransactionId || "-"}
                         </td>
                         <td className="py-2.5 px-3 text-right">
-                          <button
-                            className="btn btn-sm btn-primary h-10 px-5 shadow-md"
-                            onClick={() => handleApprove(tx.id)}
-                            disabled={isApproving}
-                          >
-                            {isApproving ? (
-                              <span className="loading loading-spinner loading-xs"></span>
-                            ) : (
-                              "Godkend"
-                            )}
-                          </button>
+                          <div className="flex gap-2 justify-end">
+                            <button
+                              className="btn btn-sm btn-primary h-10 px-5 shadow-md"
+                              onClick={() => handleApprove(tx.id)}
+                              disabled={isApproving || isRejecting}
+                            >
+                              {isApproving ? (
+                                <span className="loading loading-spinner loading-xs"></span>
+                              ) : (
+                                "Godkend"
+                              )}
+                            </button>
+                            <button
+                              className="btn btn-sm btn-outline btn-warning h-10 px-4 shadow-md"
+                              onClick={() => handleReject(tx.id)}
+                              disabled={isApproving || isRejecting}
+                            >
+                              {isRejecting ? (
+                                <span className="loading loading-spinner loading-xs"></span>
+                              ) : (
+                                "Afvis"
+                              )}
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -266,9 +312,32 @@ export function AdminTransactionsPage() {
                         </td>
                         <td className="py-2.5 px-3">
                           {tx.isApproved ? (
-                            <span className="badge badge-success badge-sm">Godkendt</span>
+                            <div>
+                              <span className="badge badge-success badge-sm">Godkendt</span>
+                              {tx.approvedAt && (
+                                <div className="text-xs text-base-content/60 mt-1">
+                                  {new Date(tx.approvedAt).toLocaleString("da-DK")}
+                                </div>
+                              )}
+                            </div>
+                          ) : tx.isDeleted ? (
+                            <div>
+                              <span className="badge badge-error badge-sm">Afvist</span>
+                              {tx.deletedAt && (
+                                <div className="text-xs text-base-content/60 mt-1">
+                                  {new Date(tx.deletedAt).toLocaleString("da-DK")}
+                                </div>
+                              )}
+                            </div>
                           ) : (
-                            <span className="badge badge-warning badge-sm">Afventer</span>
+                            <div>
+                              <span className="badge badge-warning badge-sm">Afventer</span>
+                              {tx.createdAt && (
+                                <div className="text-xs text-base-content/60 mt-1">
+                                  {new Date(tx.createdAt).toLocaleString("da-DK")}
+                                </div>
+                              )}
+                            </div>
                           )}
                         </td>
                         <td className="py-2.5 px-3 text-xs">{tx.mobilePayTransactionId || "-"}</td>

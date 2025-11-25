@@ -103,4 +103,29 @@ public class TransactionsController : ControllerBase
         }
         return Ok(transaction);
     }
+
+    [HttpPost("{id:guid}/reject")]
+    [Authorize(Policy = "RequireAdmin")]
+    public async Task<IActionResult> Reject(Guid id)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId) || !Guid.TryParse(userId, out var rejectedById))
+        {
+            return Unauthorized(new ErrorResponse("AUTH_UNAUTHORIZED", "Missing or invalid user id in token", CorrelationId));
+        }
+
+        try
+        {
+            var transaction = await _transactionService.RejectAsync(id, rejectedById);
+            if (transaction == null)
+            {
+                return StatusCode(404, new ErrorResponse("TX_NOT_FOUND", "Transaction not found", CorrelationId));
+            }
+            return Ok(transaction);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new ErrorResponse("TX_INVALID_STATE", ex.Message, CorrelationId));
+        }
+    }
 }

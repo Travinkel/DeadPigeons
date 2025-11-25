@@ -11,6 +11,9 @@ public class Transaction
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? ApprovedAt { get; set; }
     public Guid? ApprovedById { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+    public Guid? DeletedById { get; set; }
 
     // Navigation properties
     public Player Player { get; set; } = null!;

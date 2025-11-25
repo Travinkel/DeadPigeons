@@ -9,4 +9,5 @@ public interface ITransactionService
     Task<IEnumerable<TransactionResponse>> GetAllAsync();
     Task<TransactionResponse> CreateDepositAsync(CreateDepositRequest request);
     Task<TransactionResponse?> ApproveAsync(Guid id, ApproveTransactionRequest request);
+    Task<TransactionResponse?> RejectAsync(Guid id, Guid rejectedById);
 }
