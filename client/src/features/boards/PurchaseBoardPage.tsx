@@ -86,8 +86,10 @@ export function PurchaseBoardPage() {
     setIsRepeating(false);
   };
 
+  const isInactivePlayer = user && !user.isActive;
   const price = calculatePrice(selectedNumbers.length);
   const canPurchase =
+    !isInactivePlayer &&
     selectedNumbers.length >= 5 &&
     selectedNumbers.length <= 8 &&
     mobilePayId.trim().length > 0 &&
@@ -197,18 +199,15 @@ export function PurchaseBoardPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Køb plade</h1>
-        <div
-          className="badge badge-lg text-white font-semibold min-w-[140px] justify-center"
-          style={{ backgroundColor: "#d50000" }}
-        >
+        <h1 className="text-h1 text-base-content">Køb plade</h1>
+        <div className="badge badge-lg bg-primary text-primary-content font-semibold min-w-[140px] justify-center">
           Saldo: {balance.toFixed(2)} kr
         </div>
       </div>
 
       {/* Active Game Info */}
-      <div className="card shadow-md rounded-2xl" style={{ backgroundColor: "#d50000" }}>
-        <div className="card-body py-4">
+      <div className="card bg-primary text-primary-content shadow-md rounded-box">
+        <div className="card-body p-5 md:p-6">
           <p className="text-lg">
             Aktivt spil:{" "}
             <strong>
@@ -217,6 +216,27 @@ export function PurchaseBoardPage() {
           </p>
         </div>
       </div>
+
+      {isInactivePlayer && (
+        <div className="alert alert-warning">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="stroke-current shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+          <span>
+            Din konto er inaktiv. Kontakt en administrator for at aktivere, før du kan købe plader.
+          </span>
+        </div>
+      )}
 
       {/* Cutoff Warning */}
       {isPastCutoff() && (
@@ -278,7 +298,7 @@ export function PurchaseBoardPage() {
       )}
 
       {/* Pricing Info */}
-      <div className="card bg-base-100 shadow-md rounded-2xl">
+      <div className="card bg-base-100 shadow-md rounded-box">
         <div className="card-body">
           <h2 className="card-title">Priser</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -311,7 +331,7 @@ export function PurchaseBoardPage() {
       </div>
 
       {/* Selection Status */}
-      <div className="card bg-base-100 shadow-md rounded-2xl">
+      <div className="card bg-base-100 shadow-md rounded-box">
         <div className="card-body">
           <div className="flex justify-between items-center">
             <div>
@@ -340,7 +360,7 @@ export function PurchaseBoardPage() {
       </div>
 
       {/* Number Grid */}
-      <div className="card bg-base-100 shadow-md rounded-2xl">
+      <div className="card bg-base-100 shadow-md rounded-box">
         <div className="card-body">
           <h2 className="card-title">Vælg numre (1-90)</h2>
           <div className="grid grid-cols-9 sm:grid-cols-10 gap-2">
@@ -405,7 +425,7 @@ export function PurchaseBoardPage() {
       </div>
 
       {/* Purchase Summary */}
-      <div className="card bg-base-100 shadow-md rounded-2xl">
+      <div className="card bg-base-100 shadow-md rounded-box">
         <div className="card-body">
           <h2 className="card-title">Samlet pris</h2>
           <div className="flex justify-between items-center">
@@ -416,12 +436,7 @@ export function PurchaseBoardPage() {
               )}
             </div>
             <button
-              className={`btn btn-lg ${
-                canPurchase && !isSubmitting
-                  ? "text-white"
-                  : "bg-gray-300 text-gray-600 cursor-not-allowed border-none"
-              }`}
-              style={canPurchase && !isSubmitting ? { backgroundColor: "#d50000" } : {}}
+              className="btn btn-primary btn-lg h-12 px-6 shadow-md"
               disabled={!canPurchase || isSubmitting}
               onClick={handleSubmit}
             >

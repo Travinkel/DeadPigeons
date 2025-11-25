@@ -131,7 +131,7 @@ export function PlayerDetailPage() {
             </Link>{" "}
             / Spillere / {player.name}
           </p>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
+          <h1 className="text-h1 text-base-content flex items-center gap-2">
             {player.name}
             {player.isActive ? (
               <span className="badge badge-success">Aktiv</span>
@@ -149,9 +149,9 @@ export function PlayerDetailPage() {
         </div>
       </div>
 
-      <div className="card bg-base-100 shadow-md rounded-2xl">
-        <div className="card-body">
-          <h2 className="card-title">Plader</h2>
+      <div className="card bg-base-100 shadow-md rounded-box border border-base-300">
+        <div className="card-body p-5 md:p-6 space-y-3">
+          <h2 className="text-h2 font-semibold">Plader</h2>
           {boardsWithFlags.length === 0 ? (
             <p className="text-base-content/70">Ingen plader.</p>
           ) : (
@@ -203,9 +203,9 @@ export function PlayerDetailPage() {
         </div>
       </div>
 
-      <div className="card bg-base-100 shadow-md rounded-2xl">
-        <div className="card-body">
-          <h2 className="card-title">Transaktioner</h2>
+      <div className="card bg-base-100 shadow-md rounded-box border border-base-300">
+        <div className="card-body p-5 md:p-6 space-y-3">
+          <h2 className="text-h2 font-semibold">Transaktioner</h2>
           {transactions.length === 0 ? (
             <p className="text-base-content/70">Ingen transaktioner.</p>
           ) : (
