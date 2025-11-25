@@ -89,6 +89,23 @@ export function DepositRequestPage() {
     );
   }
 
+  if (user?.role === "Admin") {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-3xl font-bold">Indbetalinger</h1>
+        <div className="card bg-base-100 shadow-md rounded-2xl">
+          <div className="card-body space-y-2">
+            <h2 className="card-title text-lg">Info</h2>
+            <p className="text-base-content/80">
+              Som administrator kan du kun godkende indbetalinger – ikke oprette dem. Brug fanen
+              &quot;Transaktioner&quot; til at se og godkende indbetalinger.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col items-start gap-2 xs:flex-row xs:items-center xs:justify-between">
@@ -99,7 +116,7 @@ export function DepositRequestPage() {
       </div>
 
       {/* Instructions */}
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100 shadow-md rounded-2xl">
         <div className="card-body">
           <h2 className="card-title">Saadan gor du</h2>
           <ol className="list-decimal list-inside space-y-2 text-base-content/80">
@@ -151,7 +168,7 @@ export function DepositRequestPage() {
       )}
 
       {/* Deposit Form */}
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100 shadow-md rounded-2xl">
         <div className="card-body">
           <h2 className="card-title">Indbetalingsanmodning</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -217,7 +234,8 @@ export function DepositRequestPage() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="btn btn-primary w-full"
+              className="btn w-full text-white"
+              style={{ backgroundColor: "#d50000" }}
               disabled={isSubmitting || !amount}
             >
               {isSubmitting ? (

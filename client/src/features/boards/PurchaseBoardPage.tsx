@@ -198,11 +198,16 @@ export function PurchaseBoardPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Køb plade</h1>
-        <div className="badge badge-lg badge-primary">Saldo: {balance.toFixed(2)} kr</div>
+        <div
+          className="badge badge-lg text-white font-semibold min-w-[140px] justify-center"
+          style={{ backgroundColor: "#d50000" }}
+        >
+          Saldo: {balance.toFixed(2)} kr
+        </div>
       </div>
 
       {/* Active Game Info */}
-      <div className="card bg-primary text-primary-content">
+      <div className="card shadow-md rounded-2xl" style={{ backgroundColor: "#d50000" }}>
         <div className="card-body py-4">
           <p className="text-lg">
             Aktivt spil:{" "}
@@ -273,7 +278,7 @@ export function PurchaseBoardPage() {
       )}
 
       {/* Pricing Info */}
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100 shadow-md rounded-2xl">
         <div className="card-body">
           <h2 className="card-title">Priser</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -306,7 +311,7 @@ export function PurchaseBoardPage() {
       </div>
 
       {/* Selection Status */}
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100 shadow-md rounded-2xl">
         <div className="card-body">
           <div className="flex justify-between items-center">
             <div>
@@ -335,7 +340,7 @@ export function PurchaseBoardPage() {
       </div>
 
       {/* Number Grid */}
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100 shadow-md rounded-2xl">
         <div className="card-body">
           <h2 className="card-title">Vælg numre (1-90)</h2>
           <div className="grid grid-cols-9 sm:grid-cols-10 gap-2">
@@ -400,7 +405,7 @@ export function PurchaseBoardPage() {
       </div>
 
       {/* Purchase Summary */}
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100 shadow-md rounded-2xl">
         <div className="card-body">
           <h2 className="card-title">Samlet pris</h2>
           <div className="flex justify-between items-center">
@@ -411,7 +416,12 @@ export function PurchaseBoardPage() {
               )}
             </div>
             <button
-              className="btn btn-primary btn-lg"
+              className={`btn btn-lg ${
+                canPurchase && !isSubmitting
+                  ? "text-white"
+                  : "bg-gray-300 text-gray-600 cursor-not-allowed border-none"
+              }`}
+              style={canPurchase && !isSubmitting ? { backgroundColor: "#d50000" } : {}}
               disabled={!canPurchase || isSubmitting}
               onClick={handleSubmit}
             >

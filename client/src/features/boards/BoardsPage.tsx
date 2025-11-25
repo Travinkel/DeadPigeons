@@ -99,14 +99,15 @@ export function BoardsPage() {
         <h1 className="text-[28px] font-bold mb-6">Mine plader</h1>
         <Link
           to="/boards/purchase"
-          className="btn bg-primary text-white h-11 px-6 text-[17px] font-semibold shadow-md hover:bg-secondary active:bg-[#7A0000]"
+          className="btn text-white h-11 px-6 text-[17px] font-semibold shadow-md"
+          style={{ backgroundColor: "#d50000" }}
         >
           Køb plade
         </Link>
       </div>
 
       {boards.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-md p-8 text-center">
+        <div className="bg-white rounded-2xl shadow-md p-8 text-center">
           <p className="text-[17px] font-medium text-neutral">Du har ingen plader endnu.</p>
           <p className="text-[15px] text-neutral/70 mt-1">
             Plader oprettes automatisk, når du deltager i et spil.
@@ -117,11 +118,11 @@ export function BoardsPage() {
           {boards.map((board, index) => (
             <div
               key={board.id ?? `${board.gameId ?? "board"}-${index}`}
-              className="card bg-base-100 shadow-xl"
+              className="card bg-base-100 shadow-md rounded-2xl"
             >
               <div className="card-body">
-                <div className="flex justify-between items-start">
-                  <div>
+                <div className="flex justify-between items-start gap-3">
+                  <div className="min-w-0">
                     <h2 className="card-title">
                       {board.friendlyTitle
                         ? board.friendlyTitle
@@ -151,7 +152,8 @@ export function BoardsPage() {
                     {board.numbers?.map((num) => (
                       <div
                         key={num}
-                        className="w-10 h-10 rounded-full bg-primary text-primary-content flex items-center justify-center font-bold"
+                        className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white"
+                        style={{ backgroundColor: "#d50000" }}
                       >
                         {num}
                       </div>

@@ -45,10 +45,10 @@ export function Layout() {
   return (
     <div className="min-h-screen bg-base-200 overflow-x-hidden">
       <nav className="navbar bg-primary text-primary-content shadow-lg px-4 sm:px-6">
-        <div className="navbar-start">
+        <div className="navbar-start min-w-0">
           {isAuthenticated && user && (
             <div className="dropdown lg:hidden">
-              <label tabIndex={0} className="btn btn-ghost btn-circle">
+              <label tabIndex={0} className="btn btn-ghost btn-circle" aria-label="Open navigation">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6"
@@ -66,7 +66,8 @@ export function Layout() {
               </label>
               <ul
                 tabIndex={0}
-                className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 text-base-content rounded-box w-56"
+                className="menu menu-sm dropdown-content mt-3 z-[5] p-2 shadow rounded-box w-56 right-0 border bg-base-100 text-base-content"
+                style={{ borderColor: "#d50000" }}
               >
                 {navLinks}
                 <li className="mt-1">
@@ -78,23 +79,27 @@ export function Layout() {
             </div>
           )}
           <Link to="/" className="flex items-center gap-3">
-            <img src="/logo.png" alt="Jerne IF" className="w-10 h-10" />
-            <span className="text-lg sm:text-xl font-bold tracking-wide">Dead Pigeons</span>
+            <img src="/logo.png" alt="Jerne IF" className="w-10 h-10 flex-shrink-0" />
+            <span className="text-lg sm:text-xl font-bold tracking-wide whitespace-nowrap drop-shadow-sm">
+              Dead Pigeons
+            </span>
           </Link>
         </div>
 
         {isAuthenticated && user && (
-          <>
+          <div className="flex-none flex items-center gap-3">
             <div className="navbar-center hidden lg:flex">
               <ul className="menu menu-horizontal px-1 flex-wrap gap-1">{navLinks}</ul>
             </div>
-            <div className="navbar-end gap-3 hidden lg:flex">
-              <span className="max-w-[220px] truncate text-sm font-semibold">{user.email}</span>
+            <div className="hidden lg:flex items-center gap-4">
+              <span className="max-w-[220px] truncate text-sm font-semibold tracking-normal">
+                {user.email}
+              </span>
               <button onClick={handleLogout} className="btn btn-sm btn-ghost text-sm font-semibold">
                 Log ud
               </button>
             </div>
-          </>
+          </div>
         )}
       </nav>
 

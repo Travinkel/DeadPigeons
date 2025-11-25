@@ -138,120 +138,128 @@ export function PlayerDashboard() {
       <h1 className="text-2xl font-bold mb-6">Velkommen, {player?.name}</h1>
 
       {/* Balance Card */}
-      <div className="card bg-primary text-primary-content shadow-xl">
-        <div className="card-body">
+      <div className="card shadow-md rounded-2xl" style={{ backgroundColor: "#d50000" }}>
+        <div className="card-body text-white">
           <h2 className="card-title">Din saldo</h2>
-          <p className="text-4xl font-bold">{balance?.balance?.toFixed(2)} kr</p>
+          <p className="text-4xl font-extrabold drop-shadow-sm">
+            {balance?.balance?.toFixed(2)} kr
+          </p>
         </div>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="stat bg-base-100 rounded-box shadow">
+        <div className="stat bg-base-100 rounded-2xl shadow-md">
           <div className="stat-title">Aktive plader</div>
           <div className="stat-value text-primary">{boards.length}</div>
         </div>
-        <div className="stat bg-base-100 rounded-box shadow">
+        <div className="stat bg-base-100 rounded-2xl shadow-md">
           <div className="stat-title">Email</div>
           <div className="stat-value text-sm break-all">{player?.email}</div>
         </div>
-        <div className="stat bg-base-100 rounded-box shadow">
+        <div className="stat bg-base-100 rounded-2xl shadow-md">
           <div className="stat-title">Telefon</div>
           <div className="stat-value text-sm">{player?.phone || "-"}</div>
         </div>
       </div>
 
       {/* Recent Boards */}
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100 shadow-md rounded-2xl">
         <div className="card-body">
           <h2 className="card-title">Dine plader</h2>
           {boards.length === 0 ? (
             <p className="text-base-content/70">Du har ingen plader endnu.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Spil</th>
-                    <th>Numre</th>
-                    <th>Automatisk</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {boards.slice(0, 5).map((board) => (
-                    <tr key={board.id ?? `${board.gameId}-${board.numbers?.join("-")}`}>
-                      <td>
-                        {board.friendlyTitle
-                          ? board.friendlyTitle
-                          : board.weekNumber && board.year
-                            ? `Uge ${board.weekNumber}, ${board.year}`
-                            : board.gameId
-                              ? `Spil ${board.gameId.slice(0, 8)}`
-                              : "Spil"}
-                      </td>
-                      <td>
-                        <div className="flex gap-1 flex-wrap">
-                          {board.numbers?.map((num) => (
-                            <span key={num} className="badge badge-sm">
-                              {num}
-                            </span>
-                          ))}
-                        </div>
-                      </td>
-                      <td>
-                        {board.isRepeating ? (
-                          <span className="badge badge-success badge-sm">Ja</span>
-                        ) : (
-                          <span className="badge badge-ghost badge-sm">Nej</span>
-                        )}
-                      </td>
+            <div className="relative">
+              <div className="overflow-x-auto">
+                <table className="table min-w-[620px]">
+                  <thead>
+                    <tr>
+                      <th>Spil</th>
+                      <th>Numre</th>
+                      <th>Automatisk</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {boards.slice(0, 5).map((board) => (
+                      <tr key={board.id ?? `${board.gameId}-${board.numbers?.join("-")}`}>
+                        <td>
+                          {board.friendlyTitle
+                            ? board.friendlyTitle
+                            : board.weekNumber && board.year
+                              ? `Uge ${board.weekNumber}, ${board.year}`
+                              : board.gameId
+                                ? `Spil ${board.gameId.slice(0, 8)}`
+                                : "Spil"}
+                        </td>
+                        <td>
+                          <div className="flex gap-1 flex-wrap">
+                            {board.numbers?.map((num) => (
+                              <span key={num} className="badge badge-sm">
+                                {num}
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                        <td>
+                          {board.isRepeating ? (
+                            <span className="badge badge-success badge-sm">Ja</span>
+                          ) : (
+                            <span className="badge badge-ghost badge-sm">Nej</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-base-100 to-transparent md:hidden" />
             </div>
           )}
         </div>
       </div>
 
       {/* Recent Transactions */}
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100 shadow-md rounded-2xl">
         <div className="card-body">
           <h2 className="card-title">Seneste transaktioner</h2>
           {transactions.length === 0 ? (
             <p className="text-base-content/70">Ingen transaktioner endnu.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Dato</th>
-                    <th>Type</th>
-                    <th>Beløb</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.map((tx) => (
-                    <tr key={tx.id}>
-                      <td>
-                        {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString("da-DK") : "-"}
-                      </td>
-                      <td>{tx.type}</td>
-                      <td className={tx.amount && tx.amount > 0 ? "text-success" : "text-error"}>
-                        {tx.amount?.toFixed(2)} kr
-                      </td>
-                      <td>
-                        {tx.isApproved || tx.approvedAt ? (
-                          <span className="badge badge-success badge-sm">Godkendt</span>
-                        ) : (
-                          <span className="badge badge-warning badge-sm">Afventer</span>
-                        )}
-                      </td>
+            <div className="relative">
+              <div className="overflow-x-auto">
+                <table className="table min-w-[620px]">
+                  <thead>
+                    <tr>
+                      <th>Dato</th>
+                      <th>Type</th>
+                      <th>Beløb</th>
+                      <th>Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {transactions.map((tx) => (
+                      <tr key={tx.id}>
+                        <td>
+                          {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString("da-DK") : "-"}
+                        </td>
+                        <td>{tx.type}</td>
+                        <td className={tx.amount && tx.amount > 0 ? "text-success" : "text-error"}>
+                          {tx.amount?.toFixed(2)} kr
+                        </td>
+                        <td>
+                          {tx.isApproved || tx.approvedAt ? (
+                            <span className="badge badge-success badge-sm">Godkendt</span>
+                          ) : (
+                            <span className="badge badge-warning badge-sm">Afventer</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-base-100 to-transparent md:hidden" />
             </div>
           )}
         </div>

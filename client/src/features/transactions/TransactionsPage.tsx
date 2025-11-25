@@ -102,22 +102,26 @@ export function TransactionsPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Mine transaktioner</h1>
-        <Link to="/transactions/deposit" className="btn btn-primary">
+        <Link
+          to="/transactions/deposit"
+          className="btn text-white"
+          style={{ backgroundColor: "#d50000" }}
+        >
           Anmod indbetaling
         </Link>
       </div>
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="stat bg-base-100 rounded-box shadow">
+        <div className="stat bg-base-100 rounded-2xl shadow-md">
           <div className="stat-title">Transaktioner i alt</div>
           <div className="stat-value text-primary">{transactions.length}</div>
         </div>
-        <div className="stat bg-base-100 rounded-box shadow">
+        <div className="stat bg-base-100 rounded-2xl shadow-md">
           <div className="stat-title">Godkendte indbetalinger</div>
           <div className="stat-value text-success">{totalDeposits.toFixed(2)} kr</div>
         </div>
-        <div className="stat bg-base-100 rounded-box shadow">
+        <div className="stat bg-base-100 rounded-2xl shadow-md">
           <div className="stat-title">Afventer godkendelse</div>
           <div className="stat-value text-warning">{pendingDeposits.length}</div>
         </div>
@@ -144,68 +148,71 @@ export function TransactionsPage() {
       )}
 
       {/* Transactions List */}
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100 shadow-md rounded-2xl">
         <div className="card-body">
           <h2 className="card-title">Transaktionshistorik</h2>
           {transactions.length === 0 ? (
             <p className="text-base-content/70">Ingen transaktioner endnu.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Dato</th>
-                    <th>Type</th>
-                    <th>Belob</th>
-                    <th>MobilePay ID</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.map((tx) => (
-                    <tr key={tx.id}>
-                      <td>
-                        {tx.createdAt
-                          ? new Date(tx.createdAt).toLocaleDateString("da-DK", {
-                              day: "2-digit",
-                              month: "2-digit",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
-                          : "-"}
-                      </td>
-                      <td>
-                        {tx.type === "Deposit" ? (
-                          <span className="badge badge-info badge-sm">Indbetaling</span>
-                        ) : tx.type === "BoardPurchase" ? (
-                          <span className="badge badge-secondary badge-sm">Plade</span>
-                        ) : (
-                          <span className="badge badge-ghost badge-sm">{tx.type}</span>
-                        )}
-                      </td>
-                      <td
-                        className={
-                          tx.amount && tx.amount > 0 ? "text-success font-semibold" : "text-error"
-                        }
-                      >
-                        {tx.amount && tx.amount > 0 ? "+" : ""}
-                        {tx.amount?.toFixed(2)} kr
-                      </td>
-                      <td className="text-sm text-base-content/70">
-                        {tx.mobilePayTransactionId || "-"}
-                      </td>
-                      <td>
-                        {tx.isApproved ? (
-                          <span className="badge badge-success badge-sm">Godkendt</span>
-                        ) : (
-                          <span className="badge badge-warning badge-sm">Afventer</span>
-                        )}
-                      </td>
+            <div className="relative">
+              <div className="overflow-x-auto">
+                <table className="table min-w-[720px]">
+                  <thead>
+                    <tr>
+                      <th>Dato</th>
+                      <th>Type</th>
+                      <th>Beløb</th>
+                      <th>MobilePay ID</th>
+                      <th>Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {transactions.map((tx) => (
+                      <tr key={tx.id}>
+                        <td>
+                          {tx.createdAt
+                            ? new Date(tx.createdAt).toLocaleDateString("da-DK", {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
+                            : "-"}
+                        </td>
+                        <td>
+                          {tx.type === "Deposit" ? (
+                            <span className="badge badge-info badge-sm">Indbetaling</span>
+                          ) : tx.type === "BoardPurchase" ? (
+                            <span className="badge badge-secondary badge-sm">Plade</span>
+                          ) : (
+                            <span className="badge badge-ghost badge-sm">{tx.type}</span>
+                          )}
+                        </td>
+                        <td
+                          className={
+                            tx.amount && tx.amount > 0 ? "text-success font-semibold" : "text-error"
+                          }
+                        >
+                          {tx.amount && tx.amount > 0 ? "+" : ""}
+                          {tx.amount?.toFixed(2)} kr
+                        </td>
+                        <td className="text-sm text-base-content/70 whitespace-pre-wrap break-words">
+                          {tx.mobilePayTransactionId || "-"}
+                        </td>
+                        <td>
+                          {tx.isApproved ? (
+                            <span className="badge badge-success badge-sm">Godkendt</span>
+                          ) : (
+                            <span className="badge badge-warning badge-sm">Afventer</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-base-100 to-transparent md:hidden" />
             </div>
           )}
         </div>

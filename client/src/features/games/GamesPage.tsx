@@ -69,7 +69,14 @@ export function GamesPage() {
   }
 
   const activeGame = games.find((g) => g.status === "Active");
-  const completedGames = games.filter((g) => g.status !== "Active");
+  const completedGames = games
+    .filter((g) => g.status !== "Active")
+    .slice()
+    .sort((a, b) => {
+      const yearDiff = (b.year || 0) - (a.year || 0);
+      if (yearDiff !== 0) return yearDiff;
+      return (b.weekNumber || 0) - (a.weekNumber || 0);
+    });
 
   return (
     <div className="space-y-6">
@@ -77,39 +84,45 @@ export function GamesPage() {
 
       {/* Active Game */}
       {activeGame && (
-        <div className="card bg-primary text-primary-content shadow-xl">
+        <div className="card shadow-md rounded-2xl" style={{ backgroundColor: "#d50000" }}>
           <div className="card-body">
-            <div className="flex justify-between items-start">
-              <div>
-                <h2 className="card-title">Aktivt spil</h2>
-                <p className="text-2xl font-bold mt-2">
-                  Uge {activeGame.weekNumber}, {activeGame.year}
-                </p>
+            <div className="grid grid-cols-1 md:grid-cols-2">
+              <div className="pt-6 pb-6 px-8 space-y-4">
+                <div className="space-y-1">
+                  <p className="text-lg font-semibold tracking-tight text-white drop-shadow-sm">
+                    Aktivt spil
+                  </p>
+                  <p className="text-xl font-bold text-white">
+                    Uge {activeGame.weekNumber}, {activeGame.year}
+                  </p>
+                </div>
+                <div className="grid gap-y-2">
+                  <div>
+                    <p className="text-sm text-white/80">Plader</p>
+                    <p className="text-xl font-bold text-white">{activeGame.boardCount || 0}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-white/80">Startet</p>
+                    <p className="text-xl font-bold text-white">
+                      {activeGame.startedAt
+                        ? new Date(activeGame.startedAt).toLocaleDateString("da-DK")
+                        : "-"}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="flex flex-col gap-2 items-end">
-                <span className="badge badge-secondary">Aktiv</span>
+              <div className="pt-6 pb-6 px-8 flex flex-col items-start md:items-end justify-center gap-3">
+                <p className="text-lg font-semibold tracking-tight text-white drop-shadow-sm">
+                  Aktiv
+                </p>
                 {isAdmin && (
                   <Link
                     to={`/games/${activeGame.id}/complete`}
-                    className="btn btn-sm btn-secondary"
+                    className="rounded-lg px-4 py-2 text-sm font-medium bg-white text-red-700 hover:bg-gray-100 self-end shadow-sm"
                   >
                     Afslut spil
                   </Link>
                 )}
-              </div>
-            </div>
-            <div className="stats stats-vertical lg:stats-horizontal bg-primary-focus mt-4">
-              <div className="stat">
-                <div className="stat-title text-primary-content/70">Plader</div>
-                <div className="stat-value">{activeGame.boardCount || 0}</div>
-              </div>
-              <div className="stat">
-                <div className="stat-title text-primary-content/70">Startet</div>
-                <div className="stat-value text-sm">
-                  {activeGame.startedAt
-                    ? new Date(activeGame.startedAt).toLocaleDateString("da-DK")
-                    : "-"}
-                </div>
               </div>
             </div>
           </div>
@@ -137,51 +150,63 @@ export function GamesPage() {
       )}
 
       {/* Completed Games */}
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100 shadow-md rounded-2xl">
         <div className="card-body">
           <h2 className="card-title">Afsluttede spil</h2>
           {completedGames.length === 0 ? (
             <p className="text-base-content/70">Ingen afsluttede spil endnu.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Uge</th>
-                    <th>Ar</th>
-                    <th>Plader</th>
-                    <th>Vindende numre</th>
-                    <th>Afsluttet</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {completedGames.map((game) => (
-                    <tr key={game.id}>
-                      <td className="font-semibold">{game.weekNumber}</td>
-                      <td>{game.year}</td>
-                      <td>{game.boardCount || 0}</td>
-                      <td>
-                        {game.winningNumbers && game.winningNumbers.length > 0 ? (
-                          <div className="flex gap-1 flex-wrap">
-                            {game.winningNumbers.map((num) => (
-                              <span key={num} className="badge badge-primary badge-sm">
-                                {num}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="text-base-content/50">-</span>
-                        )}
-                      </td>
-                      <td>
-                        {game.completedAt
-                          ? new Date(game.completedAt).toLocaleDateString("da-DK")
-                          : "-"}
-                      </td>
+            <div className="relative">
+              <div className="overflow-x-auto">
+                <table className="table min-w-[720px]">
+                  <thead>
+                    <tr>
+                      <th>Uge</th>
+                      <th>Ar</th>
+                      <th>Plader</th>
+                      <th>Vindende numre</th>
+                      <th>Afsluttet</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {completedGames.map((game) => {
+                      const isActiveRow =
+                        activeGame &&
+                        activeGame.year === game.year &&
+                        activeGame.weekNumber === game.weekNumber;
+                      return (
+                        <tr
+                          key={game.id}
+                          className={isActiveRow ? "bg-red-50 text-red-700 font-semibold" : ""}
+                        >
+                          <td className="font-semibold">{game.weekNumber}</td>
+                          <td>{game.year}</td>
+                          <td>{game.boardCount || 0}</td>
+                          <td>
+                            {game.winningNumbers && game.winningNumbers.length > 0 ? (
+                              <div className="flex gap-1 flex-wrap">
+                                {game.winningNumbers.map((num) => (
+                                  <span key={num} className="badge badge-primary badge-sm">
+                                    {num}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="text-base-content/50">-</span>
+                            )}
+                          </td>
+                          <td>
+                            {game.completedAt
+                              ? new Date(game.completedAt).toLocaleDateString("da-DK")
+                              : "-"}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-base-100 to-transparent md:hidden" />
             </div>
           )}
         </div>
