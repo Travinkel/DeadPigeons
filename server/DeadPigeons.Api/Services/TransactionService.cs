@@ -16,6 +16,30 @@ public class TransactionService : ITransactionService
         _logger = logger;
     }
 
+    public async Task<TransactionResponse?> GetByIdAsync(Guid id)
+    {
+        var result = await _db.Transactions
+            .Where(t => t.Id == id)
+            .Join(_db.Players, t => t.PlayerId, p => p.Id, (t, p) => new { t, p })
+            .Select(x => new TransactionResponse(
+                x.t.Id,
+                x.t.PlayerId,
+                x.t.Amount,
+                x.t.Type.ToString(),
+                x.t.MobilePayTransactionId,
+                x.t.IsApproved,
+                x.t.CreatedAt,
+                x.t.ApprovedAt,
+                x.t.ApprovedById,
+                !string.IsNullOrEmpty(x.p.Name) ? x.p.Name : x.p.Email,
+                x.t.IsDeleted,
+                x.t.DeletedAt,
+                x.t.DeletedById))
+            .FirstOrDefaultAsync();
+
+        return result;
+    }
+
     public async Task<IEnumerable<TransactionResponse>> GetByPlayerIdAsync(Guid playerId)
     {
         var results = await _db.Transactions

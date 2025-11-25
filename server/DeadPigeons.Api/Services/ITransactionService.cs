@@ -4,6 +4,7 @@ namespace DeadPigeons.Api.Services;
 
 public interface ITransactionService
 {
+    Task<TransactionResponse?> GetByIdAsync(Guid id);
     Task<IEnumerable<TransactionResponse>> GetByPlayerIdAsync(Guid playerId);
     Task<IEnumerable<TransactionResponse>> GetPendingAsync();
     Task<IEnumerable<TransactionResponse>> GetAllAsync();

@@ -21,6 +21,17 @@ public class TransactionsController : ControllerBase
 
     private string CorrelationId => HttpContext.Items.TryGetValue("X-Correlation-ID", out var id) ? id?.ToString() ?? string.Empty : string.Empty;
 
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetTransactionById(Guid id)
+    {
+        var transaction = await _transactionService.GetByIdAsync(id);
+        if (transaction == null)
+        {
+            return StatusCode(404, new ErrorResponse("TX_NOT_FOUND", "Transaction not found", CorrelationId));
+        }
+        return Ok(transaction);
+    }
+
     [HttpGet("player/{playerId:guid}")]
     public async Task<IActionResult> GetByPlayerId(Guid playerId)
     {
@@ -80,7 +91,7 @@ public class TransactionsController : ControllerBase
         try
         {
             var transaction = await _transactionService.CreateDepositAsync(request);
-            return StatusCode(201, transaction);
+            return CreatedAtAction(nameof(GetTransactionById), new { id = transaction.Id }, transaction);
         }
         catch (ArgumentException ex)
         {
