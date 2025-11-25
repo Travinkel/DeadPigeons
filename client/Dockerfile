@@ -5,12 +5,12 @@ WORKDIR /app
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
 
-# Copy only client package manifests (context is repo root)
-COPY client/package*.json ./
+# Copy only client package manifests
+COPY package*.json ./
 RUN npm ci
 
 # Copy client source
-COPY client/ .
+COPY . .
 RUN npm run build
 
 FROM nginx:alpine
