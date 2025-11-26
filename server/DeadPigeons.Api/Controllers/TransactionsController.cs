@@ -29,6 +29,13 @@ public class TransactionsController : ControllerBase
         {
             return StatusCode(404, new ErrorResponse("TX_NOT_FOUND", "Transaction not found", CorrelationId));
         }
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = User.IsInRole("Admin");
+
+        if (!isAdmin && userId != transaction.PlayerId.ToString())
+            return StatusCode(403, new ErrorResponse("AUTH_FORBIDDEN", "Cannot view transactions for another user", CorrelationId));
+
         return Ok(transaction);
     }
 
